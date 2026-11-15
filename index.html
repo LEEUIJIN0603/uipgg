@@ -2829,12 +2829,13 @@ const ROLES = ['TOP','JGL','MID','BOT','SPT'];
 // 포지션별 이모지
 const ROLE_EMOJI = { TOP: '🗡️', JGL: '🌿', MID: '⚡', BOT: '🏹', SPT: '🛡️' };
 
+// 라인 아이콘: 사이트 안에 직접 넣어 둠 (바깥 이미지 서버가 막히면 빈칸으로 보여서)
 const ICONS = {
-  TOP: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/icon-position-top.png',
-  JGL: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/icon-position-jungle.png',
-  MID: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/icon-position-middle.png',
-  BOT: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/icon-position-bottom.png',
-  SPT: 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-shared-components/global/default/icon-position-utility.png',
+  TOP: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAyklEQVR4Xu3aMRJEQBBGYdTeSLKxY+xhxRJn4gKWJ1A1/n5fLDCvu0im6ySpsP7q7Osyb1fPtG78Tn/PObT+8k8rH+BzVDhh7anyG2AAuiqpDr8BZ85+Ka1Yl/lH36X8BhiArkoqA6ROljIALZXKAKmTpQxAS6UyQOpkKQPQUqkMkDpZygC0VCoDpE6WMgAtlcoAqZOlDEBLpTJA6mQpA9BSqQyQOlnKALRUKgOkTpYyAC2VqnyA2xcl71xCfIPyG2CAN6ypJEl6xA7P2g3IBUAScAAAAABJRU5ErkJggg==',
+  JGL: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABMklEQVR4Xu2YOw5CMQwEA1eioebg1DScCRqehNBD+bxdey3ttCRGmnEKaM0YY4xJ4/m4v9K+vLV2zvxyBVIFbPUztyBVgAJpAn6rZ21BmgAVUgT8q52xBSkClAgX0Kvc+xxNuAA1QgWM1h09hyBUgCJhAmarzp5fJUyAKiECVmuu3pshRIAydAFHKx6934MuQB2qAFQ91Jw9qAIqQBOAroaet0ETUAWKAFYtxlyKgErABTAqfYOeDxdQDbiAy/V2YkpAz4cLqIYFVCuGhiIA/U43GHMpAiphAaxa6HVFz/OPoQ+0DaiCBTBLod4tao7/EtuBugEVoAs4ur5H7/egC1DHAtQLsQkRsPqOV+/NECJAGQuIqjO7zrPnVwkToIoFqJaJIlTA6LsePYcgVIAxxhgx3k4xXkv7PMqBAAAAAElFTkSuQmCC',
+  MID: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABYklEQVR4Xu2aQQ6CMBBF0XgjN6w5hpxPj8GajWfS1KSJMSgzlc78X+YtDYm8x7QsaNcFQRAEQbBXDmvi93m6rF2Dzrkfbt/u8Yh+87VpJcC1NFQLAbJ8UYSTttyv9WTNfZ4eH/95PffDQbNv0U7AgvyLb783tQkKJMXLgW4CBPIZUQSqAAr5xCjZk2gC1JBPUATQyKe3gOTJZ+AD1JSHn4Da8tABLORhA1jJQwawlIcLYC0PFcBDHiaAlzxEAE959wDe8q4BEOTdAqDIuwRAkjcPgCZvGgBR3iwAqrxJAGT56gHQ5asGYJCvFoBFvkoAJvnNA7DJbxqAUX6zAKzymwRglv87ALv8XwFakC8O0Ip8UYCW5EsCiA4dJLRfab3QfB1uTl4zAU3KawKIjpuwjP07miXwMwKjfEJ7UDJFWFoOo+ZwIhKaCch8ToJoeaBSEiCRpanlNZvgEvTyQRAEQbBznmTVqMAcuB23AAAAAElFTkSuQmCC',
+  BOT: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAA2ElEQVR4Xu3aMQ6CQBQGYTTeiIaaY3g/PQY1DWfSFjchuDH5M+bNV0OyzNul2mGQJElVXc4+fFuX+9kzQI+jNY3T/PHNV+DiowwQzQ10613TOM3P3nfStnU5/Ae0yu8AA6S3J40BaBNJM0C6OI0BaBNJM0C6OI0BaBNJM0C6OI0BaBNJM0C6OI0BaBNJM0C6OI0BaBNJM0C6OI0BaBNJM0C6OI0BaBNJM0C6OI0BaBNJM0C6OE35AN9cln7RpvYLL0s3yh+B8gG6L0v/o/bc75XfAeUDSKrtDfAYDWSWdoItAAAAAElFTkSuQmCC',
+  SPT: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABM0lEQVR4Xu3aMZLCUAyD4cCVaKg5ODUNZ4IJJRMYbEty8Oi/QJ6+l81uscvinHPOOdfU/XZ9ND361aHr4VvDT+eL/DzSB0ZuW4UhAYgMf48NQQOojP4UAwMOwBjOfCsgAIrRrLeiBNA5HPVWhAH2NBrxVhy7/g7YSwaI3gTjVxGy6PnCANMywLQbjWaAqNi0UgDRL62qzLlSAJMywKTbzGSAjNqk0gCZLy6z7HnSAFMywJSbzGaArNyUSgDZLy+6yjlKABMywIRbrFQGqPz8Iao+vwywVj1ENsRzIQAdCIjxazAAJQJqPBxAgYAcTwFgIqDH0wAYCIzxVAAkAms8HQCBwBwvAaggsMfLADIIivFSgAiCarwc4BcE5fgWgG8I6vFtAFsIHeN30T/836Fzzjk3tCeAW0DPvS3NxAAAAABJRU5ErkJggg=='
 };
 
 const SPLASHES = ['Jinx_0','Ahri_0','Lux_0','Zed_0','Yasuo_0','Ezreal_0','Vi_0','MissFortune_0','Thresh_0','LeeSin_0'];
