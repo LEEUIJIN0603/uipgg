@@ -4628,7 +4628,8 @@ async function loadAugments() {
     const list = await fetch(CD + 'ko_kr/v1/cherry-augments.json').then(r => r.json());
     list.forEach(a => {
       const path = a.augmentSmallIconPath || a.augmentIconPath || '';
-      AUG[a.id] = { name: a.nameTRA || a.name || ('증강 #' + a.id),
+      const nm = String(a.nameTRA || a.name || '').replace(/<[^>]*>/g, '').trim();
+      AUG[a.id] = { name: nm || ('증강 #' + a.id), blank: !nm,          // 이름 없는 항목 = 빈 슬롯용 (화면에서 빼요)
                     icon: path ? CD + 'default/' + path.replace(/^\/lol-game-data\/assets\//i, '').toLowerCase() : '' };
     });
     renderRecord();
@@ -4636,6 +4637,8 @@ async function loadAugments() {
   _augLoading = false; _augTried = true;
 }
 const augInfo = id => AUG[id] || { name: '증강 #' + id, icon: '' };
+// 실제로 고른 증강만 (0번·이름 없는 빈 슬롯 항목은 빼요)
+const realAugs = p => (p.aug || []).filter(a => +a > 0 && !(AUG[a] && AUG[a].blank));
 function augIcon(id, cls) {
   const a = augInfo(id);
   return `<span class="aug ${cls || ''}" title="${escapeHtml(a.name)}" data-n="${escapeHtml(a.name)}">${a.icon ? `<img src="${a.icon}" alt="" loading="lazy" onerror="this.remove()">` : ''}<em>${escapeHtml(a.name.replace(/^증강 /, ''))}</em></span>`;
@@ -5012,7 +5015,7 @@ function matchCard(m) {
       <td>${p.cs}<span class="sub">분당 ${(p.cs / mins).toFixed(1)}</span></td>
       <td>${fmtK(p.gold)}</td>
       <td>${p.vis}<span class="sub">제어 ${p.cw}</span></td>
-      <td><div class="mt-items">${p.items.slice(0, 6).map(it => itemIcon(m, it)).join('')}${itemIcon(m, p.items[6], true)}</div>${p.aug && p.aug.length ? `<div class="mt-augs">${p.aug.map(a => augIcon(a)).join('')}</div>` : ''}</td>
+      <td><div class="mt-items">${p.items.slice(0, 6).map(it => itemIcon(m, it)).join('')}${itemIcon(m, p.items[6], true)}</div>${realAugs(p).length ? `<div class="mt-augs">${realAugs(p).map(a => augIcon(a)).join('')}</div>` : ''}</td>
     </tr>`;
   };
   const teamBlock = t => {
@@ -5308,7 +5311,7 @@ function renderSummoners() {
         <div class="sm-ach">${achHtml}</div>
         ${(() => {
           const cnt = {};
-          r.st.games.forEach(g => (g.p.aug || []).forEach(a => { cnt[a] = (cnt[a] || 0) + 1; }));
+          r.st.games.forEach(g => realAugs(g.p).forEach(a => { cnt[a] = (cnt[a] || 0) + 1; }));
           const top = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 4);
           return top.length ? `<div class="sm-augrow"><span class="sm-rl">자주 고른 증강</span><div class="sm-augs">${top.map(([a, n]) => augIcon(a, 'big') + `<small>${n}회</small>`).join('')}</div></div>` : '';
         })()}
@@ -5942,7 +5945,7 @@ function renderDashboard() {
 
   // 인기 증강 (증강 기록이 있을 때)
   const AU = {};
-  ms.forEach(m => m.players.forEach(p => (p.aug || []).forEach(a => { const x = AU[a] || (AU[a] = { g: 0, w: 0 }); x.g++; if (p.win) x.w++; })));
+  ms.forEach(m => m.players.forEach(p => realAugs(p).forEach(a => { const x = AU[a] || (AU[a] = { g: 0, w: 0 }); x.g++; if (p.win) x.w++; })));
   const augTop = Object.entries(AU).sort((a, b) => b[1].g - a[1].g || b[1].w - a[1].w).slice(0, 10);
   const row5 = augTop.length ? `<div class="db-sec"><div class="db-box"><div class="db-h"><b>✨ 인기 증강</b><span>많이 고른 순 · 고른 사람 기준 승률</span></div>
     <div class="aug-grid">${augTop.map(([a, v], i) => `<div class="dl"><span class="dl-n">${i + 1}</span>${augIcon(a, 'big')}<div class="dl-main"><b>${escapeHtml(augInfo(a).name)}</b><small>${v.w}승 ${v.g - v.w}패</small></div><div class="dl-v">${v.g}회<small>승률 ${Math.round(v.w / v.g * 100)}%</small></div></div>`).join('')}</div></div></div>` : '';
