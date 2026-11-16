@@ -5089,6 +5089,7 @@ const SCORE_W = {
 };
 const SCORE_LABEL = { wr: '승률(판수 보정)', kda: 'KDA', dpm: '분당 딜량', kp: '킬관여', mvp: 'MVP·ACE 비율', cspm: '분당 CS', vpm: '분당 시야점수' };
 // 개인 순위 계산 (종합 점수 포함)
+const RANK_MIN = 6;   // 이 판수 이상이어야 순위 · 종합 TOP 3에 들어가요 (5판 이하 = 순위 외)
 function rankRowsFor(lane) {
   const P = {};
   modeMatches().sort((a, b) => (a.date || 0) - (b.date || 0)).forEach(m => {
@@ -5155,8 +5156,7 @@ function renderRank() {
   };
   const kf = keyOf[recSort] || keyOf.total;
   rows.sort((a, b) => kf(b) - kf(a) || b.score - a.score || b.g - a.g || a.name.localeCompare(b.name));
-  // 전체 판수 6판 이하는 '순위 외'로 맨 아래에 (라인별 탭도 그 모드 전체 판수 기준)
-  const RANK_MIN = 7;
+  // 전체 판수 5판 이하는 '순위 외'로 맨 아래에 (라인별 탭도 그 모드 전체 판수 기준)
   const totalG = {}; (lane === 'ALL' ? rows : rankRowsFor('ALL')).forEach(r => { totalG[r.name + '#' + r.tag] = r.g; });
   rows.forEach(r => { r.out = (totalG[r.name + '#' + r.tag] || 0) < RANK_MIN; });
   const inRows = rows.filter(r => !r.out), outRows = rows.filter(r => r.out);
@@ -5183,7 +5183,7 @@ function renderRank() {
     ${rows.map((r, ri) => {
       const wrp = Math.round(r.wr * 100);
       const outHead = r.out && (ri === 0 || !rows[ri - 1].out)
-        ? `<tr class="rk-out-h"><td colspan="${showPos ? 11 : 10}">순위 외 · 판수 6판 이하 <small>7판부터 순위에 들어가요</small></td></tr>` : '';
+        ? `<tr class="rk-out-h"><td colspan="${showPos ? 11 : 10}">순위 외 · 판수 ${RANK_MIN - 1}판 이하 <small>${RANK_MIN}판부터 순위에 들어가요</small></td></tr>` : '';
       const mainPos = Object.entries(r.pos).sort((a, b) => b[1] - a[1])[0];
       const most = Object.entries(r.champ).sort((a, b) => b[1].g - a[1].g || b[1].w - a[1].w).slice(0, 3);
       return `${outHead}<tr${r.out ? ' class="rk-out"' : ''}>
@@ -5842,7 +5842,7 @@ function renderDashboard() {
   </div></div>`;
 
   // ② 종합 TOP 3 + 지금 가장 뜨거운/차가운
-  const rk = rankRowsFor('ALL').sort((a, b) => b.score - a.score || b.g - a.g);
+  const rk = rankRowsFor('ALL').filter(r => r.g >= RANK_MIN).sort((a, b) => b.score - a.score || b.g - a.g);   // 5판 이하는 순위 외
   const pdStep = n => `<div class="pd-step"><b>${n}</b><span>${['', 'ST', 'ND', 'RD'][n]}</span></div>`;
   const pdCard = (r, n) => {
     if (!r) return `<div class="pd p${n}" style="opacity:.35"><div class="pd-top"><div class="pd-medal">${['', '🥇', '🥈', '🥉'][n]}</div><div class="pd-meta" style="margin-top:20px">-</div></div>${pdStep(n)}</div>`;
@@ -5881,7 +5881,7 @@ function renderDashboard() {
   });
   const dayKing = Object.values(dayWin).sort((a, b) => b.w - a.w || b.mvp - a.mvp || b.sc - a.sc)[0];
   const row2 = `<div class="db-sec db-row">
-    <div class="db-box"><div class="db-h"><b>🏆 종합 TOP 3</b><span>개인 순위 종합 점수 기준</span></div>
+    <div class="db-box"><div class="db-h"><b>🏆 종합 TOP 3</b><span>개인 순위 종합 점수 기준 · ${RANK_MIN}판 이상</span></div>
       <div class="podium">${pdCard(rk[1], 2)}${pdCard(rk[0], 1)}${pdCard(rk[2], 3)}</div></div>
     <div class="db-box"><div class="db-h"><b>🌡 지금 분위기</b><span>내전 날짜 기준</span></div>
       ${hcRow(hot, 'win')}${hcRow(cold, 'lose')}
