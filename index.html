@@ -1138,6 +1138,11 @@
     .hp-g { position: relative; display: inline-flex; border-radius: 6px; }
     .hp-g::after { content: ''; position: absolute; left: 3px; right: 3px; bottom: -3px; height: 2px; border-radius: 2px; }
     .hp-g.w::after { background: #3a6fd8; } .hp-g.l::after { background: #c24040; }
+    .hp-ch { row-gap: 10px; padding-top: 6px; }
+    .hp-bd { position: absolute; left: 50%; top: -7px; transform: translateX(-50%); font: 800 .5rem 'Noto Sans KR', sans-serif; font-style: normal; letter-spacing: .3px; padding: 0 4px; border-radius: 4px; line-height: 1.5; white-space: nowrap; z-index: 1; }
+    .hp-bd.mvp { background: #f0c45a; color: #1a1205; } .hp-bd.ace { background: #7a8aa8; color: #fff; }
+    .hp-rec small { display: flex; gap: 4px; margin-top: 2px; } .hp-rec small em { font-style: normal; font-size: .6rem; font-weight: 800; padding: 0 4px; border-radius: 4px; }
+    .hp-rec small em.mvp { color: #f0c45a; border: 1px solid rgba(240,196,90,.5); } .hp-rec small em.ace { color: #aab4c5; border: 1px solid rgba(170,180,197,.4); }
 
     /* ══ 소환사 정보 카드 ══ */
     .sm-head { display: flex; align-items: baseline; gap: 10px; margin: 2px 0 14px; flex-wrap: wrap; }
@@ -4809,8 +4814,12 @@ function showStreakHist(i) {
     <div class="hp-row">
       <span class="hp-date">${d.day.slice(5).replace('.', '/')}<small>${d.day.slice(0, 4)}</small></span>
       <span class="hp-res ${d.res}">${d.res === 'w' ? '승' : d.res === 'l' ? '패' : '무'}</span>
-      <span class="hp-rec">${d.w}승 ${d.l}패</span>
-      <span class="hp-ch">${d.games.map(g => `<span class="hp-g ${g.p.win ? 'w' : 'l'}" title="${gameNo(g.m)}번째 판 · ${escapeHtml(champInfo(g.p.champ).name)} ${g.p.k}/${g.p.d}/${g.p.a} ${g.p.win ? '승' : '패'}">${champIcon(g.m, g.p.champ, 'sm')}</span>`).join('')}</span>
+      ${(() => {
+        const bd = g => matchBadges(g.m)[g.m.players.indexOf(g.p)] || '';          // 그 판 MVP(이긴 팀 1등) · ACE(진 팀 1등)
+        const nM = d.games.filter(g => bd(g) === 'mvp').length, nA = d.games.filter(g => bd(g) === 'ace').length;
+        return `<span class="hp-rec">${d.w}승 ${d.l}패${nM || nA ? `<small>${nM ? `<em class="mvp">MVP ${nM}</em>` : ''}${nA ? `<em class="ace">ACE ${nA}</em>` : ''}</small>` : ''}</span>
+      <span class="hp-ch">${d.games.map(g => { const b = bd(g); return `<span class="hp-g ${g.p.win ? 'w' : 'l'}" title="${gameNo(g.m)}번째 판 · ${escapeHtml(champInfo(g.p.champ).name)} ${g.p.k}/${g.p.d}/${g.p.a} ${g.p.win ? '승' : '패'}${b ? ' · ' + b.toUpperCase() : ''}">${champIcon(g.m, g.p.champ, 'sm')}${b ? `<i class="hp-bd ${b}">${b.toUpperCase()}</i>` : ''}</span>`; }).join('')}</span>`;
+      })()}
     </div>`).join('');
   pop.classList.add('open');
   layerOpen('hist', () => closeStreakHist(true));
