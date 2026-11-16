@@ -2345,6 +2345,16 @@
                  background: rgba(255,255,255,.03); color: #aab4c5; font: 700 .8rem 'Noto Sans KR', sans-serif; cursor: pointer; position: relative; }
     .sm-detail:hover { background: rgba(240,196,90,.08); color: var(--gold2); }
     @media (max-width: 760px) { .sm-detail { width: calc(100% + 28px); margin: 12px -14px -14px; } }
+
+    /* 순위 외 (6판 이하) */
+    .rk-out-h td { text-align: left !important; padding: 14px 16px 8px !important; font-size: .78rem; font-weight: 800; color: #8d99ae; background: transparent !important; border-top: 2px dashed #2c3a52 !important; }
+    .rk-out-h td small { font-weight: 500; margin-left: 6px; color: #6f7d93; }
+    .rk-table tr.rk-out td { opacity: .62; }
+    @media (max-width: 760px) {
+      .rk-table tr.rk-out-h { display: block; background: none !important; border: none !important; padding: 10px 2px 0 !important; }
+      .rk-table tr.rk-out-h td { display: block; border-top: 2px dashed #2c3a52 !important; padding: 12px 2px 0 !important; }
+      .rk-table tr.rk-out { opacity: .7; } .rk-table tr.rk-out td { opacity: 1; }
+    }
     /* 디스코드 미리보기 창 */
     .dcp-wrap { position: fixed; inset: 0; z-index: 3000; background: rgba(5,9,16,.72); display: flex; align-items: center; justify-content: center; padding: 16px; }
     .dcp-box { width: min(640px, 100%); max-height: 92vh; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: 0 24px 70px rgba(0,0,0,.6); }
@@ -5145,7 +5155,14 @@ function renderRank() {
   };
   const kf = keyOf[recSort] || keyOf.total;
   rows.sort((a, b) => kf(b) - kf(a) || b.score - a.score || b.g - a.g || a.name.localeCompare(b.name));
-  rows.forEach((r, i) => { r.rank = i > 0 && kf(r) === kf(rows[i - 1]) ? rows[i - 1].rank : i + 1; });   // 동점 = 같은 순위, 다음은 인원만큼 건너뛰기
+  // 전체 판수 6판 이하는 '순위 외'로 맨 아래에 (라인별 탭도 그 모드 전체 판수 기준)
+  const RANK_MIN = 7;
+  const totalG = {}; (lane === 'ALL' ? rows : rankRowsFor('ALL')).forEach(r => { totalG[r.name + '#' + r.tag] = r.g; });
+  rows.forEach(r => { r.out = (totalG[r.name + '#' + r.tag] || 0) < RANK_MIN; });
+  const inRows = rows.filter(r => !r.out), outRows = rows.filter(r => r.out);
+  inRows.forEach((r, i) => { r.rank = i > 0 && kf(r) === kf(inRows[i - 1]) ? inRows[i - 1].rank : i + 1; });   // 동점 = 같은 순위, 다음은 인원만큼 건너뛰기
+  outRows.forEach(r => { r.rank = 99; });
+  rows.length = 0; rows.push(...inRows, ...outRows);
 
   const showPos = recMode === 'rift' && lane === 'ALL';
   const wTxt = w => Object.entries(w).map(([k, v]) => `${SCORE_LABEL[k]} ${v}%`).join(' + ');
@@ -5163,12 +5180,14 @@ function renderRank() {
   box.innerHTML = `${noteHtml}
   <div class="rk-wrap"><table class="rk-table">
     <tr><th>#</th><th class="l">플레이어</th><th title="위 설명 참고">종합 점수</th><th>판수</th><th>승률</th><th>평균 K / D / A</th><th>평균 딜량</th><th>${lane === 'SPT' ? '분당 시야' : '분당 CS'}</th><th>MVP·ACE</th>${showPos ? '<th>주 라인</th>' : ''}<th class="l">모스트 챔피언</th></tr>
-    ${rows.map(r => {
+    ${rows.map((r, ri) => {
       const wrp = Math.round(r.wr * 100);
+      const outHead = r.out && (ri === 0 || !rows[ri - 1].out)
+        ? `<tr class="rk-out-h"><td colspan="${showPos ? 11 : 10}">순위 외 · 판수 6판 이하 <small>7판부터 순위에 들어가요</small></td></tr>` : '';
       const mainPos = Object.entries(r.pos).sort((a, b) => b[1] - a[1])[0];
       const most = Object.entries(r.champ).sort((a, b) => b[1].g - a[1].g || b[1].w - a[1].w).slice(0, 3);
-      return `<tr>
-        <td><span class="rk-no${r.rank <= 3 ? ' top' + r.rank : ''}">${r.rank}</span></td>
+      return `${outHead}<tr${r.out ? ' class="rk-out"' : ''}>
+        <td><span class="rk-no${!r.out && r.rank <= 3 ? ' top' + r.rank : ''}">${r.out ? '–' : r.rank}</span></td>
         <td class="rk-name"><b>${escapeHtml(r.name)}</b><small>#${escapeHtml(r.tag)}</small></td>
         <td><div class="rk-score"><b>${r.score.toFixed(1)}</b><div class="bar"><i style="width:${Math.round(r.score)}%"></i></div></div></td>
         <td class="rk-c-g" data-l="판수">${r.g}</td>
