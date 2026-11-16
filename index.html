@@ -4053,7 +4053,8 @@ function makeBoard(t1, t2, showScore) {
   let pr = null;
   try { pr = (typeof predictCurrent === 'function' && matches.length) ? predictCurrent() : null; } catch (e) { pr = null; }
   const ok = pr && pr.known >= 3;
-  const pb = ok ? Math.round(pr.p * 100) : 50, prd = 100 - pb;
+  const pb = ok ? Math.round(pr.p * 1000) / 10 : 50, prd = Math.round((100 - pb) * 10) / 10;   // 소수점 한 자리
+  const f1 = v => v.toFixed(1);
   const fav = !ok ? '' : Math.abs(pb - 50) < 4 ? '막상막하' : pb > 50 ? '블루팀 우세' : '레드팀 우세';
   const sub = !pr || !matches.length ? '' : ok
     ? `🔮 <b>${fav}</b> · 기록 있는 소환사 ${pr.known}/10명`
@@ -4061,9 +4062,9 @@ function makeBoard(t1, t2, showScore) {
   const tip = ok ? `평균 전력 ${pr.a1.toFixed(1)} : ${pr.a2.toFixed(1)} · ${MODE_NAME[pr.mode]} 전적${pr.mode === 'rift' ? '·라인 점수' : ''} 기준` : '';
   // 위: 큰 승률 숫자 + 막대 (예측이 없으면 숫자 대신 팀 이름만)
   const meter = (ok ? `<div class="mx-meter">
-      <div class="mx-pct b${ok && pb >= prd ? ' win' : ''}"><small>BLUE</small>${ok ? pb + '%' : ''}</div>
+      <div class="mx-pct b${ok && pb >= prd ? ' win' : ''}"><small>BLUE</small>${ok ? f1(pb) + '%' : ''}</div>
       <div class="mx-bar"><i style="width:${pb}%"></i></div>
-      <div class="mx-pct r${ok && prd > pb ? ' win' : ''}"><small>RED</small>${ok ? prd + '%' : ''}</div>
+      <div class="mx-pct r${ok && prd > pb ? ' win' : ''}"><small>RED</small>${ok ? f1(prd) + '%' : ''}</div>
     </div>` : '') + (sub ? `<div class="mx-sub" title="${tip}">${sub}</div>` : '<div style="height:4px"></div>');   // 예측이 없으면 막대는 숨겨요
   const hasRole = t1[0] && t1[0].role;
   const card = (cls, list) => `<div class="mx-team ${cls}">
@@ -6123,7 +6124,7 @@ async function sendTeamToDiscord() {
     fields: [
       { name: `🔵 블루팀${showScore ? ` · 평균 ${avg(t1)}` : ''}`, value: t1.map(line).join('\n') || '-', inline: true },
       { name: `🔴 레드팀${showScore ? ` · 평균 ${avg(t2)}` : ''}`, value: t2.map(line).join('\n') || '-', inline: true },
-      ...(() => { const pr = predictCurrent(); return pr && pr.known >= 3 ? [{ name: '🔮 승부 예측', value: `블루 **${Math.round(pr.p * 100)}%** : **${100 - Math.round(pr.p * 100)}%** 레드`, inline: false }] : []; })()
+      ...(() => { const pr = predictCurrent(); return pr && pr.known >= 3 ? [{ name: '🔮 승부 예측', value: `블루 **${(pr.p * 100).toFixed(1)}%** : **${(100 - pr.p * 100).toFixed(1)}%** 레드`, inline: false }] : []; })()
     ],
     footer: { text: '의P.GG · 팀 배정', ...(brandIconUrl() ? { icon_url: brandIconUrl() } : {}) }, timestamp: new Date().toISOString()
   };
