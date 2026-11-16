@@ -5845,9 +5845,9 @@ function renderDashboard() {
     <div class="kpi" data-ico="👥"><div class="kpi-l">참여 인원</div><div class="kpi-v">${people}<small>명</small></div><div class="kpi-s">한 번이라도 뛴 소환사</div></div>
     <div class="kpi" data-ico="⏱"><div class="kpi-l">총 플레이 시간</div><div class="kpi-v">${hm(totalSec)}</div><div class="kpi-s">평균 ${Math.round(totalSec / ms.length / 60)}분 / 판</div></div>
     <div class="kpi" data-ico="☠"><div class="kpi-l">총 킬</div><div class="kpi-v">${fmtNum(totalKills)}<small>킬</small></div><div class="kpi-s">판당 ${Math.round(totalKills / ms.length)}킬</div></div>
-    ${(() => { const R = Object.values(retroPredictions()); if (!R.length) return '';
+    ${(() => { const R = dayPredictions(); if (!R.length) return '';
         const ok = R.filter(x => x.ok).length;
-        return `<div class="kpi" data-ico="🔮"><div class="kpi-l">승부 예측 적중률</div><div class="kpi-v">${Math.round(ok / R.length * 100)}<small>%</small></div><div class="kpi-s">${R.length}판 중 ${ok}판 적중</div></div>`; })()}
+        return `<div class="kpi" data-ico="🔮" title="내전 날마다 그날의 최종 승리 팀을 맞혔는지 (그날 시작 전 기록으로 예측 · 무승부인 날은 제외)"><div class="kpi-l">승부 예측 적중률</div><div class="kpi-v">${Math.round(ok / R.length * 100)}<small>%</small></div><div class="kpi-s">내전 ${R.length}일 중 ${ok}일 적중</div></div>`; })()}
     <div class="kpi" data-ico="📅"><div class="kpi-l">최근 내전</div><div class="kpi-v">${lastDay.slice(5).replace('.', '/')}</div><div class="kpi-s">${lastMs.length}판 진행</div></div>
   </div></div>`;
 
@@ -6480,6 +6480,35 @@ function retroPredictions() {
     out[m.id] = { p: pr.p, ok: (pr.p >= 0.5) === (w === 'blue') };
   });
   _retroCache = { key, map: out };
+  return out;
+}
+
+// 내전 날 단위 적중: 그날 같은 두 팀이 여러 판을 하면 '최종 승리 팀'을 맞혔는지 하루에 한 번만 셈
+// (팀은 첫 판 기준으로 나누고, 판마다 블루/레드가 바뀌어도 사람 겹침으로 같은 팀을 찾아요)
+function dayPredictions() {
+  const list = modeMatches().sort((a, b) => (a.date || 0) - (b.date || 0));
+  const days = {};
+  list.forEach(m => { (days[dayKey(m)] = days[dayKey(m)] || []).push(m); });
+  const out = [];
+  Object.keys(days).sort().forEach(day => {
+    const prev = list.filter(x => dayKey(x) < day);
+    if (prev.length < 3) return;
+    const ms = days[day], first = ms[0];
+    const A = new Set(first.players.filter(p => p.team === 'blue').map(p => normName(p.name)));
+    let wa = 0, wb = 0, okTeams = true;
+    ms.forEach(m => {
+      const blueA = m.players.filter(p => p.team === 'blue' && A.has(normName(p.name))).length;
+      const redA = m.players.filter(p => p.team === 'red' && A.has(normName(p.name))).length;
+      if (Math.max(blueA, redA) < 4) { okTeams = false; return; }     // 그날 팀이 크게 바뀌었으면 날 단위로 못 셈
+      const aSide = blueA >= redA ? 'blue' : 'red';
+      if (winnerOf(m) === aSide) wa++; else wb++;
+    });
+    if (!okTeams || wa === wb) return;                                  // 팀이 섞였거나 무승부인 날은 제외
+    const T = ratingTableFrom(prev, recMode);
+    const pr = predictWith(T, first.players.filter(p => p.team === 'blue'), first.players.filter(p => p.team === 'red'));
+    if (pr.known < 6) return;
+    out.push({ day, p: pr.p, ok: (pr.p >= 0.5) === (wa > wb), wa, wb });
+  });
   return out;
 }
 
