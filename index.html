@@ -5052,8 +5052,8 @@ function matchCard(m) {
     <div class="mt-head" onclick="toggleMatch('${escapeHtml(m.id)}')">
       <div class="mt-meta">
         <span class="mt-win ${win}">${win === 'blue' ? '블루팀 승리' : win === 'red' ? '레드팀 승리' : '결과 없음'}</span>
-        ${(() => { const r = retroPredictions()[m.id]; if (!r) return ''; const b = Math.round(r.p * 100);
-          return `<span class="mt-pred ${r.ok ? 'ok' : 'no'}" title="이 경기 전까지의 기록으로 예측한 결과">🔮 예측 ${b >= 50 ? '블루 ' + b : '레드 ' + (100 - b)}% · ${r.ok ? '적중' : '빗나감'}</span>`; })()}
+        ${(() => { const r = retroPredictions()[m.id]; if (!r) return ''; const bp = r.p * 100;
+          return `<span class="mt-pred ${r.ok ? 'ok' : 'no'}" title="그날 내전 시작 전까지의 기록으로 예측한 결과 (같은 날 앞 판은 반영 안 함)">🔮 예측 ${r.p >= 0.5 ? '블루 ' + bp.toFixed(1) : '레드 ' + (100 - bp).toFixed(1)}% · ${r.ok ? '적중' : '빗나감'}</span>`; })()}
         <span><b class="mt-seq">${gameNo(m)}번째 판</b>${m.dayOnly ? '' : ' · ' + fmtDate(m.date).slice(11)}</span>
         <span>${fmtLen(m.len)}${m.surrender ? ' · 항복' : ''}${m.ver ? ' · ' + m.ver : ''}</span>
         ${sharedState !== 'none' && isLocalOnly(m) ? '<span class="mt-local" title="공유용 파일 내보내기 후 GitHub에 올리면 모두에게 보여요. 그 전에 새로고침하면 사라져요">📌 공유 전 · 새로고침하면 사라져요</span>' : ''}
@@ -6460,17 +6460,19 @@ function renderPrediction() {
     <div class="pred-bar"><div class="pb" style="width:${b}%"></div><div class="pr"></div></div>
     <div class="pred-sub">평균 전력 블루 ${pr.a1.toFixed(1)} · 레드 ${pr.a2.toFixed(1)} · 기록 있는 소환사 ${pr.known}/10명 · ${MODE_NAME[pr.mode]} 전적${pr.mode === 'rift' ? '·라인 점수' : ''} 기준</div>`;
 }
-// 지난 경기들을 '그 전까지의 기록만으로' 예측했을 때 맞았는지 (경기 카드 · 대시보드 적중률)
+// 지난 경기들을 '그날 내전 전까지의 기록만으로' 예측했을 때 맞았는지 (경기 카드 · 대시보드 적중률)
 let _retroCache = { key: '', map: {} };
 function retroPredictions() {
   const list = modeMatches().sort((a, b) => (a.date || 0) - (b.date || 0));
   const key = recMode + '|' + list.map(m => m.id + ':' + (m.mode || '')).join(',');
   if (_retroCache.key === key) return _retroCache.map;
   const out = {};
-  list.forEach((m, i) => {
-    const prev = list.slice(0, i);
+  const byDay = {};                                                     // 같은 날 판끼리는 서로 영향 없이: 그날 내전 '시작 전' 기록만으로 예측
+  list.forEach(m => {
+    const day = dayKey(m);
+    const prev = list.filter(x => dayKey(x) < day);
     if (prev.length < 3) return;                                        // 3판은 쌓여야 예측
-    const T = ratingTableFrom(prev, recMode);
+    const T = byDay[day] || (byDay[day] = ratingTableFrom(prev, recMode));
     const blue = m.players.filter(p => p.team === 'blue'), red = m.players.filter(p => p.team === 'red');
     const pr = predictWith(T, blue, red);
     if (pr.known < 6) return;
