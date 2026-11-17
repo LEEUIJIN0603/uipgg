@@ -1935,6 +1935,9 @@
     .hx-len-ico { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; font-size: 1.4rem; background: radial-gradient(circle, #3a2a10, #1a140a); box-shadow: 0 0 0 2px #c9a14a, 0 0 16px rgba(255,190,70,.35); }
     .hx-len small { display: block; color: #d8c08a; font-size: .72rem; } .hx-len b { display: block; font-family: 'Rajdhani', sans-serif; font-size: 1.6rem; color: #fff1cc; line-height: 1.1; }
     .hx-len span { color: #a99a78; font-size: .66rem; }
+    .hx-len > div { min-width: 0; }
+    .hx-len .hx-len-ico { font-size: 1.4rem; flex-shrink: 0; }
+    .hx-len-w { margin-top: 5px; color: #f3dc9a; font-size: .74rem; font-weight: 700; line-height: 1.45; word-break: keep-all; }
     .hx-mos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .hx-mo { padding: 1.5px; border-radius: 16px; }
     .hx-mo.fire { background: linear-gradient(160deg, #ffb347, #8a2a08 50%, #ff6a1f); box-shadow: 0 0 26px rgba(255,110,30,.25); }
@@ -5166,7 +5169,7 @@ function matchCard(m) {
 }
 
 const RIFT_ONLY_SORT = ['vis', 'cw'];   // 칼바람에서는 시야·제어와드 안 봐요
-const RK_SORTS = [['total','종합'], ['games','판수'], ['wr','승률'], ['kda','KDA'], ['vis','시야'], ['cw','제어와드'], ['mvp','MVP']];
+const RK_SORTS = [['total','종합'], ['wr','승률'], ['kda','KDA'], ['vis','시야'], ['cw','제어와드'], ['mvp','MVP'], ['games','판수']];
 let recSortAsc = false;   // 같은 정렬 버튼을 한 번 더 누르면 낮은 순
 const RK_LANES = [['ALL','전체'], ['TOP','탑'], ['JGL','정글'], ['MID','미드'], ['BOT','원딜'], ['SPT','서폿']];
 let recLane = 'ALL';
@@ -5708,7 +5711,7 @@ function _renderHall(box) {
   const moment = (cls, ico, title, sub, items, empty) => `<div class="hx-mo ${cls}"><div class="hx-mo-in">
       <div class="hx-mo-h"><span class="hx-mo-ico">${ico}</span><div><b>${title}</b><small>${sub}</small></div><span class="hx-mo-n">${items.length}</span></div>
       ${items.length ? items.join('') : `<div class="hx-mo-none">${empty}</div>`}</div></div>`;
-  const lenMedal = (m, label, ico) => `<div class="hx-len"><span class="hx-len-ico">${ico}</span><div><small>${label}</small><b>${fmtLen(m.len)}</b><span>${hallWhen(m)} · ${winnerOf(m) === 'blue' ? '🔵 블루' : '🔴 레드'} 승</span></div></div>`;
+  const lenMedal = (m, label, ico) => `<div class="hx-len"><span class="hx-len-ico">${ico}</span><div><small>${label}</small><b>${fmtLen(m.len)}</b><span>${hallWhen(m)} · ${winnerOf(m) === 'blue' ? '🔵 블루' : '🔴 레드'} 승</span><div class="hx-len-w">🏆 ${m.players.filter(p => p.team === winnerOf(m)).map(p => escapeHtml(p.name)).join(' · ')}</div></div></div>`;
   box.innerHTML = `<div class="hx-jump"><button onclick="document.getElementById('hxFame').scrollIntoView({behavior:'smooth'})">🏆 명예의 전당</button><button class="sh" onclick="document.getElementById('hxShame').scrollIntoView({behavior:'smooth'})">💀 불명예의 전당</button></div>
   <div class="hx" id="hxFame">
     <div class="hx-rays"></div>${spark(24)}
