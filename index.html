@@ -2087,7 +2087,7 @@
     .hs-mos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 30px; } .hs-mos.two { grid-template-columns: 1fr 1fr; margin-bottom: 18px; }
     .hs-mo { min-width: 0; border-radius: 14px; padding: 14px 16px; background: linear-gradient(180deg, #19162a, #110f1c); border: 1px solid rgba(150,110,220,.35); }
     .hs-mo.rev { border-color: rgba(255,120,120,.4); } .hs-mo.gg { border-color: rgba(220,220,220,.3); } .hs-mo.mass { border-color: rgba(230,60,80,.45); }
-    .hs-mo.lose { border-color: rgba(120,160,240,.45); } .hs-mo.dead { border-color: rgba(130,230,160,.4); }
+    .hs-mo.lose { border-color: rgba(120,160,240,.45); } .hs-mo.dead { border-color: rgba(130,230,160,.4); } .hs-mo.ward { border-color: rgba(240,196,90,.4); }
     .hs-mo-h { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; } .hs-mo-h > span { font-size: 1.5rem; }
     .hs-mo-h b { display: block; color: #fff; font-size: .95rem; } .hs-mo-h small { color: #8f88a8; font-size: .66rem; }
     .hs-mr { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid rgba(255,255,255,.06); }
@@ -5082,13 +5082,14 @@ function matchCard(m) {
   </div>`;
 }
 
-const RK_SORTS = [['total','종합'], ['games','판수'], ['wr','승률'], ['kda','KDA'], ['dmg','평균 딜량'], ['mvp','MVP']];
+const RK_SORTS = [['total','종합'], ['games','판수'], ['wr','승률'], ['kda','KDA'], ['vis','시야'], ['cw','제어와드'], ['mvp','MVP']];
+let recSortAsc = false;   // 같은 정렬 버튼을 한 번 더 누르면 낮은 순
 const RK_LANES = [['ALL','전체'], ['TOP','탑'], ['JGL','정글'], ['MID','미드'], ['BOT','원딜'], ['SPT','서폿']];
 let recLane = 'ALL';
 recSort = 'total';
 // 정렬 한 줄: 종합·판수·승률·KDA·딜량·MVP는 전체 기준, 라인 버튼은 그 라인만 모아 '종합 점수'로 순위
-function setRankSort(k) { recSort = k; recLane = 'ALL'; renderRank(); }
-function setRankLane(l) { recLane = l; recSort = 'total'; renderRank(); }
+function setRankSort(k) { recSortAsc = (recSort === k && recLane === 'ALL' && k !== 'total') ? !recSortAsc : false; recSort = k; recLane = 'ALL'; renderRank(); }
+function setRankLane(l) { recLane = l; recSort = 'total'; recSortAsc = false; renderRank(); }
 // 종합 점수 가중치 (합 100). 라인별로 그 라인에 중요한 지표를 더 봐요.
 const SCORE_W = {
   ALL: { wr: 30, kda: 25, dpm: 20, kp: 15, mvp: 10 },
@@ -5110,10 +5111,10 @@ function rankRowsFor(lane) {
     m.players.forEach((p, i) => {
       if (lane !== 'ALL' && p.pos !== lane) return;          // 라인별: 그 라인으로 뛴 판만
       const key = p.puuid || p.name;
-      const s = P[key] || (P[key] = { name: p.name, tag: p.tag, g: 0, w: 0, k: 0, d: 0, a: 0, dmg: 0, cs: 0, vis: 0, mins: 0, mvp: 0, ka: 0, tk: 0, champ: {}, pos: {} });
+      const s = P[key] || (P[key] = { name: p.name, tag: p.tag, g: 0, w: 0, k: 0, d: 0, a: 0, dmg: 0, cs: 0, vis: 0, cw: 0, mins: 0, mvp: 0, ka: 0, tk: 0, champ: {}, pos: {} });
       s.name = p.name; s.tag = p.tag;                      // 닉네임이 바뀌어도 가장 최근 이름으로
       s.g++; if (p.win) s.w++;
-      s.k += p.k; s.d += p.d; s.a += p.a; s.dmg += p.dmg; s.cs += p.cs; s.vis += p.vis; s.mins += m.len / 60;
+      s.k += p.k; s.d += p.d; s.a += p.a; s.dmg += p.dmg; s.cs += p.cs; s.vis += p.vis; s.cw += p.cw || 0; s.mins += m.len / 60;
       s.ka += p.k + p.a; s.tk += tk[p.team];
       if (badges[i]) s.mvp++;
       const c = s.champ[p.champ] || (s.champ[p.champ] = { g: 0, w: 0, m });
@@ -5151,7 +5152,7 @@ function renderRank() {
   if (lane !== 'ALL') recSort = 'total';
   sortBox.innerHTML =
     '<div class="rk-group rk-one"><span>정렬</span>' + RK_SORTS.map(([k, t]) =>
-      `<button class="rk-btn${k === 'total' ? ' total' : ''}${lane === 'ALL' && recSort === k ? ' active' : ''}" onclick="setRankSort('${k}')">${k === 'total' ? '🏅 ' : ''}${t}</button>`).join('') +
+      `<button class="rk-btn${k === 'total' ? ' total' : ''}${lane === 'ALL' && recSort === k ? ' active' : ''}" onclick="setRankSort('${k}')" title="${k === 'total' ? '' : '한 번 더 누르면 낮은 순 ↔ 높은 순'}">${k === 'total' ? '🏅 ' : ''}${t}${lane === 'ALL' && recSort === k && k !== 'total' ? (recSortAsc ? ' ↑' : ' ↓') : ''}</button>`).join('') +
     (recMode === 'rift' ? '<span class="rk-sep" title="라인별은 그 라인으로 뛴 판만 모아 종합 점수로 순위를 매겨요"></span>' + RK_LANES.filter(([k]) => k !== 'ALL').map(([k, t]) =>
       `<button class="rk-btn rk-lane${lane === k ? ' active' : ''}" onclick="setRankLane('${k}')" title="${t} 라인 종합 점수 순위">${ICONS[k] ? `<img src="${ICONS[k]}" alt="" onerror="this.remove()">` : ''}${t}</button>`).join('') : '') + '</div>';
   if (!modeMatches().length) { box.innerHTML = recLoading() ? loadingHtml('rec-empty') : `<div class="rec-empty">아직 ${MODE_NAME[recMode]} 경기 기록이 없어요.<br>${IS_ADMIN ? '왼쪽 <b>전적</b> 메뉴에서 리플레이 파일을 올리면 순위가 나와요.' : '내전 기록이 올라오면 순위가 나와요.'}</div>`; return; }
@@ -5163,9 +5164,12 @@ function renderRank() {
   // 정렬 기준 값 (화면에 보이는 자릿수로 맞춰서, 보이는 값이 같으면 같은 순위)
   const keyOf = {
     total: r => Math.round(r.score * 10) / 10, games: r => r.g, wr: r => Math.round(r.wr * 100),
-    kda: r => (r.d ? Math.round(r.kda * 100) / 100 : 9999), dmg: r => Math.round(r.avgDmg), mvp: r => r.mvp
+    kda: r => (r.d ? Math.round(r.kda * 100) / 100 : 9999), dmg: r => Math.round(r.avgDmg), mvp: r => r.mvp,
+    vis: r => Math.round(r.vis / r.g * 10) / 10, cw: r => Math.round(r.cw / r.g * 100) / 100
   };
-  const kf = keyOf[recSort] || keyOf.total;
+  const kf0 = keyOf[recSort] || keyOf.total;
+  const asc = recSortAsc && lane === 'ALL' && recSort !== 'total';
+  const kf = asc ? (r => -kf0(r)) : kf0;          // 낮은 순이면 부호만 뒤집어서 같은 방식으로 정렬 · 동점 처리
   rows.sort((a, b) => kf(b) - kf(a) || b.score - a.score || b.g - a.g || a.name.localeCompare(b.name));
   // 전체 판수 5판 이하는 '순위 외'로 맨 아래에 (라인별 탭도 그 모드 전체 판수 기준)
   const totalG = {}; (lane === 'ALL' ? rows : rankRowsFor('ALL')).forEach(r => { totalG[r.name + '#' + r.tag] = r.g; });
@@ -5190,11 +5194,11 @@ function renderRank() {
       : '';
   box.innerHTML = `${noteHtml}
   <div class="rk-wrap"><table class="rk-table">
-    <tr><th>#</th><th class="l">플레이어</th><th title="위 설명 참고">종합 점수</th><th>판수</th><th>승률</th><th>평균 K / D / A</th><th>평균 딜량</th><th>${lane === 'SPT' ? '분당 시야' : '분당 CS'}</th><th>MVP·ACE</th>${showPos ? '<th>주 라인</th>' : ''}<th class="l">모스트 챔피언</th></tr>
+    <tr><th>#</th><th class="l">플레이어</th><th title="위 설명 참고">종합 점수</th><th>판수</th><th>승률</th><th>평균 K / D / A</th><th>${lane === 'SPT' ? '분당 시야' : '분당 CS'}</th><th>판당 시야</th><th>판당 제어와드</th><th>MVP·ACE</th>${showPos ? '<th>주 라인</th>' : ''}<th class="l">모스트 챔피언</th></tr>
     ${rows.map((r, ri) => {
       const wrp = Math.round(r.wr * 100);
       const outHead = r.out && (ri === 0 || !rows[ri - 1].out)
-        ? `<tr class="rk-out-h"><td colspan="${showPos ? 11 : 10}">순위 외 · 판수 ${RANK_MIN - 1}판 이하 <small>${RANK_MIN}판부터 순위에 들어가요</small></td></tr>` : '';
+        ? `<tr class="rk-out-h"><td colspan="${showPos ? 12 : 11}">순위 외 · 판수 ${RANK_MIN - 1}판 이하 <small>${RANK_MIN}판부터 순위에 들어가요</small></td></tr>` : '';
       const mainPos = Object.entries(r.pos).sort((a, b) => b[1] - a[1])[0];
       const most = Object.entries(r.champ).sort((a, b) => b[1].g - a[1].g || b[1].w - a[1].w).slice(0, 3);
       return `${outHead}<tr${r.out ? ' class="rk-out"' : ''}>
@@ -5206,8 +5210,9 @@ function renderRank() {
           <span class="wr-pct${wrp >= 60 ? ' hi' : wrp < 40 ? ' lo' : ''}">${wrp}%</span></div></td>
         <td class="kda rk-c-kda" data-l="평균 K/D/A">${(r.k / r.g).toFixed(1)} / <span class="dd">${(r.d / r.g).toFixed(1)}</span> / ${(r.a / r.g).toFixed(1)}
           <span class="kda-r${r.kda >= 4 ? ' hi' : ''}">${r.d ? r.kda.toFixed(2) + ':1' : 'Perfect'}</span></td>
-        <td data-l="평균 딜량">${fmtNum(Math.round(r.avgDmg))}</td>
         <td data-l="${lane === 'SPT' ? '분당 시야' : '분당 CS'}">${lane === 'SPT' ? r.f.vpm.toFixed(2) : r.f.cspm.toFixed(1)}</td>
+        <td data-l="판당 시야">${(r.vis / r.g).toFixed(1)}</td>
+        <td data-l="판당 제어와드">${(r.cw / r.g).toFixed(2)}</td>
         <td data-l="MVP·ACE">${r.mvp || '-'}</td>
         ${showPos ? `<td class="rk-pos" data-l="주 라인">${mainPos && ICONS[mainPos[0]] ? `<img src="${ICONS[mainPos[0]]}" title="${POS_KO[mainPos[0]]} ${mainPos[1]}판" alt="" onerror="this.remove()"><span class="rk-pos-t">${POS_KO[mainPos[0]]}</span>` : '-'}</td>` : ''}
         <td class="rk-c-most"><div class="rk-most">${most.map(([c, v]) => `<div>${champIcon(v.m, c, 'sm')}<span>${v.g}판 ${Math.round(v.w / v.g * 100)}%</span></div>`).join('')}</div></td>
@@ -5439,6 +5444,8 @@ const TITLES = [
   { k: 'eff',    ico: '🏷️', name: '가성비 KING',     desc: '골드 1당 챔피언 피해량 1위', v: r => r.gold ? r.dmg / r.gold : null, f: v => v.toFixed(2) + ' 딜/골드' },
   { k: 'early',  ico: '🌅', name: '초반 캐리형',     desc: '15분 전 킬관여(킬+어시) 판당 1위', v: r => r.xg ? r.early / r.xg : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'vis',    ico: '👁️', name: '천리안',          desc: '분당 시야점수 1위', v: r => r.vis / r.mins, f: v => v.toFixed(2) + '/분' },
+  { k: 'blind',  ico: '🙈', name: '맹인 검객',        desc: '판당 시야점수가 가장 낮음', low: true, v: r => r.vis / r.g, f: v => v.toFixed(1) + '점/판' },
+  { k: 'nocw',   ico: '🪙', name: '와드 한 개도 아까워', desc: '제어 와드 구매가 판당 가장 적음', low: true, rift: true, v: r => r.cw / r.g, f: v => v.toFixed(2) + '개/판' },
   { k: 'lost',   ico: '🧭', name: '어디로 가야 하오', desc: '킬관여율이 가장 낮음', low: true, v: r => r.tk ? r.ka / r.tk : null, f: v => '킬관여 ' + pctFmt(v) },
   { k: 'omw',    ico: '🏃', name: '금방 가요~',       desc: "'가는 중' 핑을 가장 많이 찍음 (판당)", v: r => r.xg ? r.omw / r.xg : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'multi',  ico: '🎯', name: '최다 멀티킬',      desc: '더블킬 이상 멀티킬 총 횟수 1위', v: r => r.xg ? r.multiCnt : null, f: v => v + '회' },
@@ -5459,7 +5466,7 @@ const TITLES = [
 ];
 // 칭호 계산 기준 (화면에 같이 표시)
 const TITLE_BASIS = {
-  ej: '판당 평균', early: '판당 평균', omw: '판당 평균', bld: '판당 평균', wp: '판당 평균', pot: '판당 평균', mage: '판당 평균', die: '판당 평균',
+  blind: '판당 평균', nocw: '판당 평균', ej: '판당 평균', early: '판당 평균', omw: '판당 평균', bld: '판당 평균', wp: '판당 평균', pot: '판당 평균', mage: '판당 평균', die: '판당 평균',
   cs: '분당 평균', gold: '분당 평균', vis: '분당 평균', apm: '분당 평균', tank: '분당 평균', rock: '분당 평균',
   eff: '골드 대비', carry: '평균 비중', bus: '평균 비중', lost: '평균 비율', duoBest: '함께한 판 승률', duoWorst: '함께한 판 승률',
   multi: '누적 합계', pool: '누적 합계', attend: '누적 합계', roller: '판별 기복', river: '판별 기복'
@@ -5473,12 +5480,12 @@ function titleStats() {
     const mins = Math.max(1, m.len / 60);
     m.players.forEach(p => {
       const key = p.puuid || p.name;
-      const r = P[key] || (P[key] = { key, g: 0, w: 0, k: 0, d: 0, a: 0, dmg: 0, gold: 0, cs: 0, vis: 0, taken: 0, mins: 0, ka: 0, tk: 0,
+      const r = P[key] || (P[key] = { key, g: 0, w: 0, k: 0, d: 0, a: 0, dmg: 0, gold: 0, cs: 0, vis: 0, cw: 0, taken: 0, mins: 0, ka: 0, tk: 0,
         dshare: 0, wshare: 0, kdas: [], res: [], champs: new Set(), champCnt: {},
         xg: 0, xmins: 0, ej: 0, early: 0, omw: 0, multiCnt: 0, bld: 0, wp: 0, casts: 0, cons: 0, mdmg: 0, mit: 0 });
       r.name = p.name; r.tag = p.tag; r.lastM = m;
       r.g++; if (p.win) r.w++;
-      r.k += p.k; r.d += p.d; r.a += p.a; r.dmg += p.dmg; r.gold += p.gold; r.cs += p.cs; r.vis += p.vis; r.taken += p.taken || 0; r.mins += mins;
+      r.k += p.k; r.d += p.d; r.a += p.a; r.dmg += p.dmg; r.gold += p.gold; r.cs += p.cs; r.vis += p.vis; r.cw += p.cw || 0; r.taken += p.taken || 0; r.mins += mins;
       r.ka += p.k + p.a; r.tk += tk[p.team];
       const share = td[p.team] ? p.dmg / td[p.team] : 0;
       r.dshare += share; if (p.win) r.wshare += share;
@@ -5688,8 +5695,9 @@ function shameHtml(ms, retro) {
   const longLose = st.map(s => { let best = 0, cur = 0, end = null; s.days.forEach(d => { if (d.res === 'l') { cur++; if (cur > best) { best = cur; end = d.day; } } else if (d.res === 'w') cur = 0; }); return { name: s.name, n: best, end, last: s.last }; })
     .filter(x => x.n >= 2).sort((a, b) => b.n - a.n).slice(0, 3);
   const D = {};
-  ms.forEach(m => m.players.forEach(p => { const k = p.puuid || p.name; const x = D[k] || (D[k] = { name: p.name, d: 0, g: 0, p, m }); x.name = p.name; x.d += p.d; x.g++; x.p = p; x.m = m; }));
+  ms.forEach(m => m.players.forEach(p => { const k = p.puuid || p.name; const x = D[k] || (D[k] = { name: p.name, d: 0, cw: 0, g: 0, p, m }); x.name = p.name; x.d += p.d; x.cw += p.cw || 0; x.g++; x.p = p; x.m = m; }));
   const deathKing = Object.values(D).sort((a, b) => b.d - a.d).slice(0, 3);
+  const wardPoor = Object.values(D).filter(x => x.g >= 3).sort((a, b) => a.cw / a.g - b.cw / b.g || b.g - a.g).slice(0, 3);   // 3판 이상 · 판당 제어와드 적은 순
   const rank = (i) => `<span class="hs-rk">${i + 1}</span>`;
   return `<div class="hs" id="hxShame">
     <div class="hs-fog"></div>
@@ -5707,9 +5715,10 @@ function shameHtml(ms, retro) {
       ${box('mass', '🩸', '최악의 학살', '킬 차이가 가장 컸던 판', massacre.filter(x => x.diff > 0).map(x => row(`<div class="hs-time">−${x.diff}</div>`, `${x.l === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} ${tk(x.m, x.l)} : ${tk(x.m, x.w)} 참패`, `${hallWhen(x.m)} · ${teamNames(x.m, x.l)}`)), '아직 기록이 없어요')}
     </div>
     <div class="hs-sec"><span>✦ CAREER OF SHAME ✦</span><b>누적 흑역사</b></div>
-    <div class="hs-mos two">
+    <div class="hs-mos">
       ${box('lose', '🧊', '역대 최장 연패', '내전 날짜 기준', longLose.map((x, i) => row(rank(i) + champIcon(x.last.m, x.last.p.champ), `${escapeHtml(x.name)} <em>${x.n}연패</em>`, `${x.end ? x.end.slice(5).replace('.', '/') + '까지' : ''}`)), '아직 2연패 이상이 없어요')}
       ${box('dead', '⚰️', '누적 데스왕', '지금까지 가장 많이 죽은 사람', deathKing.map((x, i) => row(rank(i) + champIcon(x.m, x.p.champ), `${escapeHtml(x.name)} <em>${x.d}데스</em>`, `${x.g}판 · 판당 ${(x.d / x.g).toFixed(1)}데스`)), '아직 기록이 없어요')}
+      ${box('ward', '🪙', '와드 빈곤층', '제어 와드를 판당 가장 적게 산 사람 (3판 이상)', wardPoor.map((x, i) => row(rank(i) + champIcon(x.m, x.p.champ), `${escapeHtml(x.name)} <em>${(x.cw / x.g).toFixed(2)}개/판</em>`, `${x.g}판 동안 총 ${x.cw}개`)), '아직 기록이 없어요')}
     </div>
     <div class="hs-foot">🤫 웃자고 만든 기록이에요. 다음 내전에서 명예 회복하면 돼요!</div>
   </div>`;
