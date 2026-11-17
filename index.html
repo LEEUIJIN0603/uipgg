@@ -2360,6 +2360,51 @@
       .rk-table tr.rk-out-h td { display: block; border-top: 2px dashed #2c3a52 !important; padding: 12px 2px 0 !important; }
       .rk-table tr.rk-out { opacity: .7; } .rk-table tr.rk-out td { opacity: 1; }
     }
+
+    /* ══ 5연승 · 5연패 명예회원 (대리석 명판) ══ */
+    .mbd { position: relative; border-radius: 6px; padding: 30px 24px 22px; margin: 0 0 26px; overflow: hidden; text-align: center; }
+    .mbd::before { content: ''; position: absolute; inset: 0; pointer-events: none; }
+    .mbd > * { position: relative; }
+    .mbd.w { background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.55), transparent 50%), linear-gradient(115deg, #ece8e1 0%, #d9d3c8 30%, #efebe4 50%, #cfc8bc 70%, #e8e3da 100%); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08), 0 14px 34px rgba(0,0,0,.55); }
+    .mbd.w::before { background: repeating-linear-gradient(35deg, transparent 0 40px, rgba(120,110,95,.08) 40px 41px, transparent 41px 90px), repeating-linear-gradient(-20deg, transparent 0 70px, rgba(120,110,95,.06) 70px 71px, transparent 71px 130px); }
+    .mbd.l { background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.08), transparent 50%), linear-gradient(115deg, #17181c 0%, #0e0f12 30%, #1a1b20 50%, #0b0c0f 70%, #15161a 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 14px 34px rgba(0,0,0,.7); }
+    .mbd.l::before { background: repeating-linear-gradient(35deg, transparent 0 40px, rgba(255,255,255,.035) 40px 41px, transparent 41px 90px); }
+    .mbd-emb { font-size: 1.6rem; }
+    .mbd-hd small { display: block; font: 700 .66rem 'Noto Sans KR', sans-serif; letter-spacing: 7px; margin-top: 2px; }
+    .mbd-hd h3 { margin: 4px 0; font: 900 1.7rem 'Noto Serif KR', 'Noto Sans KR', serif; letter-spacing: 6px; }
+    .mbd-hd p { margin: 0 0 14px; font-size: .72rem; }
+    .mbd.w .mbd-hd small { color: #9a7a3a; } .mbd.w .mbd-hd h3 { color: #a8802e; text-shadow: 0 1px 0 #fff6d8, 0 -1px 0 rgba(0,0,0,.25); } .mbd.w .mbd-hd p { color: #7a6e5e; }
+    .mbd.l .mbd-hd small { color: #8a7a5a; } .mbd.l .mbd-hd h3 { color: #b89a5a; text-shadow: 0 1px 0 rgba(0,0,0,.8); } .mbd.l .mbd-hd p { color: #6f727a; }
+    .mbd-t { border-top: 1px solid rgba(154,122,58,.45); padding: 12px 0 6px; }
+    .mbd.l .mbd-t { border-top-color: rgba(184,154,90,.22); }
+    .mbd-tn { font: 800 .74rem 'Noto Sans KR', sans-serif; letter-spacing: 5px; margin-bottom: 8px; }
+    .mbd.w .mbd-tn { color: #9a7a3a; } .mbd.l .mbd-tn { color: #8a7a5a; }
+    .mbd-names { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 28px; }
+    .mbd-names b { display: block; font: 900 1.05rem 'Noto Serif KR', 'Noto Sans KR', serif; letter-spacing: 1px; }
+    .mbd-t.top .mbd-names b { font-size: 1.35rem; }
+    .mbd-names i { font-style: normal; font-size: .62rem; }
+    .mbd.w .mbd-names b { color: #b08a3a; text-shadow: 0 1px 0 #fff8e0, 0 -1px 0 rgba(0,0,0,.22); } .mbd.w .mbd-names i { color: #8a7e6c; }
+    .mbd.l .mbd-names b { color: #c2a463; text-shadow: 0 1px 0 rgba(0,0,0,.8); } .mbd.l .mbd-names i { color: #6f727a; }
+    .mbd-names .em { font-size: .74rem; } .mbd.w .mbd-names .em { color: #a59a88; } .mbd.l .mbd-names .em { color: #55585f; }
+    @media (max-width: 600px) { .mbd { padding: 24px 14px 16px; } .mbd-hd h3 { font-size: 1.35rem; letter-spacing: 4px; } .mbd-names { gap: 6px 18px; } }
+
+    /* ══ 불명예의 전당: 더 어둡게 (보라빛 대신 칠흑 + 핏빛 잔광) ══ */
+    .hs { background: radial-gradient(90% 50% at 50% 0%, rgba(140,20,30,.14), transparent 65%), radial-gradient(70% 40% at 50% 100%, rgba(60,10,20,.25), transparent 70%), linear-gradient(180deg, #08070a 0%, #040305 100%) !important;
+          border-color: rgba(120,30,40,.45) !important; box-shadow: inset 0 0 90px rgba(0,0,0,.85), 0 20px 60px rgba(0,0,0,.7) !important; }
+    .hs-fog { opacity: .28 !important; background: radial-gradient(40% 30% at 20% 30%, rgba(150,20,30,.22), transparent 70%), radial-gradient(35% 25% at 80% 60%, rgba(90,90,100,.16), transparent 70%) !important; }
+    .hs-skull { filter: drop-shadow(0 0 14px rgba(200,30,40,.55)) grayscale(.3) !important; }
+    .hs-title { background: linear-gradient(180deg, #d9d4cc 0%, #8a8178 50%, #5a1a20 100%) !important; -webkit-background-clip: text !important; background-clip: text !important;
+                filter: drop-shadow(0 0 16px rgba(160,20,30,.45)) !important; }
+    .hs-sub, .hs-foot, .hs-none { color: #77727a !important; }
+    .hs-sec span { color: #b8404a !important; } .hs-sec b { color: #d9d4cc !important; }
+    .hs-pl { background: linear-gradient(160deg, #4a2228, #16141a 45%, #2a2a30 70%, #4a2228) !important; }
+    .hs-pl-in { background: repeating-linear-gradient(135deg, rgba(255,255,255,.012) 0 6px, transparent 6px 12px), linear-gradient(180deg, #0f0e12, #08070a) !important; }
+    .hs-lab { color: #a8a2a8 !important; }
+    .hs-val { color: #e05a64 !important; text-shadow: 0 0 16px rgba(200,40,50,.45) !important; }
+    .hs-quip { color: #8a858c !important; border-top-color: rgba(160,40,50,.25) !important; } .hs-quip em { color: #e05a64 !important; }
+    .hs-mo { background: linear-gradient(180deg, #0f0e12, #08070a) !important; border-color: rgba(120,30,40,.38) !important; }
+    .hs-mn b em { color: #e05a64 !important; }
+    .hs-div span { color: #8a6066 !important; }
     /* 디스코드 미리보기 창 */
     .dcp-wrap { position: fixed; inset: 0; z-index: 3000; background: rgba(5,9,16,.72); display: flex; align-items: center; justify-content: center; padding: 16px; }
     .dcp-box { width: min(640px, 100%); max-height: 92vh; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: 0 24px 70px rgba(0,0,0,.6); }
@@ -5646,9 +5691,42 @@ function _renderHall(box) {
       ${moment('shield', '🛡️', '노데스 게임', '0데스로 끝낸 판', nodeath.slice().reverse().sort((a, b) => (b.p.k + b.p.a) - (a.p.k + a.p.a)).slice(0, 6).map(x => mrow(x.m, x.p, `${x.p.k}/0/${x.p.a}`)), '아직 노데스 게임이 없어요')}
       ${moment('upset', '😱', '대역전승', '예측 25% 이하 팀의 승리', upsets.slice().reverse().map(u => `<div class="hx-mr"><div class="hx-pct ${u.w}">${u.pct}%</div><div class="hx-mn"><b>${u.w === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} 역전승</b><span>${hallWhen(u.m)} · ${u.m.players.filter(p => p.team === u.w).map(p => escapeHtml(p.name)).join(', ')}</span></div></div>`), '아직 대역전승이 없어요')}
     </div>
+    ${memberBoard('w')}
   </div>
   <div class="hs-div"><span>⬇ 그리고… 잊고 싶은 기록들</span></div>
   ${shameHtml(ms, retro)}`;
+}
+
+
+// ══ 5연승 · 5연패 명예회원 (병원 기부자 명판처럼 등급별로 이름이 새겨져요) ══
+// 내전 날짜 기준 연속 기록 · 5 이상이면 한 번 달성할 때마다 이름이 하나씩 새겨짐
+function streakRuns(kind) {                                     // kind: 'w' 연승 / 'l' 연패
+  const out = [];
+  calcStreaks().forEach(s => {
+    let n = 0, start = null, last = null;
+    const flush = () => { if (n >= 5) out.push({ name: s.name, tag: s.tag, n, start, end: last }); n = 0; start = null; };
+    s.days.forEach(d => {
+      if (d.res === kind) { if (!n) start = d.day; n++; last = d.day; }
+      else if (d.res !== 'd') flush();                           // 무승부인 날은 이어짐
+    });
+    flush();
+  });
+  return out.sort((a, b) => b.n - a.n || (b.end > a.end ? 1 : -1));
+}
+function memberBoard(kind) {
+  const win = kind === 'w', unit = win ? '연승' : '연패';
+  const runs = streakRuns(kind);
+  const tiers = [['7' + unit + ' 이상', r => r.n >= 7], ['6' + unit, r => r.n === 6], ['5' + unit, r => r.n === 5]];
+  const d8 = d => d.slice(2).replace(/\./g, '.');               // '2026.11.04' → '26.11.04'
+  const rows = tiers.map(([label, f], ti) => {
+    const list = runs.filter(f);
+    return `<div class="mbd-t${ti === 0 ? ' top' : ''}"><div class="mbd-tn">${label}</div><div class="mbd-names">${list.length
+      ? list.map(r => `<span><b>${escapeHtml(r.name)}</b><i>${r.n >= 7 ? r.n + unit + ' · ' : ''}${d8(r.start)} – ${r.end.slice(5)}</i></span>`).join('')
+      : `<span class="em">— ${win ? '첫 번째 주인공을 기다리는 자리' : '아직 아무도 없어요'} —</span>`}</div></div>`;
+  }).join('');
+  return `<div class="mbd ${win ? 'w' : 'l'}">
+    <div class="mbd-hd"><div class="mbd-emb">${win ? '🏆' : '🕯️'}</div><small>${win ? 'HONORARY MEMBERS' : 'IN MEMORIAM'}</small>
+      <h3>5${unit} 명예회원</h3><p>${win ? '내전 날짜 기준 5연승 이상을 달성한 소환사의 이름을 새깁니다' : '5연패 이상… 그 이름을 오래도록 기억하겠습니다'}</p></div>${rows}</div>`;
 }
 
 // ══════════════════ 불명예의 전당 (명예의 전당 아래) ══════════════════
@@ -5720,6 +5798,7 @@ function shameHtml(ms, retro) {
       ${box('dead', '⚰️', '누적 데스왕', '지금까지 가장 많이 죽은 사람', deathKing.map((x, i) => row(rank(i) + champIcon(x.m, x.p.champ), `${escapeHtml(x.name)} <em>${x.d}데스</em>`, `${x.g}판 · 판당 ${(x.d / x.g).toFixed(1)}데스`)), '아직 기록이 없어요')}
       ${box('ward', '🪙', '와드 빈곤층', '제어 와드를 판당 가장 적게 산 사람 (3판 이상)', wardPoor.map((x, i) => row(rank(i) + champIcon(x.m, x.p.champ), `${escapeHtml(x.name)} <em>${(x.cw / x.g).toFixed(2)}개/판</em>`, `${x.g}판 동안 총 ${x.cw}개`)), '아직 기록이 없어요')}
     </div>
+    ${memberBoard('l')}
     <div class="hs-foot">🤫 웃자고 만든 기록이에요. 다음 내전에서 명예 회복하면 돼요!</div>
   </div>`;
 }
