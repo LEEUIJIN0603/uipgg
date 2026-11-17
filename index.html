@@ -2048,6 +2048,24 @@
     .hs-div::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: linear-gradient(90deg, transparent, rgba(170,130,240,.5), transparent); }
     .hs-div span { position: relative; padding: 6px 18px; border-radius: 999px; background: var(--bg); border: 1px solid rgba(170,130,240,.4); color: #b9a6e6; font-size: .82rem; }
     /* 불명예의 전당 (으스스하지만 웃긴 박물관) */
+    /* 경기 업적 (명예/불명예 공통, 맨 하단) */
+    .gx { position: relative; border-radius: 20px; padding: 30px 26px 20px; margin-top: 22px; border: 1px solid rgba(160,170,200,.18);
+          background: radial-gradient(80% 40% at 50% 0%, rgba(120,140,220,.12), transparent 70%), linear-gradient(180deg, #121624, #0b0d16); }
+    .gx-hero { text-align: center; margin-bottom: 22px; }
+    .gx-hero span { display: block; font-family: 'Rajdhani', sans-serif; letter-spacing: 5px; font-size: .72rem; color: #9fb0d8; }
+    .gx-hero b { display: block; font-size: 1.6rem; color: #fff; margin: 4px 0 2px; letter-spacing: 2px; }
+    .gx-hero small { color: #8a94ad; font-size: .74rem; }
+    .gx-sub { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: .9rem; margin: 6px 0 12px; }
+    .gx-sub::after { content: ''; flex: 1; height: 1px; }
+    .gx-sub.good { color: #f0d080; } .gx-sub.good::after { background: linear-gradient(90deg, rgba(240,208,128,.45), transparent); }
+    .gx-sub.bad { color: #e07884; margin-top: 22px; } .gx-sub.bad::after { background: linear-gradient(90deg, rgba(224,120,132,.45), transparent); }
+    .gx em { font-style: normal; color: #ffd77a; font-weight: 700; margin-left: 4px; }
+    .gx .hx-mos { margin-bottom: 4px;  grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .gx .hx-mo, .gx .hx-mo-in, .gx .hx-mn { min-width: 0; }
+    .gx .hx-mn span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    @media (max-width: 1100px) { .gx .hx-mos { grid-template-columns: minmax(0, 1fr); } }
+    .gx .hs-mos { margin-bottom: 10px; }
+    @media (max-width: 640px) { .gx { padding: 22px 14px 14px; border-radius: 16px; } .gx-hero b { font-size: 1.3rem; } }
     .hs { position: relative; overflow: hidden; border-radius: 20px; padding: 34px 26px 26px; scroll-margin-top: 12px;
           background: radial-gradient(120% 60% at 50% 0%, rgba(110,220,140,.12), transparent 60%), radial-gradient(80% 50% at 50% 100%, rgba(140,80,220,.18), transparent 70%), linear-gradient(180deg, #120f1c 0%, #0d0c16 100%);
           border: 1px solid rgba(150,110,220,.4); box-shadow: inset 0 0 80px rgba(120,80,200,.12), 0 20px 60px rgba(0,0,0,.5); }
@@ -2071,10 +2089,11 @@
     .hs-pl { padding: 1.5px; border-radius: 6px; background: linear-gradient(160deg, #6a5a8a, #2a2238 45%, #3a5a48 70%, #6a5a8a); animation: tcDeal .7s cubic-bezier(.2,.9,.3,1.2) both; transform: rotate(-.6deg); transition: transform .25s; }
     .hs-pl:nth-child(even) { transform: rotate(.7deg); }
     .hs-pl:hover { transform: rotate(0) translateY(-5px); }
-    .hs-pl-in { position: relative; height: 100%; border-radius: 5px; padding: 30px 14px 14px; text-align: center; overflow: hidden;
+    .hs-pl-in { position: relative; height: 100%; border-radius: 5px; padding: 62px 14px 14px; text-align: center; overflow: hidden;
                 background: repeating-linear-gradient(135deg, rgba(255,255,255,.015) 0 6px, transparent 6px 12px), linear-gradient(180deg, #1b1726, #121019); }
     .hs-pl-in::after { content: ''; position: absolute; right: -8px; top: 18px; width: 70px; height: 1px; background: rgba(255,255,255,.18); transform: rotate(38deg); }
-    .hs-tape { position: absolute; top: -2px; left: 50%; transform: translateX(-50%) rotate(-3deg); padding: 3px 16px 4px; background: rgba(230,220,180,.25); border: 1px dashed rgba(230,220,180,.35); font-size: 1rem; }
+    .hs-tape { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 1.15rem;
+               background: radial-gradient(circle at 40% 35%, #2a1418, #0d0709); border: 1.5px solid rgba(184,64,74,.6); box-shadow: 0 0 14px rgba(160,20,30,.35), inset 0 0 8px rgba(0,0,0,.6); }
     .hs-lab { color: #b9a6e6; font-size: .78rem; font-weight: 700; letter-spacing: 1px; }
     .hs-val { font-family: 'Rajdhani', 'Bebas Neue', sans-serif; font-weight: 700; font-size: 2.2rem; line-height: 1.15; margin: 4px 0 10px; color: #9cf0b8; text-shadow: 0 0 16px rgba(110,230,150,.45); }
     .hs-val small { display: block; font-family: 'Noto Sans KR', sans-serif; font-size: .68rem; color: #9b93b2; text-shadow: none; margin-top: -2px; }
@@ -5649,19 +5668,6 @@ function _renderHall(box) {
   const broken = recs.reduce((t, x) => t + x.hist.length - 1, 0);
   const spark = n => '<div class="hx-spark">' + Array.from({ length: n }, (_, i) => `<i style="left:${(i * 37 + 11) % 100}%;animation-delay:${((i * .61) % 4).toFixed(2)}s;animation-duration:${(4 + (i % 4)).toFixed(1)}s"></i>`).join('') + '</div>';
   const prevTxt = (r, hist) => { const prev = hist[hist.length - 2]; return prev ? `<s>${escapeHtml(prev.p.name)} ${r.f(prev.v, prev.p)}</s> <em>${hist.length - 1}번 경신</em>` : '<span class="hx-first">👑 최초 기록 · 아직 깨진 적 없음</span>'; };
-  // 스포트라이트: 최다 킬 기록
-  const [hero, ...rest] = recs;
-  const heroCur = hero.hist[hero.hist.length - 1];
-  const spotlight = `<div class="hx-spot">
-    <div class="hx-spot-bg" style="background-image:url('${splashOf(heroCur.p.champ)}')"></div><div class="hx-spot-sh"></div>${spark(14)}
-    <div class="hx-spot-in">
-      <div class="hx-crown">👑 LEGENDARY RECORD</div>
-      <div class="hx-spot-lab">${hero.r.ico} ${hero.r.name}</div>
-      <div class="hx-spot-val">${hero.r.f(heroCur.v, heroCur.p)}</div>
-      <div class="hx-spot-who">${champIcon(heroCur.m, heroCur.p.champ)}<div><b>${escapeHtml(heroCur.p.name)}</b><span>${escapeHtml(champInfo(heroCur.p.champ).name)} · ${hallWhen(heroCur.m)}</span></div></div>
-      <div class="hx-spot-prev">${prevTxt(hero.r, hero.hist)}</div>
-    </div>
-  </div>`;
   const plaque = ({ r, hist }, i) => {
     const cur = hist[hist.length - 1];
     return `<div class="hx-pl" style="animation-delay:${(i * .07).toFixed(2)}s"><div class="hx-pl-in">
@@ -5688,19 +5694,23 @@ function _renderHall(box) {
       <div class="hx-chips"><span>📜 기록 <b>${recs.length}</b></span><span>⚡ 총 경신 <b>${broken}</b>회</span><span>🔥 펜타킬 <b>${pentas.length}</b></span><span>🎮 ${ms.length}판 기준</span></div>
     </div>
     ${memberBoard('w')}
-    ${spotlight}
     <div class="hx-sec"><span>✦ RECORD PLAQUES ✦</span><b>역대 한 판 최고 기록</b></div>
-    <div class="hx-grid">${rest.map(plaque).join('')}</div>
-    <div class="hx-sec"><span>✦ LEGENDARY MOMENTS ✦</span><b>희귀 업적</b></div>
+    <div class="hx-grid">${recs.map(plaque).join('')}</div>
+  </div>
+  <div class="hs-div"><span>⬇ 그리고… 잊고 싶은 기록들</span></div>
+  ${shameHtml(ms, retro)}
+  <div class="gx" id="hxMoments">
+    <div class="gx-hero"><span>✦ MATCH MOMENTS ✦</span><b>경기 업적</b><small>한 판 한 판에서 나온 빛나는 순간과 흑역사</small></div>
+    <div class="gx-sub good">🌟 빛나는 순간</div>
     <div class="hx-lens">${lenMedal(byLen[0], '최단 경기', '⚡')}${lenMedal(byLen[byLen.length - 1], '최장 경기', '⏳')}</div>
     <div class="hx-mos">
       ${moment('fire', '🔥', '펜타킬 달성자', '전설의 다섯 킬', pentas.slice().reverse().map(x => mrow(x.m, x.p, `${x.p.k}/${x.p.d}/${x.p.a}`)), '아직 펜타킬이 없어요<br>첫 번째 전설은 누구?')}
       ${moment('shield', '🛡️', '노데스 게임', '0데스로 끝낸 판', nodeath.slice().reverse().sort((a, b) => (b.p.k + b.p.a) - (a.p.k + a.p.a)).slice(0, 6).map(x => mrow(x.m, x.p, `${x.p.k}/0/${x.p.a}`)), '아직 노데스 게임이 없어요')}
       ${moment('upset', '😱', '대역전승', '예측 25% 이하 팀의 승리', upsets.slice().reverse().map(u => `<div class="hx-mr"><div class="hx-pct ${u.w}">${u.pct}%</div><div class="hx-mn"><b>${u.w === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} 역전승</b><span>${hallWhen(u.m)} · ${u.m.players.filter(p => p.team === u.w).map(p => escapeHtml(p.name)).join(', ')}</span></div></div>`), '아직 대역전승이 없어요')}
     </div>
-  </div>
-  <div class="hs-div"><span>⬇ 그리고… 잊고 싶은 기록들</span></div>
-  ${shameHtml(ms, retro)}`;
+    <div class="gx-sub bad">🌑 흑역사 순간</div>
+    ${_darkMomentsHtml}
+  </div>`;
 }
 
 
@@ -5735,6 +5745,7 @@ function memberBoard(kind) {
       <h3>5${unit} 명예회원</h3><p>${win ? '내전 날짜 기준 5연승 이상을 달성한 소환사의 이름을 새깁니다' : '5연패 이상… 그 이름을 오래도록 기억하겠습니다'}</p></div>${rows}</div></div>`;
 }
 
+let _darkMomentsHtml = '';
 // ══════════════════ 불명예의 전당 (명예의 전당 아래) ══════════════════
 const SHAME_RECORDS = [
   { k: 'd',    ico: '💀', name: '최다 데스',        quip: '부활 대기실 VIP',       v: (p, m) => p.d, f: v => v + '데스', high: true },
@@ -5783,6 +5794,12 @@ function shameHtml(ms, retro) {
   const deathKing = Object.values(D).sort((a, b) => b.d - a.d).slice(0, 3);
   const wardPoor = Object.values(D).filter(x => x.g >= 3).sort((a, b) => a.cw / a.g - b.cw / b.g || b.g - a.g).slice(0, 3);   // 3판 이상 · 판당 제어와드 적은 순
   const rank = (i) => `<span class="hs-rk">${i + 1}</span>`;
+  _darkMomentsHtml = `    <div class="hs-mos">
+      ${box('rev', '📉', '대역전패', `예측 75% 이상이었는데 진 판${reversals.length > 5 ? ` · 최근 5개 (전체 ${reversals.length}판)` : ''}`, reversals.slice().reverse().slice(0, 5).map(u => row(`<div class="hs-pct ${u.l}">${u.pct}%</div>`, `${u.l === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} 역전패`, `${hallWhen(u.m)} · ${teamNames(u.m, u.l)}`)), '아직 대역전패가 없어요 😇')}
+      ${box('gg', '🏳️', '가장 빠른 항복', '항복으로 끝난 짧은 판', surr.map(m => { const l = winnerOf(m) === 'blue' ? 'red' : 'blue'; return row(`<div class="hs-time">${fmtLen(m.len).replace(/ \d+초/, '')}</div>`, `${l === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} 항복`, `${hallWhen(m)} · ${teamNames(m, l)}`); }), '아직 항복한 판이 없어요')}
+      ${box('mass', '🩸', '최악의 학살', '킬 차이가 가장 컸던 판', massacre.filter(x => x.diff > 0).map(x => row(`<div class="hs-time">−${x.diff}</div>`, `${x.l === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} ${tk(x.m, x.l)} : ${tk(x.m, x.w)} 참패`, `${hallWhen(x.m)} · ${teamNames(x.m, x.l)}`)), '아직 기록이 없어요')}
+    </div>
+`;
   return `<div class="hs" id="hxShame">
     <div class="hs-fog"></div>
     <div class="hs-hero">
@@ -5793,12 +5810,6 @@ function shameHtml(ms, retro) {
     ${memberBoard('l')}
     <div class="hs-sec"><span>✦ CURSED RECORDS ✦</span><b>한 판 최악 기록</b></div>
     <div class="hs-grid">${recs.map(plaque).join('')}</div>
-    <div class="hs-sec"><span>✦ DARK MOMENTS ✦</span><b>경기 흑역사</b></div>
-    <div class="hs-mos">
-      ${box('rev', '📉', '대역전패', `예측 75% 이상이었는데 진 판${reversals.length > 5 ? ` · 최근 5개 (전체 ${reversals.length}판)` : ''}`, reversals.slice().reverse().slice(0, 5).map(u => row(`<div class="hs-pct ${u.l}">${u.pct}%</div>`, `${u.l === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} 역전패`, `${hallWhen(u.m)} · ${teamNames(u.m, u.l)}`)), '아직 대역전패가 없어요 😇')}
-      ${box('gg', '🏳️', '가장 빠른 항복', '항복으로 끝난 짧은 판', surr.map(m => { const l = winnerOf(m) === 'blue' ? 'red' : 'blue'; return row(`<div class="hs-time">${fmtLen(m.len).replace(/ \d+초/, '')}</div>`, `${l === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} 항복`, `${hallWhen(m)} · ${teamNames(m, l)}`); }), '아직 항복한 판이 없어요')}
-      ${box('mass', '🩸', '최악의 학살', '킬 차이가 가장 컸던 판', massacre.filter(x => x.diff > 0).map(x => row(`<div class="hs-time">−${x.diff}</div>`, `${x.l === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} ${tk(x.m, x.l)} : ${tk(x.m, x.w)} 참패`, `${hallWhen(x.m)} · ${teamNames(x.m, x.l)}`)), '아직 기록이 없어요')}
-    </div>
     <div class="hs-sec"><span>✦ CAREER OF SHAME ✦</span><b>누적 흑역사</b></div>
     <div class="hs-mos">
       ${box('lose', '🧊', '역대 최장 연패', '내전 날짜 기준', longLose.map((x, i) => row(rank(i) + champIcon(x.last.m, x.last.p.champ), `${escapeHtml(x.name)} <em>${x.n}연패</em>`, `${x.end ? x.end.slice(5).replace('.', '/') + '까지' : ''}`)), '아직 2연패 이상이 없어요')}
