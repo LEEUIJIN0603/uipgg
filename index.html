@@ -899,6 +899,12 @@
     .rk-table td { padding: 9px 8px; text-align: center; border-bottom: 1px solid #273a57; white-space: nowrap; }
     .rk-table tr:last-child td { border-bottom: none; }
     .rk-table tr:hover td { background: rgba(255,255,255,.02); }
+    /* 정렬 기준 열 강조 */
+    .rk-table th.sk { color: #f0c96a; font-weight: 700; background: rgba(240,201,106,.12); box-shadow: inset 0 -2px 0 #f0c96a; }
+    .rk-table th.sk .sk-ar { font-style: normal; font-size: .58rem; margin-left: 2px; }
+    .rk-table td.sk { background: rgba(240,201,106,.07); color: #ffe2a0; font-weight: 700; }
+    .rk-table tr:hover td.sk { background: rgba(240,201,106,.11); }
+    .rk-table tr.rk-out td.sk { background: rgba(240,201,106,.035); color: inherit; font-weight: inherit; }
     .rk-no { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.05rem; color: var(--muted); }
     .rk-no.top1 { color: var(--gold2); } .rk-no.top2 { color: #c7d1df; } .rk-no.top3 { color: #c98a5a; }
     .rk-name { text-align: left !important; }
@@ -1438,6 +1444,9 @@
       .rk-table .rk-score .bar { width: 40px; }
       .rk-table td[data-l]::before { content: attr(data-l); display: block; font-size: .6rem; color: var(--muted); margin-bottom: 3px; white-space: nowrap; }
       .rk-table td.rk-c-wr { grid-column: 1 / -1; order: 1; }
+      .rk-table td.sk { background: rgba(240,201,106,.10); border-radius: 8px; padding-left: 8px; padding-right: 6px; box-shadow: inset 2px 0 0 #f0c96a; }
+      .rk-table td.sk[data-l]::before { color: #f0c96a; font-weight: 700; }
+      .rk-table td.sk:nth-child(3) { box-shadow: none; padding: 4px 8px; }
       .rk-table td.rk-c-wr .wr { justify-content: flex-start; }
       .rk-table td.rk-c-wr .wr-bar { width: 140px; }
       .rk-table td.rk-c-most { grid-column: 1 / -1; order: 3; padding-top: 8px; border-top: 1px solid #273a57; }
@@ -5289,6 +5298,14 @@ function renderRank() {
       </tr>`;
     }).join('')}
   </table></div>`;
+  // 지금 정렬 기준 열 강조 (헤더 + 그 열의 칸)
+  const SORT_COL = { total: 2, games: 3, wr: 4, kda: 5, vis: 7, cw: 8, mvp: 9 };
+  const sc = SORT_COL[lane === 'ALL' ? recSort : 'total'];
+  if (sc != null) box.querySelectorAll('.rk-table tr').forEach(tr => {
+    if (tr.classList.contains('rk-out-h')) return;
+    const c = tr.children[sc]; if (!c) return;
+    c.classList.add('sk'); if (c.tagName === 'TH') c.innerHTML += ` <i class="sk-ar">${asc ? '▲' : '▼'}</i>`;
+  });
 }
 
 // ══════════════════ 소환사 정보 ══════════════════
