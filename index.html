@@ -1436,7 +1436,7 @@
       .rk-table td { border: none; padding: 0; white-space: normal; text-align: left; min-width: 0; }
       .rk-table td:nth-child(1) { grid-column: span 1; }
       .rk-table td.rk-name { grid-column: span 3; min-width: 0; margin-left: -16px; }
-      .rk-table td:nth-child(3) { grid-column: span 2; justify-self: end; }
+      .rk-table td.rk-c-score { grid-column: span 2; justify-self: end; }
       .rk-table td[data-l] { order: 2; grid-column: span 2; align-self: stretch; font-size: .74rem; padding: 8px 0 8px; margin-top: 8px; border-top: 1px solid #273a57; line-height: 1.35; }
       .rk-group > span { flex-shrink: 0; white-space: nowrap; }
       .rk-table td.rk-name b { font-size: .92rem; }
@@ -1446,7 +1446,10 @@
       .rk-table td.rk-c-wr { grid-column: 1 / -1; order: 1; }
       .rk-table td.sk { background: rgba(240,201,106,.10); border-radius: 8px; padding-left: 8px; padding-right: 6px; box-shadow: inset 2px 0 0 #f0c96a; }
       .rk-table td.sk[data-l]::before { color: #f0c96a; font-weight: 700; }
-      .rk-table td.sk:nth-child(3) { box-shadow: none; padding: 4px 8px; }
+      .rk-table td.sk.rk-c-score { box-shadow: none; padding: 4px 8px; }
+      .rk-table td.sk[data-l] { order: 1; grid-column: 1 / -1; text-align: right; font-size: .9rem; padding: 9px 12px; margin-top: 10px; border-top: none; }
+      .rk-table td.sk[data-l]::before { float: left; font-size: .72rem; margin: 2px 0 0; }
+      .rk-table td.sk.rk-c-wr .wr { justify-content: flex-end; }
       .rk-table td.rk-c-wr .wr { justify-content: flex-start; }
       .rk-table td.rk-c-wr .wr-bar { width: 140px; }
       .rk-table td.rk-c-most { grid-column: 1 / -1; order: 3; padding-top: 8px; border-top: 1px solid #273a57; }
@@ -5283,7 +5286,7 @@ function renderRank() {
       return `${outHead}<tr${r.out ? ' class="rk-out"' : ''}>
         <td><span class="rk-no${!r.out && r.rank <= 3 ? ' top' + r.rank : ''}">${r.out ? '–' : r.rank}</span></td>
         <td class="rk-name"><b>${escapeHtml(r.name)}</b><small>#${escapeHtml(r.tag)}</small></td>
-        <td><div class="rk-score"><b>${r.score.toFixed(1)}</b><div class="bar"><i style="width:${Math.round(r.score)}%"></i></div></div></td>
+        <td class="rk-c-score"><div class="rk-score"><b>${r.score.toFixed(1)}</b><div class="bar"><i style="width:${Math.round(r.score)}%"></i></div></div></td>
         <td class="rk-c-g" data-l="판수">${r.g}</td>
         <td class="rk-c-wr" data-l="승률"><div class="wr"><div class="wr-bar"><div class="w" style="width:${wrp}%">${r.w ? r.w + '승' : ''}</div><div class="l">${r.g - r.w ? (r.g - r.w) + '패' : ''}</div></div>
           <span class="wr-pct${wrp >= 60 ? ' hi' : wrp < 40 ? ' lo' : ''}">${wrp}%</span></div></td>
@@ -5305,6 +5308,7 @@ function renderRank() {
     if (tr.classList.contains('rk-out-h')) return;
     const c = tr.children[sc]; if (!c) return;
     c.classList.add('sk'); if (c.tagName === 'TH') c.innerHTML += ` <i class="sk-ar">${asc ? '▲' : '▼'}</i>`;
+    if (sc !== 2) tr.insertBefore(c, tr.children[2]);   // 플레이어 이름 바로 뒤로
   });
 }
 
