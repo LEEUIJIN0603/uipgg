@@ -2397,7 +2397,7 @@
       .rk-table tr.rk-out { opacity: .7; } .rk-table tr.rk-out td { opacity: 1; }
     }
 
-    /* ══ 5연승 · 5연패 명예회원 (각 전당 분위기에 맞춘 명판) ══ */
+    /* ══ 6연승 · 6연패 명예회원 (각 전당 분위기에 맞춘 명판) ══ */
     .mbd { position: relative; border-radius: 16px; padding: 1.5px; margin: 0 0 30px; text-align: center; }
     .mbd-in { position: relative; border-radius: 15px; padding: 24px 22px 18px; overflow: hidden; }
     .mbd-in::before { content: ''; position: absolute; inset: 0; pointer-events: none; }
@@ -5743,13 +5743,14 @@ function _renderHall(box) {
 }
 
 
-// ══ 5연승 · 5연패 명예회원 (병원 기부자 명판처럼 등급별로 이름이 새겨져요) ══
+// ══ 6연승 · 6연패 명예회원 (병원 기부자 명판처럼 등급별로 이름이 새겨져요) ══
 // 내전 날짜 기준 연속 기록 · 5 이상이면 한 번 달성할 때마다 이름이 하나씩 새겨짐
+const MEMBER_MIN = 6;   // 명예회원: 내전 날짜 기준 6연승/6연패부터
 function streakRuns(kind) {                                     // kind: 'w' 연승 / 'l' 연패
   const out = [];
   calcStreaks().forEach(s => {
     let n = 0, start = null, last = null;
-    const flush = () => { if (n >= 5) out.push({ name: s.name, tag: s.tag, n, start, end: last }); n = 0; start = null; };
+    const flush = () => { if (n >= MEMBER_MIN) out.push({ name: s.name, tag: s.tag, n, start, end: last }); n = 0; start = null; };
     s.days.forEach(d => {
       if (d.res === kind) { if (!n) start = d.day; n++; last = d.day; }
       else if (d.res !== 'd') flush();                           // 무승부인 날은 이어짐
@@ -5761,17 +5762,18 @@ function streakRuns(kind) {                                     // kind: 'w' 연
 function memberBoard(kind) {
   const win = kind === 'w', unit = win ? '연승' : '연패';
   const runs = streakRuns(kind);
-  const tiers = [['7' + unit + ' 이상', r => r.n >= 7], ['6' + unit, r => r.n === 6], ['5' + unit, r => r.n === 5]];
+  const M = MEMBER_MIN;
+  const tiers = [[(M + 2) + unit + ' 이상', r => r.n >= M + 2], [(M + 1) + unit, r => r.n === M + 1], [M + unit, r => r.n === M]];
   const d8 = d => d.slice(2).replace(/\./g, '.');               // '2026.11.04' → '26.11.04'
   const rows = tiers.map(([label, f], ti) => {
     const list = runs.filter(f);
     return `<div class="mbd-t${ti === 0 ? ' top' : ''}"><div class="mbd-tn">${label}</div><div class="mbd-names">${list.length
-      ? list.map(r => `<span><b>${escapeHtml(r.name)}</b><i>${r.n >= 7 ? r.n + unit + ' · ' : ''}${d8(r.start)} – ${r.end.slice(5)}</i></span>`).join('')
+      ? list.map(r => `<span><b>${escapeHtml(r.name)}</b><i>${r.n >= M + 2 ? r.n + unit + ' · ' : ''}${d8(r.start)} – ${r.end.slice(5)}</i></span>`).join('')
       : `<span class="em">— ${win ? '첫 번째 주인공을 기다리는 자리' : '아직 아무도 없어요'} —</span>`}</div></div>`;
   }).join('');
   return `<div class="mbd ${win ? 'w' : 'l'}"><div class="mbd-in">
     <div class="mbd-hd"><div class="mbd-emb">${win ? '🏆' : '🕯️'}</div><small>${win ? 'HONORARY MEMBERS' : 'IN MEMORIAM'}</small>
-      <h3>5${unit} 명예회원</h3><p>${win ? '내전 날짜 기준 5연승 이상을 달성한 소환사의 이름을 새깁니다' : '5연패 이상… 그 이름을 오래도록 기억하겠습니다'}</p></div>${rows}</div></div>`;
+      <h3>${M}${unit} 명예회원</h3><p>${win ? `내전 날짜 기준 ${M}연승 이상을 달성한 소환사의 이름을 새깁니다` : `${M}연패 이상… 그 이름을 오래도록 기억하겠습니다`}</p></div>${rows}</div></div>`;
 }
 
 let _darkMomentsHtml = '';
