@@ -1920,8 +1920,8 @@
     .hx-medal { position: absolute; top: -1px; left: 50%; transform: translateX(-50%); width: 46px; height: 30px; border-radius: 0 0 24px 24px;
                 background: linear-gradient(180deg, #ffe08a, #b07a1e); display: grid; place-items: center; box-shadow: 0 4px 12px rgba(0,0,0,.4); }
     .hx-medal span { font-size: 1rem; margin-top: -2px; }
-    .hx-pl-lab { color: #e8cf8c; font-size: .78rem; font-weight: 700; letter-spacing: 1px; }
-    .hx-pl-val { font-family: 'Rajdhani', 'Bebas Neue', sans-serif; font-weight: 700; font-size: 2.3rem; line-height: 1.15; margin: 4px 0 10px;
+    .hx-pl-lab { color: #e8cf8c; font-size: .9rem; font-weight: 700; letter-spacing: 1px; }
+    .hx-pl-val { font-family: 'Rajdhani', 'Bebas Neue', sans-serif; font-weight: 700; font-size: 2rem; line-height: 1.15; margin: 2px 0 10px;
                  background: linear-gradient(180deg, #fff6d6, #f0c45a 60%, #b07a1e); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .hx-pl-val small { display: block; font-family: 'Noto Sans KR', sans-serif; font-size: .7rem; color: #cbb98f; -webkit-text-fill-color: #cbb98f; margin-top: -2px; }
     .hx-pl-who { display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -1961,7 +1961,7 @@
       .hx-spot-in { padding: 20px 18px; } .hx-spot-val { font-size: 3.6rem; }
       .hx-spot-sh { background: linear-gradient(180deg, rgba(12,9,4,.55) 0%, rgba(12,9,4,.92) 60%); }
       .hx-grid { gap: 10px; } .hx-grid > .hx-pl { flex: 0 1 calc(50% - 5px); min-width: 0; }
-      .hx-pl-val { font-size: 1.8rem; }
+      .hx-pl-val { font-size: 1.7rem; }
       .hx-lens { grid-template-columns: 1fr; }
     }
     @media (prefers-reduced-motion: reduce) { .hx *, .hx *::after { animation: none !important; } }
@@ -2110,8 +2110,9 @@
     .hs-pl-in::after { content: ''; position: absolute; right: -8px; top: 18px; width: 70px; height: 1px; background: rgba(255,255,255,.18); transform: rotate(38deg); }
     .hs-tape { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 1.15rem;
                background: radial-gradient(circle at 40% 35%, #2a1418, #0d0709); border: 1.5px solid rgba(184,64,74,.6); box-shadow: 0 0 14px rgba(160,20,30,.35), inset 0 0 8px rgba(0,0,0,.6); }
-    .hs-lab { color: #b9a6e6; font-size: .78rem; font-weight: 700; letter-spacing: 1px; }
-    .hs-val { font-family: 'Rajdhani', 'Bebas Neue', sans-serif; font-weight: 700; font-size: 2.2rem; line-height: 1.15; margin: 4px 0 10px; color: #9cf0b8; text-shadow: 0 0 16px rgba(110,230,150,.45); }
+    .hs-lab { color: #b9a6e6; font-size: .9rem; font-weight: 700; letter-spacing: 1px; }
+    .hs-val { font-family: 'Rajdhani', 'Bebas Neue', sans-serif; font-weight: 700; font-size: 2rem; line-height: 1.15; margin: 2px 0 10px; color: #9cf0b8; text-shadow: 0 0 16px rgba(110,230,150,.45); }
+    .hx-pl-val .u, .hs-val .u { font-family: 'Noto Sans KR', sans-serif; font-size: .5em; font-weight: 700; margin-left: 3px; letter-spacing: 0; }
     .hs-val small { display: block; font-family: 'Noto Sans KR', sans-serif; font-size: .68rem; color: #9b93b2; text-shadow: none; margin-top: -2px; }
     .hs-who { display: flex; align-items: center; justify-content: center; gap: 8px; }
     .hs-who .ch-box { width: 30px; height: 30px; border-radius: 50%; filter: grayscale(.6); box-shadow: 0 0 0 1.5px #6a5a8a; }
@@ -2523,7 +2524,7 @@
     <button class="nav-btn" onclick="switchPage('record',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg></span>전적</button>
     <button class="nav-btn" onclick="switchPage('rank',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>순위</button>
     <button class="nav-btn" onclick="switchPage('summoner',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></span>소환사 정보</button>
-    <button class="nav-btn adm-only" onclick="switchPage('hall',this)" title="관리자만 보이는 미리보기 (아직 일반 링크에는 안 보여요)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4 18h16"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 3 3 8.5V11h18V8.5z"/></svg></span>명예의 전당</button>
+    <button class="nav-btn" onclick="switchPage('hall',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4 18h16"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 3 3 8.5V11h18V8.5z"/></svg></span>명예의 전당</button>
     <div class="nav-sep" aria-hidden="true"></div>
     <button class="nav-btn" onclick="switchPage('assign',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg></span>팀 배정</button>
     <button class="nav-btn adm-only" onclick="switchPage('stats',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="1"/><rect x="12" y="8" width="3" height="10" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/></svg></span>접속통계</button>
@@ -5701,7 +5702,7 @@ function _renderHall(box) {
     return `<div class="hx-pl" style="animation-delay:${(i * .07).toFixed(2)}s"><div class="hx-pl-in">
       <div class="hx-medal"><span>${r.ico}</span></div>
       <div class="hx-pl-lab">${r.name}</div>
-      <div class="hx-pl-val">${r.f(cur.v, cur.p)}${r.sub ? `<small>${r.sub(cur.p)}</small>` : ''}</div>
+      <div class="hx-pl-val">${hallNum(r.f(cur.v, cur.p))}${r.sub ? `<small>${r.sub(cur.p)}</small>` : ''}</div>
       <div class="hx-pl-who">${champIcon(cur.m, cur.p.champ)}<b>${escapeHtml(cur.p.name)}</b></div>
       <div class="hx-pl-when">${escapeHtml(champInfo(cur.p.champ).name)} · ${hallWhen(cur.m)}</div>
       <div class="hx-pl-prev">${prevTxt(r, hist)}</div>
@@ -5774,6 +5775,8 @@ function memberBoard(kind) {
 }
 
 let _darkMomentsHtml = '';
+// 기록 숫자 뒤 단위(데스·점·/분 등)는 작게
+const hallNum = v => String(v).replace(/^([−\-]?[\d.,:]+)\s*(.*)$/, (_, n, u) => u ? `${n}<span class="u">${u}</span>` : n);
 // ══════════════════ 불명예의 전당 (명예의 전당 아래) ══════════════════
 const SHAME_RECORDS = [
   { k: 'd',    ico: '💀', name: '최다 데스',        quip: '부활 대기실 VIP',       v: (p, m) => p.d, f: v => v + '데스', high: true },
@@ -5799,7 +5802,7 @@ function shameHtml(ms, retro) {
     return `<div class="hs-pl" style="animation-delay:${(i * .07).toFixed(2)}s"><div class="hs-pl-in">
       <div class="hs-tape">${r.ico}</div>
       <div class="hs-lab">${r.name}</div>
-      <div class="hs-val">${r.f(cur.v)}${r.sub ? `<small>${r.sub(cur.p)}</small>` : ''}</div>
+      <div class="hs-val">${hallNum(r.f(cur.v))}${r.sub ? `<small>${r.sub(cur.p)}</small>` : ''}</div>
       <div class="hs-who">${champIcon(cur.m, cur.p.champ)}<b>${escapeHtml(cur.p.name)}</b></div>
       <div class="hs-when">${escapeHtml(champInfo(cur.p.champ).name)} · ${hallWhen(cur.m)}</div>
       <div class="hs-quip">${prev ? `<s>${escapeHtml(prev.p.name)} ${r.f(prev.v)}</s> <em>${hist.length - 1}번 갱신</em>` : `“${r.quip}”`}</div>
