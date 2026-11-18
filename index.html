@@ -1943,6 +1943,13 @@
     .hx-mo.fire { background: linear-gradient(160deg, #ffb347, #8a2a08 50%, #ff6a1f); box-shadow: 0 0 26px rgba(255,110,30,.25); }
     .hx-mo.shield { background: linear-gradient(160deg, #9fd0ff, #1d3a6a 50%, #5a9cff); box-shadow: 0 0 26px rgba(90,150,255,.22); }
     .hx-mo.upset { background: linear-gradient(160deg, #d9a6ff, #3e1a6a 50%, #a46bff); box-shadow: 0 0 26px rgba(170,110,255,.22); }
+    .hx-mo.gold { background: linear-gradient(160deg, #ffe39a, #6a4a12 50%, #e0b050); box-shadow: 0 0 26px rgba(240,190,80,.22); }
+    .hx-mo.gold .hx-mo-n { display: none; }
+    .hx-career { margin-top: 4px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .hx-career .hx-mo, .hx-career .hx-mo-in { min-width: 0; }
+    @media (max-width: 1100px) { .hx-career { grid-template-columns: minmax(0, 1fr); } }
+    .hx-rk { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; font: 700 .7rem 'Rajdhani', sans-serif; color: #1a1408; background: #8a7a5a; }
+    .hx-rk.r1 { background: linear-gradient(135deg, #ffe7a0, #d9a63c); } .hx-rk.r2 { background: linear-gradient(135deg, #f0f0f0, #a9b0bb); } .hx-rk.r3 { background: linear-gradient(135deg, #f0c09a, #a8663a); }
     .hx-mo-in { height: 100%; border-radius: 15px; padding: 14px 16px; background: linear-gradient(180deg, #161a28, #10131e); }
     .hx-mo-h { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
     .hx-mo-ico { font-size: 1.6rem; filter: drop-shadow(0 0 10px rgba(255,255,255,.35)); }
@@ -5713,6 +5720,21 @@ function _renderHall(box) {
       <div class="hx-mo-h"><span class="hx-mo-ico">${ico}</span><div><b>${title}</b><small>${sub}</small></div><span class="hx-mo-n">${items.length}</span></div>
       ${items.length ? items.join('') : `<div class="hx-mo-none">${empty}</div>`}</div></div>`;
   const lenMedal = (m, label, ico) => `<div class="hx-len"><span class="hx-len-ico">${ico}</span><div><small>${label}</small><b>${fmtLen(m.len)}</b><span>${hallWhen(m)} · ${winnerOf(m) === 'blue' ? '🔵 블루' : '🔴 레드'} 승</span><div class="hx-len-w">🏆 ${m.players.filter(p => p.team === winnerOf(m)).map(p => escapeHtml(p.name)).join(' · ')}</div></div></div>`;
+  // 누적 명예: 역대 최장 연승 · 누적 킬왕 · 와드 재벌 (불명예의 '누적 흑역사'와 짝)
+  const stG = calcStreaks();
+  const longWin = stG.map(s => { let best = 0, cur = 0, end = null; s.days.forEach(d => { if (d.res === 'w') { cur++; if (cur > best) { best = cur; end = d.day; } } else if (d.res === 'l') cur = 0; }); return { name: s.name, n: best, end, last: s.last }; })
+    .filter(x => x.n >= 2).sort((a, b) => b.n - a.n || (b.end > a.end ? 1 : -1)).slice(0, 3);
+  const G = {};
+  ms.forEach(m => m.players.forEach(p => { const k = p.puuid || p.name; const x = G[k] || (G[k] = { name: p.name, k: 0, cw: 0, g: 0, p, m }); x.name = p.name; x.k += p.k; x.cw += p.cw || 0; x.g++; x.p = p; x.m = m; }));
+  const killKing = Object.values(G).sort((a, b) => b.k - a.k || a.g - b.g).slice(0, 3);
+  const wardRich = Object.values(G).filter(x => x.g >= 3).sort((a, b) => b.cw / b.g - a.cw / a.g || b.g - a.g).slice(0, 3);
+  const grow = (i, m, p, main, sub) => `<div class="hx-mr"><span class="hx-rk r${i + 1}">${i + 1}</span>${champIcon(m, p.champ)}<div class="hx-mn"><b>${main}</b><span>${sub}</span></div></div>`;
+  const careerHtml = `<div class="hx-sec"><span>✦ CAREER OF GLORY ✦</span><b>누적 명예 기록</b></div>
+    <div class="hx-mos hx-career">
+      ${moment('gold', '🔥', '역대 최장 연승', '내전 날짜 기준', longWin.map((x, i) => grow(i, x.last.m, x.last.p, `${escapeHtml(x.name)} <em>${x.n}연승</em>`, x.end ? x.end.slice(5).replace('.', '/') + '까지' : '')), '아직 2연승 이상이 없어요')}
+      ${moment('gold', '⚔️', '누적 킬왕', '지금까지 가장 많이 잡은 사람', killKing.map((x, i) => grow(i, x.m, x.p, `${escapeHtml(x.name)} <em>${x.k}킬</em>`, `${x.g}판 · 판당 ${(x.k / x.g).toFixed(1)}킬`)), '아직 기록이 없어요')}
+      ${moment('gold', '💎', '와드 재벌', '제어 와드를 판당 가장 많이 산 사람 (3판 이상)', wardRich.map((x, i) => grow(i, x.m, x.p, `${escapeHtml(x.name)} <em>${(x.cw / x.g).toFixed(2)}개/판</em>`, `${x.g}판 동안 총 ${x.cw}개`)), '아직 기록이 없어요')}
+    </div>`;
   box.innerHTML = `<div class="hx-jump"><button onclick="document.getElementById('hxFame').scrollIntoView({behavior:'smooth'})">🏆 명예의 전당</button><button class="sh" onclick="document.getElementById('hxShame').scrollIntoView({behavior:'smooth'})">💀 불명예의 전당</button></div>
   <div class="hx" id="hxFame">
     <div class="hx-rays"></div>${spark(24)}
@@ -5725,6 +5747,7 @@ function _renderHall(box) {
     ${memberBoard('w')}
     <div class="hx-sec"><span>✦ RECORD PLAQUES ✦</span><b>역대 한 판 최고 기록</b></div>
     <div class="hx-grid">${recs.map(plaque).join('')}</div>
+    ${careerHtml}
   </div>
   <div class="hs-div"><span>⬇ 그리고… 잊고 싶은 기록들</span></div>
   ${shameHtml(ms, retro)}
