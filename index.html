@@ -1041,9 +1041,15 @@
     .tc-exp { display: inline-block; margin-top: 5px; font-size: .64rem; color: #ffe0a0; background: rgba(0,0,0,.45); border: 1px solid rgba(240,180,60,.5); border-radius: 999px; padding: 2px 8px; }
     .tc-exp.soon { color: #fff; background: rgba(220,90,40,.75); border-color: #ff9f6a; font-weight: 700; }
     .hot-minis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    .hot-mini { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,.02); }
-    .hot-mini.win { border-color: rgba(255,140,60,.35); } .hot-mini.lose { border-color: rgba(90,160,255,.35); }
-    .hm-h { font-size: .74rem; font-weight: 700; margin-right: 4px; } .hot-mini.win .hm-h { color: #ffb36b; } .hot-mini.lose .hm-h { color: #8fc7ff; }
+    .hot-mini { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'h n' 'l n'; align-items: center; gap: 8px 14px; padding: 12px 16px; border-radius: 16px; overflow: hidden; }
+    .hot-mini.win { background: linear-gradient(120deg, rgba(255,120,40,.16), rgba(40,20,10,.55) 60%, rgba(20,12,8,.8)); border: 1.5px solid rgba(255,140,60,.55); box-shadow: 0 0 18px rgba(255,120,40,.18); }
+    .hot-mini.lose { background: linear-gradient(120deg, rgba(90,140,230,.16), rgba(10,20,40,.55) 60%, rgba(8,12,24,.8)); border: 1.5px solid rgba(110,160,255,.55); box-shadow: 0 0 18px rgba(90,140,230,.18); }
+    .hm-h { grid-area: h; justify-self: start; font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; font-size: .82rem; padding: 2px 10px; border-radius: 6px; color: #fff; }
+    .hot-mini.win .hm-h { background: linear-gradient(90deg, #ff7a2a, #ffb347); } .hot-mini.lose .hm-h { background: linear-gradient(90deg, #4f7fe0, #8fb7ff); }
+    .hm-num { grid-area: n; display: flex; flex-direction: column; align-items: center; line-height: 1; font-size: .78rem; font-weight: 700; letter-spacing: 2px; }
+    .hm-num b { font-family: 'Rajdhani', sans-serif; font-size: 2.8rem; letter-spacing: 0; }
+    .hot-mini.win .hm-num { color: #ffb347; text-shadow: 0 0 14px rgba(255,140,40,.6); } .hot-mini.lose .hm-num { color: #a9c8ff; text-shadow: 0 0 14px rgba(120,170,255,.6); }
+    .hot-mini .hm-list, .hot-mini .hm-none { grid-area: l; }
     .hm-list { flex: 1 1 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 10px; }
     .hm-chip { display: flex; align-items: center; gap: 6px; min-width: 0; font-family: inherit; font-size: .76rem; color: var(--text-bright); background: none; border: none; padding: 2px 0; cursor: pointer; text-align: left; }
     .hm-chip .ch-box { width: 26px !important; height: 26px !important; flex-shrink: 0; border-radius: 50%; }
@@ -5222,7 +5228,7 @@ function renderStreaks() {
   const ghost = kind => `<div class="tcard ghost" style="animation-delay:${(delay++ * 0.12).toFixed(2)}s"><div>
       <span class="gi">${kind === 'win' ? '🔥' : '🧊'}</span>${kind === 'win' ? '3연승 이상<br>아직 없음<br>다음 내전 주인공은?' : '3연패 이상<br>아무도 없음<br>다들 선방 중 👏'}</div></div>`;
   // 2연승 · 2연패: 이름 칩 한 줄 (누르면 기록 보기)
-  const mini = (list, kind) => `<div class="hot-mini ${kind}"><span class="hm-h">${kind === 'win' ? '🔥 2연승' : '🧊 2연패'} <b>${list.length}</b></span>${list.length
+  const mini = (list, kind) => `<div class="hot-mini ${kind}"><span class="hm-h">${kind === 'win' ? 'WIN STREAK 🔥' : 'LOSE STREAK 🧊'} · ${list.length}명</span><span class="hm-num"><b>2</b>${kind === 'win' ? '연승' : '연패'}</span>${list.length
     ? `<div class="hm-list">${list.map(x => `<button class="hm-chip" onclick="showStreakHist(${_streakCache.push(x) - 1})" title="${kind === 'win' && x.expiry ? `${x.expiry.until}까지 참석 안 하면 연승 소멸` : ''}">${champIcon(x.last.m, x.last.p.champ)}<b>${escapeHtml(x.name)}</b>${kind === 'win' && x.expiry && x.expiry.left <= 7 ? `<i>D-${x.expiry.left}</i>` : ''}</button>`).join('')}</div>`
     : '<span class="hm-none">없음</span>'}</div>`;
   const minis = () => (wins2.length || loses2.length) ? `<div class="hot-minis">${mini(wins2, 'win')}${mini(loses2, 'lose')}</div>` : '';
