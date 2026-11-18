@@ -1037,16 +1037,18 @@
                  background: linear-gradient(90deg, #ffd27a, #ff6a1f 42%, #6fa4ff 58%, #d6e6ff);
                  -webkit-background-clip: text; background-clip: text; color: transparent; }
     .hot-sub { font-size: .7rem; color: var(--muted); }
-    .hot-rule { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 4px 0 12px; padding: 8px 12px; border-radius: 10px; background: linear-gradient(90deg, rgba(240,180,60,.14), rgba(240,180,60,.03)); border: 1px solid rgba(240,180,60,.45); }
-    .hot-rule b { color: #ffd77a; font-size: .8rem; } .hot-rule span { color: #e8d8b0; font-size: .74rem; }
+    .hot-rule { margin: 0 0 12px; font-size: .74rem; color: #ff6b6b; }
     .tc-exp { display: inline-block; margin-top: 5px; font-size: .64rem; color: #ffe0a0; background: rgba(0,0,0,.45); border: 1px solid rgba(240,180,60,.5); border-radius: 999px; padding: 2px 8px; }
     .tc-exp.soon { color: #fff; background: rgba(220,90,40,.75); border-color: #ff9f6a; font-weight: 700; }
     .hot-minis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
     .hot-mini { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,.02); }
     .hot-mini.win { border-color: rgba(255,140,60,.35); } .hot-mini.lose { border-color: rgba(90,160,255,.35); }
     .hm-h { font-size: .74rem; font-weight: 700; margin-right: 4px; } .hot-mini.win .hm-h { color: #ffb36b; } .hot-mini.lose .hm-h { color: #8fc7ff; }
-    .hm-chip { font-family: inherit; font-size: .74rem; color: var(--text-bright); background: var(--panel2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; cursor: pointer; }
-    .hm-chip:hover { border-color: var(--gold); } .hm-chip i { font-style: normal; font-size: .62rem; color: #ff9f6a; margin-left: 5px; font-weight: 700; }
+    .hm-list { flex: 1 1 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 10px; }
+    .hm-chip { display: flex; align-items: center; gap: 6px; min-width: 0; font-family: inherit; font-size: .76rem; color: var(--text-bright); background: none; border: none; padding: 2px 0; cursor: pointer; text-align: left; }
+    .hm-chip .ch-box { width: 26px !important; height: 26px !important; flex-shrink: 0; border-radius: 50%; }
+    .hm-chip b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .hm-chip:hover b { color: var(--gold2); } .hm-chip i { font-style: normal; font-size: .62rem; color: #ff6b6b; font-weight: 700; flex-shrink: 0; }
     .hm-none { font-size: .72rem; color: var(--muted); }
     .hot-expired { margin-top: 10px; font-size: .74rem; color: #b9b2c8; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
     .hot-expired b { color: #d8d0e8; } .hot-expired s { color: #ffb36b; } .hot-expired small { color: var(--muted); font-size: .66rem; }
@@ -1322,13 +1324,16 @@
     .hc-v { margin-left: auto; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.6rem; }
     .hc.win .hc-v { color: #ffb45a; } .hc.lose .hc-v { color: #9db8ec; }
     .hc-none { font-size: .74rem; color: var(--muted); padding: 10px; }
-    .hc-rule { font-size: .7rem; color: #e8cf8c; background: rgba(240,180,60,.08); border: 1px solid rgba(240,180,60,.35); border-radius: 8px; padding: 7px 10px; margin-bottom: 8px; line-height: 1.5; }
-    .hc-rule b { color: #ffd77a; } .hc-rule .soon { color: #ff9f6a; font-weight: 700; } .hc-rule .gone { color: #b9b2c8; }
+    .hc-rule { font-size: .7rem; color: #ff6b6b; margin: -2px 0 8px; line-height: 1.5; }
+    .hc-rule .soon { font-weight: 700; } .hc-rule .gone { color: #e89a9a; }
     .hc-exp { display: block; font-style: normal; font-size: .62rem; color: #c9b27a; margin-top: 1px; } .hc-exp.soon { color: #ff9f6a; font-weight: 700; }
     .hcl .hc-n { display: flex; flex-direction: column; }
-    .hcl.two { gap: 8px; padding: 6px 0; } .hc-two-h { flex-shrink: 0; font-size: .66rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; opacity: .85; }
+    .hcl.two { gap: 6px; padding: 7px 0 4px; flex-wrap: wrap; } .hc-two-h { flex-shrink: 0; font-size: .66rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; opacity: .85; }
     .hc-list.win .hc-two-h { color: #ffb36b; } .hc-list.lose .hc-two-h { color: #8fc7ff; }
-    .hc-two { font-size: .76rem; color: var(--text); line-height: 1.5; min-width: 0; }
+    .hc-two { flex: 1 1 100%; min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 8px; }
+    .hc2 { display: flex; align-items: center; gap: 5px; min-width: 0; }
+    .hc2 .ch-box { width: 24px !important; height: 24px !important; flex-shrink: 0; border-radius: 50%; }
+    .hc2 b { font-size: .74rem; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .hc-list { flex-direction: column; align-items: stretch; gap: 0; padding: 8px 12px 6px; }
     .hc-list .hc-head { margin-bottom: 4px; font-weight: 700; }
     .hcl { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-top: 1px solid rgba(255,255,255,.06); }
@@ -5216,10 +5221,10 @@ function renderStreaks() {
       <span class="gi">${kind === 'win' ? '🔥' : '🧊'}</span>${kind === 'win' ? '3연승 이상<br>아직 없음<br>다음 내전 주인공은?' : '3연패 이상<br>아무도 없음<br>다들 선방 중 👏'}</div></div>`;
   // 2연승 · 2연패: 이름 칩 한 줄 (누르면 기록 보기)
   const mini = (list, kind) => `<div class="hot-mini ${kind}"><span class="hm-h">${kind === 'win' ? '🔥 2연승' : '🧊 2연패'} <b>${list.length}</b></span>${list.length
-    ? list.map(x => `<button class="hm-chip" onclick="showStreakHist(${_streakCache.push(x) - 1})" title="${kind === 'win' && x.expiry ? `${x.expiry.until}까지 참석 안 하면 연승 소멸` : ''}">${escapeHtml(x.name)}${kind === 'win' && x.expiry && x.expiry.left <= 7 ? `<i>D-${x.expiry.left}</i>` : ''}</button>`).join('')
+    ? `<div class="hm-list">${list.map(x => `<button class="hm-chip" onclick="showStreakHist(${_streakCache.push(x) - 1})" title="${kind === 'win' && x.expiry ? `${x.expiry.until}까지 참석 안 하면 연승 소멸` : ''}">${champIcon(x.last.m, x.last.p.champ)}<b>${escapeHtml(x.name)}</b>${kind === 'win' && x.expiry && x.expiry.left <= 7 ? `<i>D-${x.expiry.left}</i>` : ''}</button>`).join('')}</div>`
     : '<span class="hm-none">없음</span>'}</div>`;
   const minis = () => (wins2.length || loses2.length) ? `<div class="hot-minis">${mini(wins2, 'win')}${mini(loses2, 'lose')}</div>` : '';
-  const rule = `<div class="hot-rule"><b>⏳ 연승 유효기간 ${WIN_EXPIRE_DAYS}일</b><span>마지막 내전일로부터 ${WIN_EXPIRE_DAYS}일 동안 내전에 안 나오면 연승이 사라져요 (연패는 그대로)</span></div>`;
+  const rule = `<div class="hot-rule">※ 연승은 마지막 내전일로부터 ${WIN_EXPIRE_DAYS}일 동안 내전에 안 나오면 사라져요 (연패는 그대로)</div>`;
   const expHtml = () => expired.length ? `<div class="hot-expired">💨 <b>최근 사라진 연승</b> ${expired.map(x => `<span>${escapeHtml(x.name)} <s>${x.expiredWin.n}연승</s> <small>${x.expiredWin.lastDay.slice(5).replace('.', '/')} 이후 ${WIN_EXPIRE_DAYS}일 불참</small></span>`).join('')}</div>` : '';
 
   const head = `<div class="hot-head"><span class="hot-title">HOT &amp; COLD</span><span class="hot-sub">내전 날짜 기준 연승 · 연패 중인 소환사 (그날 승이 많으면 승, 같으면 무승부라 제외)</span></div>` + rule;
@@ -6250,11 +6255,11 @@ function renderDashboard() {
     if (!list.length) return `<div class="hc ${kind}"><div class="hc-none">${kind === 'win' ? '🔥 2연승 이상 없음' : '🧊 2연패 이상 없음'}</div></div>`;
     return `<div class="hc hc-list ${kind}"><div class="hc-t hc-head">${kind === 'win' ? '🔥 연승 중' : '🧊 연패 중'} · ${list.length}명</div>
         ${big.map(s => `<div class="hcl lv${Math.min(5, s.n)}">${champIcon(s.last.m, s.last.p.champ)}<span class="hc-n">${escapeHtml(s.name)}${kind === 'win' && s.expiry ? `<em class="hc-exp${s.expiry.left <= 7 ? ' soon' : ''}">⏳ ${s.expiry.until}까지</em>` : ''}</span><span class="hc-v">${s.n}<small>${kind === 'win' ? '연승' : '연패'}</small></span></div>`).join('')}
-        ${two.length ? `<div class="hcl two"><span class="hc-two-h">2${kind === 'win' ? '연승' : '연패'}</span><span class="hc-two">${two.map(s => escapeHtml(s.name)).join(' · ')}</span></div>` : ''}</div>`;
+        ${two.length ? `<div class="hcl two"><span class="hc-two-h">2${kind === 'win' ? '연승' : '연패'}</span><div class="hc-two">${two.map(s => `<span class="hc2">${champIcon(s.last.m, s.last.p.champ)}<b>${escapeHtml(s.name)}</b></span>`).join('')}</div></div>` : ''}</div>`;
   };
   const expiredSoon = st.filter(s => s.kind === 'win' && s.n >= 2 && s.expiry && s.expiry.left <= 7);
   const expiredNow = st.filter(s => s.expiredWin && s.expiredWin.n >= 2 && s.expiredWin.ago <= 30);
-  const expNote = `<div class="hc-rule">⏳ 연승은 마지막 내전일로부터 <b>${WIN_EXPIRE_DAYS}일</b> 동안 불참하면 사라져요${expiredSoon.length ? ` · <span class="soon">곧 소멸: ${expiredSoon.map(s => `${escapeHtml(s.name)}(${s.expiry.left ? 'D-' + s.expiry.left : '오늘까지'})`).join(', ')}</span>` : ''}${expiredNow.length ? ` · <span class="gone">💨 사라진 연승: ${expiredNow.map(s => `${escapeHtml(s.name)} ${s.expiredWin.n}연승`).join(', ')}</span>` : ''}</div>`;
+  const expNote = `<div class="hc-rule">※ 연승은 마지막 내전일로부터 ${WIN_EXPIRE_DAYS}일 동안 불참하면 사라져요${expiredSoon.length ? ` · <span class="soon">곧 소멸: ${expiredSoon.map(s => `${escapeHtml(s.name)}(${s.expiry.left ? 'D-' + s.expiry.left : '오늘까지'})`).join(', ')}</span>` : ''}${expiredNow.length ? ` · <span class="gone">💨 사라진 연승: ${expiredNow.map(s => `${escapeHtml(s.name)} ${s.expiredWin.n}연승`).join(', ')}</span>` : ''}</div>`;
   // 최근 내전 MVP: ① 그날 승 수 → ② 그날 MVP 횟수 → ③ 그날 경기별 활약 점수 합 (같은 팀이라 승 수가 같아도 활약으로 갈려요)
   const dayWin = {};
   lastMs.forEach(m => {
