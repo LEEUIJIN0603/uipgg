@@ -1329,6 +1329,7 @@
     .tt-who.multi { flex-direction: column; align-items: flex-start; gap: 3px; }
     .tt-co { font-size: .58rem; font-weight: 400; color: var(--muted); margin-left: 3px; }
     .tt.empty { opacity: .45; }
+    .tcc-duo { display: block; line-height: 1.5; } .tcc-duo small { margin-left: 6px; font-size: .7em; opacity: .7; font-weight: 500; }
     .tt.duo.best { border-color: rgba(74,163,255,.4); } .tt.duo.worst { border-color: rgba(232,64,64,.4); }
     /* 챔피언 / 기록 */
     .db-list { display: flex; flex-direction: column; gap: 7px; }
@@ -5768,6 +5769,11 @@ function duoStats() {
   });
   return { list: Object.values(D), name };
 }
+// 칭호 1등 이름 (듀오는 'A & B', 공동 듀오는 ' / '로 구분)
+function titleWho(x) {
+  if (x.pairs) return x.pairs.map(pr => pr.ps.map(p => p.name).join(' & ')).join(' / ');
+  return x.winners.map(w => w.name).join(x.t.duo ? ' & ' : ', ');
+}
 // 칭호별 1등 계산 → [{t, winners:[row], val, text}]
 function computeTitles() {
   // 칭호는 소환사 협곡 전적으로만 집계 · 노출 (칼바람 탭에서는 칭호 없음)
@@ -5787,10 +5793,16 @@ function computeTitles() {
       const maxPg = Math.max(...list.map(d => d.g));
       const pool = list.filter(d => d.g >= Math.min(3, maxPg));
       pool.sort((a, b) => t.duo === 'best' ? (b.w / b.g - a.w / a.g || b.g - a.g) : (a.w / a.g - b.w / b.g || b.g - a.g));
-      const d = pool[0];
-      const ps = d.ks.map(k => rows.find(r => r.key === k) || { key: k, name: name[k].name, tag: name[k].tag, mainChamp: name[k].champ, lastM: null });
-      ps.forEach(p => give(p.key, t));
-      out.push({ t, winners: ps, text: `함께 ${d.g}판 ${d.w}승 ${d.g - d.w}패 · 승률 ${pctFmt(d.w / d.g)}` });
+      // 승률 → 판수까지 같은 듀오는 모두 공동 1등
+      const rate = d => pctFmt(d.w / d.g);
+      const top = pool.filter(d => rate(d) === rate(pool[0]) && d.g === pool[0].g);   // 승률이 같으면 함께한 판수가 많은 쪽, 판수까지 같으면 공동
+      const mk = k => rows.find(r => r.key === k) || { key: k, name: name[k].name, tag: name[k].tag, mainChamp: name[k].champ, lastM: null };
+      const pairs = top.map(d => ({ ps: d.ks.map(mk), g: d.g, w: d.w }));
+      const winners = [];
+      pairs.forEach(pr => pr.ps.forEach(p => { if (!winners.some(w => w.key === p.key)) winners.push(p); }));
+      winners.forEach(p => give(p.key, t));
+      const d = top[0];
+      out.push({ t, winners, pairs, text: top.length === 1 ? `함께 ${d.g}판 ${d.w}승 ${d.g - d.w}패 · 승률 ${rate(d)}` : `승률 ${rate(d)} · ${top.length}쌍 공동 1등` });
       return;
     }
     const pool = rows.filter(r => (t.any || r.g >= minG)).map(r => ({ r, v: t.v(r) })).filter(x => x.v !== null && isFinite(x.v));
@@ -6214,18 +6226,20 @@ function renderDashboard() {
   const picked = x => !x.tie && x.winners && x.winners.length;
   const got = titles.filter(picked), notYet = titles.filter(x => !picked(x));
   const ACC = ['#f0b429', '#4fd1c5', '#f56565', '#9f7aea', '#48bb78', '#ed8936', '#63b3ed', '#ed64a6', '#ecc94b', '#38b2ac'];
-  const cards = got.map(({ t, winners, text }, i) => {
+  const cards = got.map(({ t, winners, pairs, text }, i) => {
     const ac = t.duo === 'worst' ? '#f56565' : t.duo === 'best' ? '#63b3ed' : ACC[i % ACC.length];
     const main = winners[0];
-    const pics = winners.slice(0, 2).map(w => `<span class="tcc-pic">${w.lastM ? champIcon(w.lastM, w.mainChamp) : ''}</span>`).join('');
-    const names = winners.map(w => escapeHtml(w.name)).join(t.duo ? ' & ' : ', ');
-    const co = !t.duo && winners.length > 1 ? `<span class="tcc-co">공동 1등</span>` : '';
+    const pics = (pairs ? pairs[0].ps : winners).slice(0, 2).map(w => `<span class="tcc-pic">${w.lastM ? champIcon(w.lastM, w.mainChamp) : ''}</span>`).join('');
+    const names = pairs && pairs.length > 1
+      ? pairs.map(pr => `<span class="tcc-duo">${pr.ps.map(p => escapeHtml(p.name)).join(' & ')}<small>${pr.g}판 ${pr.w}승 ${pr.g - pr.w}패</small></span>`).join('')
+      : winners.map(w => escapeHtml(w.name)).join(t.duo ? ' & ' : ', ');
+    const co = (!t.duo && winners.length > 1) || (pairs && pairs.length > 1) ? `<span class="tcc-co">공동 1등</span>` : '';
     const ch = tc && tc.changes.find(c => c.k === t.k);
     return `<div class="tcc" data-i="${i}" style="--ac:${ac}" onclick="carGo(${i})">
       ${ch ? `<span class="tcc-new">${ch.from ? '🔄 왕좌 탈환' : '🆕 첫 1등'}</span>` : ''}
       <div class="tcc-bg" style="background-image:url('${main.mainChamp ? splashOf(main.mainChamp) : ''}')"></div>
       <div class="tcc-in">
-        <div class="tcc-pics${winners.length > 1 ? ' two' : ''}">${pics}<span class="tcc-badge">${t.ico}</span></div>
+        <div class="tcc-pics${(pairs ? pairs[0].ps : winners).length > 1 ? ' two' : ''}">${pics}<span class="tcc-badge">${t.ico}</span></div>
         <div class="tcc-txt">
           <div class="tcc-name">${t.name}${titleBasis(t) ? `<span class="tcc-basis">${titleBasis(t)}</span>` : ''}</div>
           <div class="tcc-desc">${escapeHtml(t.desc)}</div>
@@ -6485,7 +6499,7 @@ function dayDigest(day) {
   if (before.length && recMode === 'rift') {
     const tb = withMatches(before, () => computeTitles().titles), ta = withMatches(upTo, () => computeTitles().titles);
     const sig = x => (x && !x.tie && x.winners && x.winners.length) ? x.winners.map(w => w.key).sort().join('|') : '';
-    const names = x => x.winners.map(w => w.name).join(x.t.duo ? ' & ' : ', ');
+    const names = titleWho;
     const prev = {}; tb.forEach(x => { prev[x.t.k] = x; });
     ta.forEach(x => { const now = sig(x), was = sig(prev[x.t.k]); if (now && now !== was) out.titles.push({ t: x.t, to: names(x), from: was ? names(prev[x.t.k]) : '', isNew: !was, text: x.text || '' }); });
   }
@@ -6868,7 +6882,7 @@ function titleChanges() {
   const before = withMatches(ms.filter(m => dayKey(m) !== last), () => computeTitles().titles);
   const after = computeTitles().titles;
   const sig = x => (x && !x.tie && x.winners && x.winners.length) ? x.winners.map(w => w.key).sort().join('|') : '';
-  const names = x => x.winners.map(w => w.name).join(x.t.duo ? ' & ' : ', ');
+  const names = titleWho;
   const prevBy = {}; before.forEach(x => { prevBy[x.t.k] = x; });
   const changes = [];
   after.forEach(x => {
