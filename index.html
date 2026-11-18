@@ -238,6 +238,37 @@
     }
     .btn-clear-inputs:hover { border-color: var(--red-team); color: var(--red-team); }
     .member-restore { padding: 0 12px 12px; }
+    .member-sub { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 8px 16px 0; font-size: .68rem; color: var(--muted); }
+    .member-chk-all { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--gold); font-size: .66rem; padding: 2px 8px; cursor: pointer; font-family: inherit; }
+    .member-chk-all:hover { border-color: var(--gold); }
+    .member-chk { display: inline-flex; flex-shrink: 0; cursor: pointer; }
+    .member-chk input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .member-chk i { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid #4a5f80; display: grid; place-items: center; transition: all .15s; }
+    .member-chk input:checked + i { background: var(--gold); border-color: var(--gold); }
+    .member-chk input:checked + i::after { content: '✓'; color: #04080e; font-size: .7rem; font-weight: 900; line-height: 1; font-style: normal; }
+    .member-item.checked { background: rgba(200,155,60,.07); }
+    .member-item.used .member-chk { opacity: 1; }
+    .member-att { font-size: .64rem; color: var(--muted); flex-shrink: 0; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+    .member-att.new { color: #6fb3ff; font-size: .58rem; }
+    /* 팀별 승률 측정 */
+    #view-assign .tabs { grid-template-columns: repeat(3, 1fr); }
+    .modal-action-row.single { grid-template-columns: 1fr !important; } .modal-action-row.single > * { flex: 1 1 100%; }
+    .ms-mode { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .ms-mode button { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: inherit; font-size: .76rem; cursor: pointer; }
+    .ms-mode button.active { border-color: var(--gold); color: var(--gold2); background: var(--gold-dim); font-weight: 700; }
+    .ms-mode small { color: var(--muted); font-size: .68rem; margin-left: 4px; }
+    .ms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+    .ms-team { border: 1px solid var(--border); border-radius: 12px; padding: 12px; background: rgba(255,255,255,.015); }
+    .ms-team.blue { border-top: 3px solid var(--blue-team, #3d8bff); } .ms-team.red { border-top: 3px solid var(--red-team, #e84040); }
+    .ms-th { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; font-size: .95rem; margin-bottom: 8px; }
+    .ms-team.blue .ms-th { color: #7db8ff; } .ms-team.red .ms-th { color: #ff8a8a; }
+    .ms-row { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+    .ms-ln { display: inline-flex; align-items: center; gap: 6px; width: 64px; flex-shrink: 0; color: var(--muted); font-size: .76rem; }
+    .ms-ln img { width: 20px; height: 20px; opacity: .85; }
+    .ms-row input { flex: 1; min-width: 0; }
+    .ms-grid.aram .ms-ln img, .ms-grid.aram .ms-ln b { display: none; }
+    .ms-grid.aram .ms-ln::before { content: attr(data-i) '번'; }
+    .ms-grid.aram .ms-ln { width: 32px; }
     .btn-restore { width: 100%; padding: 8px; background: transparent; border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font-family: 'Noto Sans KR', sans-serif; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.15s; }
     .btn-restore:hover { border-color: var(--gold); color: var(--gold2); background: var(--gold-dim); }
 
@@ -1361,6 +1392,9 @@
       .card { padding: 16px 14px; border-radius: 12px; }
       /* 탭: 두 칸 나란히, 설명 글은 숨김 */
       .tabs { grid-template-columns: 1fr 1fr !important; margin-bottom: 14px; }
+      #view-assign .tabs { grid-template-columns: repeat(3, 1fr) !important; }
+      #view-assign .tab-btn .t-main { font-size: .76rem; }
+      .ms-grid { grid-template-columns: 1fr; gap: 10px; }
       .tab-btn { padding: 10px 6px; border-right: 1px solid var(--border) !important; border-bottom: none !important; }
       .tab-btn:last-child { border-right: none !important; }
       .tab-btn.active { border-bottom: 2px solid var(--gold) !important; }
@@ -2570,6 +2604,10 @@
       <span class="t-main">⚖️ 증바람 능력치 랜덤</span>
       <span class="t-sub">평균 능력치 균형 배정</span>
     </button>
+    <button class="tab-btn" onclick="switchTab('measure',this)">
+      <span class="t-main">🔮 팀별 승률 측정</span>
+      <span class="t-sub">직접 짠 팀의 예측 승률</span>
+    </button>
   </div>
 
   <!-- 올 랜덤 -->
@@ -2608,6 +2646,21 @@
     </div>
     <div class="result-wrap" id="resAbility"></div>
   </div>
+
+  <!-- 팀별 승률 측정: 직접 짠 팀으로 예측 승률만 보기 -->
+  <div class="panel" id="panel-measure">
+    <div class="card">
+      <div class="card-title"><span>▸ 팀별로 라인마다 이름 입력</span><button class="btn-tab-reset" onclick="resetTab('measure')">↺ 초기화</button></div>
+      <div class="ms-mode" id="msMode">
+        <button type="button" class="active" data-m="rift" onclick="setMeasureMode('rift')">🌲 소환사 협곡</button>
+        <button type="button" data-m="aram" onclick="setMeasureMode('aram')">❄️ 칼바람</button>
+        <small id="msModeNote">협곡 전적 · 라인 점수 기준으로 예측해요</small>
+      </div>
+      <div class="ms-grid" id="msGrid"></div>
+      <button class="btn-main" id="btnMeasure" onclick="doMeasure()">🔮&nbsp; 승률 측정</button>
+      <div class="error-msg" id="errMeasure"></div>
+    </div>
+  </div>
 </div><!-- layout-main -->
 
 <!-- 멤버 리스트 패널 -->
@@ -2616,6 +2669,7 @@
     <span class="member-panel-title">멤버 리스트</span>
     <span class="member-count" id="memberCount">0명</span>
   </div>
+  <div class="member-sub">함께 했던 소환사 · 참석 많은 순 <button type="button" class="member-chk-all" id="memberChkAll" onclick="toggleAllMemberChecks()">전체 선택</button></div>
   <div class="member-add-row">
     <input type="text" id="memberAddInput" placeholder="이름 입력 후 + 클릭" maxlength="12"
       onkeydown="if(event.key==='Enter') addMember()">
@@ -2625,10 +2679,10 @@
     <div class="member-empty" id="memberEmpty">멤버를 추가하면<br>클릭으로 빠르게 입력할 수 있어요</div>
   </div>
   <div class="member-actions">
-    <button class="btn-fill-all" onclick="fillAll()" title="빈 칸을 멤버 리스트에서 무작위로 채워요">랜덤 전체 채우기</button>
+    <button class="btn-fill-all" id="btnFillAll" onclick="fillAll()" title="체크한 멤버로 칸을 무작위로 채워요">랜덤 채우기</button>
     <button class="btn-clear-inputs" onclick="clearMemberList()" title="멤버 리스트 전체 삭제">✕ 리스트 비우기</button>
   </div>
-  <div class="member-restore"><button class="btn-restore" onclick="restoreDefaultMembers()">기본 멤버 복원</button></div>
+  <div class="member-restore"><button class="btn-restore" onclick="restoreDefaultMembers()">멤버 리스트 복원</button></div>
 </div>
 
 </div><!-- layout -->
@@ -2963,8 +3017,37 @@ const DEFAULT_MEMBERS = [
 // 멤버 리스트는 브라우저에 저장하지 않아요. 새로고침하면 항상 위 DEFAULT_MEMBERS(=index.html에 적힌 멤버)로 시작해요.
 //   화면에서 추가/삭제한 멤버는 새로고침 전까지만 유지돼요.
 try { localStorage.removeItem('lol_members'); localStorage.removeItem('lol_members_removed'); } catch (e) {}   // 예전 버전이 저장한 기록 정리
-let removedDefaults = [];
-function loadMembers() { return DEFAULT_MEMBERS.slice(); }
+// 멤버 리스트 = 지금까지 내전에 함께 한 소환사 전부 (참석한 날이 많은 순) + 직접 추가한 이름
+//   전적이 아직 안 불러와졌으면 DEFAULT_MEMBERS로 시작해요. 새로고침하면 추가/삭제/체크는 처음으로.
+let removedDefaults = [];                 // 지운 이름 (새로고침 전까지 숨김)
+let extraMembers = [];                    // 직접 추가한 이름
+let memberChecked = new Set();            // 체크한 이름 → 랜덤 채우기에 사용
+let memberAttend = {};                    // 이름 → { days, games }
+function memberBase() {
+  let ms = [];
+  try { ms = matches || []; } catch (e) { ms = []; }        // 전적 변수가 아직 준비 전이면 기본 멤버로
+  if (!ms.length) { memberAttend = {}; return DEFAULT_MEMBERS.slice(); }
+  const A = {};
+  ms.forEach(m => {
+    const day = typeof dayKey === 'function' ? dayKey(m) : '';
+    m.players.forEach(p => {
+      const k = normName(p.name);
+      const a = A[k] || (A[k] = { name: p.name, days: new Set(), games: 0, last: 0 });
+      a.days.add(day); a.games++;
+      if ((m.date || 0) >= a.last) { a.last = m.date || 0; a.name = p.name; }   // 가장 최근 닉네임으로
+    });
+  });
+  const list = Object.values(A).sort((a, b) => b.days.size - a.days.size || b.games - a.games || b.last - a.last || a.name.localeCompare(b.name));
+  memberAttend = {};
+  list.forEach(a => { memberAttend[a.name] = { days: a.days.size, games: a.games }; });
+  return list.map(a => a.name);
+}
+function loadMembers() {
+  const nm = v => String(v || '').toLowerCase().replace(/\s+/g, '');
+  const base = memberBase().filter(n => !removedDefaults.includes(n));
+  const seen = new Set(base.map(nm));
+  return [...base, ...extraMembers.filter(n => !seen.has(nm(n)) && !removedDefaults.includes(n))];
+}
 let members = loadMembers();
 function saveMembers() { /* 저장 안 함 */ }
 
@@ -2985,7 +3068,14 @@ function renderMembers() {
   const empty = document.getElementById('memberEmpty');
   const used = getUsedNames();
 
+  members = loadMembers();
+  memberChecked.forEach(n => { if (!members.includes(n)) memberChecked.delete(n); });
   document.getElementById('memberCount').textContent = members.length + '명';
+  const nChk = memberChecked.size;
+  const fb = document.getElementById('btnFillAll');
+  if (fb) fb.textContent = nChk ? `✓ ${nChk}명 랜덤 채우기` : '랜덤 채우기 (전체)';
+  const ca = document.getElementById('memberChkAll');
+  if (ca) ca.textContent = members.length && nChk === members.length ? '전체 해제' : '전체 선택';
 
   // member-item 만 지우고 empty div 는 유지
   [...list.querySelectorAll('.member-item')].forEach(e => e.remove());
@@ -2999,12 +3089,21 @@ function renderMembers() {
   members.forEach((name, idx) => {
     const isUsed = used.has(name);
     const item = document.createElement('div');
-    item.className = 'member-item' + (isUsed ? ' used' : '');
+    const chk = memberChecked.has(name), at = memberAttend[name];
+    item.className = 'member-item' + (isUsed ? ' used' : '') + (chk ? ' checked' : '');
     item.innerHTML = `
+      <label class="member-chk" title="체크하면 랜덤 채우기에 들어가요"><input type="checkbox"${chk ? ' checked' : ''}><i></i></label>
       <span class="member-no">${idx + 1}</span>
-      <span class="member-name">${name}</span>
+      <span class="member-name">${escapeHtml(name)}</span>
+      ${at ? `<span class="member-att" title="참석 ${at.days}일 · ${at.games}판">${at.days}일</span>` : '<span class="member-att new" title="아직 내전 기록 없음">NEW</span>'}
       <button class="member-del" onclick="deleteMember(${idx},event)" title="삭제">✕</button>
     `;
+    const cb = item.querySelector('.member-chk');
+    cb.addEventListener('click', e => e.stopPropagation());
+    cb.querySelector('input').addEventListener('change', e => {
+      if (e.target.checked) memberChecked.add(name); else memberChecked.delete(name);
+      renderMembers();
+    });
     if (!isUsed) {
       item.onclick = () => clickMember(name, item);
     }
@@ -3021,8 +3120,9 @@ function addMember() {
     setTimeout(() => input.style.borderColor = '', 800);
     return;
   }
-  removedDefaults = removedDefaults.filter(n => n !== name);   // 지웠던 기본 멤버를 다시 추가하면 복구
-  members.push(name);
+  removedDefaults = removedDefaults.filter(n => n !== name);   // 지웠던 멤버를 다시 추가하면 복구
+  if (!loadMembers().includes(name)) extraMembers.push(name);
+  memberChecked.add(name);                                     // 새로 추가한 사람은 바로 체크
   saveMembers();
   input.value = '';
   renderMembers();
@@ -3030,8 +3130,10 @@ function addMember() {
 
 function deleteMember(idx, e) {
   e.stopPropagation();
-  const [name] = members.splice(idx, 1);
-  if (DEFAULT_MEMBERS.includes(name) && !removedDefaults.includes(name)) removedDefaults.push(name); // 지운 기본 멤버는 다시 안 나타남
+  const name = members[idx];
+  if (!removedDefaults.includes(name)) removedDefaults.push(name);   // 지운 이름은 새로고침 전까지 안 나타남
+  extraMembers = extraMembers.filter(n => n !== name);
+  memberChecked.delete(name);
   saveMembers();
   renderMembers();
 }
@@ -3054,7 +3156,8 @@ function fillAll() {
   getActiveInputs().forEach(inp => { inp.value = ''; });
   panel.querySelectorAll('input[type=number]').forEach(inp => { inp.value = ''; });
   panel.querySelectorAll('.role-chip').forEach(c => setChipState(c, 0));
-  const picked = shuffle(members);
+  const pool = memberChecked.size ? members.filter(n => memberChecked.has(n)) : members;   // 체크한 사람만 (체크가 없으면 전체)
+  const picked = shuffle(pool);
   getActiveInputs().forEach((inp, i) => { if (i < picked.length) inp.value = picked[i]; });
   renderMembers();
 }
@@ -3102,6 +3205,39 @@ for (let i = 0; i < 10; i++) {
   ag.appendChild(d);
 }
 
+// 팀별 승률 측정 입력칸: 블루 5줄 · 레드 5줄 (라인마다 이름)
+const MS_LANE_KO = { TOP: '탑', JGL: '정글', MID: '미드', BOT: '원딜', SPT: '서폿' };
+let _measureMode = 'rift';
+(function buildMeasureGrid() {
+  const g = document.getElementById('msGrid');
+  g.innerHTML = ['blue', 'red'].map(t => `<div class="ms-team ${t}"><div class="ms-th">${t === 'blue' ? '🔵 BLUE SIDE' : '🔴 RED SIDE'}</div>
+    ${ROLES.map((r, i) => `<div class="ms-row"><span class="ms-ln" data-i="${i + 1}"><img src="${ICONS[r]}" alt=""><b>${MS_LANE_KO[r]}</b></span><input type="text" placeholder="이름" maxlength="16" data-team="${t}" data-role="${r}"></div>`).join('')}</div>`).join('');
+})();
+function setMeasureMode(m) {
+  _measureMode = m;
+  document.querySelectorAll('#msMode button').forEach(b => b.classList.toggle('active', b.dataset.m === m));
+  document.getElementById('msGrid').classList.toggle('aram', m === 'aram');
+  document.getElementById('msModeNote').textContent = m === 'aram' ? '칼바람 전적 기준으로 예측해요 (라인 없음)' : '협곡 전적 · 라인 점수 기준으로 예측해요';
+}
+function doMeasure() {
+  const err = document.getElementById('errMeasure');
+  const get = t => [...document.querySelectorAll(`#msGrid input[data-team="${t}"]`)].map(inp => ({ role: inp.dataset.role, name: inp.value.trim() }));
+  const blue = get('blue'), red = get('red'), all = [...blue, ...red];
+  if (all.some(x => !x.name)) { err.textContent = '블루 5명 · 레드 5명 이름을 모두 입력해 주세요!'; return; }
+  const seen = {}, dup = all.find(x => { const k = normName(x.name); if (seen[k]) return true; seen[k] = 1; return false; });
+  if (dup) { err.textContent = `${dup.name}님이 두 번 들어가 있어요!`; return; }
+  err.textContent = '';
+  const aram = _measureMode === 'aram';
+  const t1 = blue.map(x => aram ? { name: x.name } : { ...x }), t2 = red.map(x => aram ? { name: x.name } : { ...x });
+  _assignMode = _measureMode;
+  if (typeof logVisit === 'function') logVisit('팀 배정 실행', '승률 측정 · ' + (aram ? '칼바람' : '협곡'));
+  prepareSplash();
+  document.querySelectorAll('.modal-section').forEach(x => x.classList.remove('active'));
+  document.getElementById('animModal').classList.add('open');
+  layerOpen('assign', () => closeModal(true));
+  showResultInModal(t1, t2, null, false);
+}
+
 // 탭 초기화 — 해당 패널의 입력칸 + 결과 모두 리셋
 function resetTab(id) {
   const panel = document.getElementById('panel-' + id);
@@ -3121,8 +3257,9 @@ function resetTab(id) {
 // 멤버 리스트 전체 비우기
 function clearMemberList() {
   if (members.length === 0) return;
-  if (!confirm('멤버 리스트를 전체 삭제할까요?\n(기본 멤버는 "기본 멤버 복원"으로 되돌릴 수 있어요)')) return;
-  DEFAULT_MEMBERS.forEach(n => { if (!removedDefaults.includes(n)) removedDefaults.push(n); });
+  if (!confirm('멤버 리스트를 전체 삭제할까요?\n("멤버 리스트 복원"으로 되돌릴 수 있어요)')) return;
+  members.forEach(n => { if (!removedDefaults.includes(n)) removedDefaults.push(n); });
+  extraMembers = []; memberChecked.clear();
   members = [];
   saveMembers();
   renderMembers();
@@ -3131,21 +3268,21 @@ function clearMemberList() {
 // 기본 멤버 복원: 리스트를 비우지 않아도 언제든 사용 가능
 //  - 지운 기본 멤버를 다시 채우고, 기본 멤버는 원래 순서로 정렬 (직접 추가한 멤버는 그 뒤에 그대로 유지)
 function restoreDefaultMembers() {
-  const before = members.slice();
-  const missing = DEFAULT_MEMBERS.filter(n => !members.includes(n));
-  const custom = members.filter(n => !DEFAULT_MEMBERS.includes(n));
+  const before = members.length;
   removedDefaults = [];
-  members = [...DEFAULT_MEMBERS, ...custom];
-  saveMembers();
   renderMembers();
-  const msg = missing.length ? `✓ ${missing.length}명 복원했어요`
-            : (JSON.stringify(before) !== JSON.stringify(members) ? '✓ 기본 순서로 정리했어요' : '이미 모두 들어 있어요');
+  const n = members.length - before;
   const btn = document.querySelector('.btn-restore');
   if (btn) {
-    btn.textContent = msg;
+    btn.textContent = n > 0 ? `✓ ${n}명 복원했어요` : '이미 모두 들어 있어요';
     clearTimeout(btn._t);
-    btn._t = setTimeout(() => { btn.textContent = '기본 멤버 복원'; }, 1800);
+    btn._t = setTimeout(() => { btn.textContent = '멤버 리스트 복원'; }, 1800);
   }
+}
+function toggleAllMemberChecks() {
+  if (members.length && memberChecked.size === members.length) memberChecked.clear();
+  else members.forEach(n => memberChecked.add(n));
+  renderMembers();
 }
 
 // ── 상단 메뉴 전환 ──
@@ -3931,7 +4068,7 @@ function showResultInModal(t1, t2, rerollFn, showScore) {
     m.pid = (team === 'blue' ? 0 : 5) + i;
     home[m.pid] = { team, idx: i };
   }));
-  _lastResult = { t1, t2, showScore, splash, home,
+  _lastResult = { t1, t2, showScore, splash, home, measure: !rerollFn,
                   orig: { t1: t1.map(m => ({ ...m })), t2: t2.map(m => ({ ...m })) } };   // 원복용 처음 배정
   // 복사 버튼 초기화
   document.getElementById('btnCopyTxt').innerHTML = '<span class="btn-copy-icon">📋</span> 텍스트 복사';
@@ -3941,11 +4078,13 @@ function showResultInModal(t1, t2, rerollFn, showScore) {
   // 애니 영역 숨기고 결과 영역 표시
   document.getElementById('animSections').style.display = 'none';
   document.getElementById('animSkipBtn').style.display  = 'none';
-  document.getElementById('animModalTitle').textContent = '▸ 팀 배정 완료';
+  document.getElementById('animModalTitle').textContent = rerollFn ? '▸ 팀 배정 완료' : '▸ 승률 측정 결과';
 
   document.getElementById('modalTeamsRow').classList.remove('no-anim');
   renderResultCards();
 
+  document.getElementById('btnModalReroll').style.display = rerollFn ? '' : 'none';   // 승률 측정은 '다시 배정' 없음
+  document.querySelector('.modal-action-row').classList.toggle('single', !rerollFn);
   document.getElementById('btnModalReroll').onclick = () => {
     const seen = _randSeen;              // 다시 배정은 같은 창 안이라 '나온 모션' 기록을 이어가요
     closeModal(true);
@@ -3973,6 +4112,11 @@ function renderResultCards() {
   row.innerHTML = '';
   row.appendChild(makeBoard(t1, t2, showScore));
   if (typeof renderPrediction === 'function') renderPrediction();
+  if (_lastResult.measure) {                                // 승률 측정: 결과에서 바꾼 자리를 입력칸에도 반영
+    const ins = t => [...document.querySelectorAll(`#msGrid input[data-team="${t}"]`)];
+    ins('blue').forEach((inp, i) => { if (t1[i]) inp.value = t1[i].name; });
+    ins('red').forEach((inp, i) => { if (t2[i]) inp.value = t2[i].name; });
+  }
 }
 
 // ── 결과 화면: 이름을 끌어서 다른 사람과 교체 ──
@@ -4812,6 +4956,7 @@ const MULTI = { 2: '더블킬', 3: '트리플킬', 4: '쿼드라킬', 5: '펜타
 
 // ── 화면 그리기 ──
 function renderRecord() {
+  if (typeof renderMembers === 'function') renderMembers();
   loadAugments();
   renderShareInfo();
   renderStreaks();
