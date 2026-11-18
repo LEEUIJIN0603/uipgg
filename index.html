@@ -1037,6 +1037,20 @@
                  background: linear-gradient(90deg, #ffd27a, #ff6a1f 42%, #6fa4ff 58%, #d6e6ff);
                  -webkit-background-clip: text; background-clip: text; color: transparent; }
     .hot-sub { font-size: .7rem; color: var(--muted); }
+    .hot-rule { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 4px 0 12px; padding: 8px 12px; border-radius: 10px; background: linear-gradient(90deg, rgba(240,180,60,.14), rgba(240,180,60,.03)); border: 1px solid rgba(240,180,60,.45); }
+    .hot-rule b { color: #ffd77a; font-size: .8rem; } .hot-rule span { color: #e8d8b0; font-size: .74rem; }
+    .tc-exp { display: inline-block; margin-top: 5px; font-size: .64rem; color: #ffe0a0; background: rgba(0,0,0,.45); border: 1px solid rgba(240,180,60,.5); border-radius: 999px; padding: 2px 8px; }
+    .tc-exp.soon { color: #fff; background: rgba(220,90,40,.75); border-color: #ff9f6a; font-weight: 700; }
+    .hot-minis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .hot-mini { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,.02); }
+    .hot-mini.win { border-color: rgba(255,140,60,.35); } .hot-mini.lose { border-color: rgba(90,160,255,.35); }
+    .hm-h { font-size: .74rem; font-weight: 700; margin-right: 4px; } .hot-mini.win .hm-h { color: #ffb36b; } .hot-mini.lose .hm-h { color: #8fc7ff; }
+    .hm-chip { font-family: inherit; font-size: .74rem; color: var(--text-bright); background: var(--panel2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; cursor: pointer; }
+    .hm-chip:hover { border-color: var(--gold); } .hm-chip i { font-style: normal; font-size: .62rem; color: #ff9f6a; margin-left: 5px; font-weight: 700; }
+    .hm-none { font-size: .72rem; color: var(--muted); }
+    .hot-expired { margin-top: 10px; font-size: .74rem; color: #b9b2c8; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+    .hot-expired b { color: #d8d0e8; } .hot-expired s { color: #ffb36b; } .hot-expired small { color: var(--muted); font-size: .66rem; }
+    @media (max-width: 760px) { .hot-minis { grid-template-columns: 1fr; } }
     .hot-row { display: flex; gap: 14px; padding: 10px 4px 16px; align-items: stretch; }
     /* 카드가 적으면 가로로 넓은 카드(가로 일러스트), 많으면 세로 카드 */
     .hot-row.c2 .tcard { height: 300px; } .hot-row.c3 .tcard { height: 290px; } .hot-row.c4 .tcard { height: 280px; }
@@ -1129,6 +1143,8 @@
       .hot-row .tc-num, .hot-row.wide .tc-num { top: 50%; right: 16px; transform: translateY(-50%); }
       .hot-row .tc-num b, .hot-row.wide .tc-num b { font-size: 2.9rem; }
       .hot-row .tc-num span, .hot-row.wide .tc-num span { font-size: .62rem; }
+      .hot-row .tcard.has-exp { height: 156px !important; }
+      .tc-exp { margin-top: 3px; } .tc-exp-l { display: none; }
       .hot-row .tc-body, .hot-row.wide .tc-body { top: 30px; bottom: auto; right: 84px; padding: 0 12px; }
       .hot-row .tc-tag, .hot-row.wide .tc-tag { display: none; }
       .hot-row .tc-name, .hot-row.wide .tc-name { font-size: 1.02rem; }
@@ -1306,6 +1322,13 @@
     .hc-v { margin-left: auto; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.6rem; }
     .hc.win .hc-v { color: #ffb45a; } .hc.lose .hc-v { color: #9db8ec; }
     .hc-none { font-size: .74rem; color: var(--muted); padding: 10px; }
+    .hc-rule { font-size: .7rem; color: #e8cf8c; background: rgba(240,180,60,.08); border: 1px solid rgba(240,180,60,.35); border-radius: 8px; padding: 7px 10px; margin-bottom: 8px; line-height: 1.5; }
+    .hc-rule b { color: #ffd77a; } .hc-rule .soon { color: #ff9f6a; font-weight: 700; } .hc-rule .gone { color: #b9b2c8; }
+    .hc-exp { display: block; font-style: normal; font-size: .62rem; color: #c9b27a; margin-top: 1px; } .hc-exp.soon { color: #ff9f6a; font-weight: 700; }
+    .hcl .hc-n { display: flex; flex-direction: column; }
+    .hcl.two { gap: 8px; padding: 6px 0; } .hc-two-h { flex-shrink: 0; font-size: .66rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; opacity: .85; }
+    .hc-list.win .hc-two-h { color: #ffb36b; } .hc-list.lose .hc-two-h { color: #8fc7ff; }
+    .hc-two { font-size: .76rem; color: var(--text); line-height: 1.5; min-width: 0; }
     .hc-list { flex-direction: column; align-items: stretch; gap: 0; padding: 8px 12px 6px; }
     .hc-list .hc-head { margin-bottom: 4px; font-weight: 700; }
     .hcl { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-top: 1px solid rgba(255,255,255,.06); }
@@ -5067,6 +5090,16 @@ function showStreakHist(i) {
 }
 function closeStreakHist(fromBack) { document.getElementById('histPop').classList.remove('open'); if (!fromBack) layerClose('hist'); }          // '2026.11.03'
 // 연승/연패는 '내전 날짜' 기준: 그날 승이 많으면 승, 패가 많으면 패, 같으면 무승부(연승·연패 계산에서 빼요)
+// 연승 유효기간: 그 소환사의 마지막 내전일로부터 30일이 지나면 연승은 무효 (연패는 그대로)
+const WIN_EXPIRE_DAYS = 30;
+const dayMs = d => new Date(d.replace(/\./g, '-') + 'T00:00:00').getTime();
+function winExpiry(lastDay) {                                     // → { until: 'M/D', left: 남은 일수 (0 = 오늘까지), expired }
+  const today = dayMs(fmtDate(Date.now()).slice(0, 10));
+  const untilMs = dayMs(lastDay) + WIN_EXPIRE_DAYS * 86400000;
+  const left = Math.round((untilMs - today) / 86400000);
+  const u = new Date(untilMs);
+  return { until: `${u.getMonth() + 1}/${u.getDate()}`, left, expired: left < 0 };
+}
 function calcStreaks() {
   const P = {};
   modeMatches().sort((a, b) => (a.date || 0) - (b.date || 0)).forEach(m => {
@@ -5097,6 +5130,11 @@ function calcStreaks() {
     const streakGames = streakDays.flatMap(d => d.games);
     // 멘트는 연승이면 가장 최근에 이긴 판, 연패면 가장 최근에 진 판 기록으로
     const last = streakGames.slice().reverse().find(g => g.p.win === (kind === 'win')) || lastGame;
+    if (kind === 'win') {
+      const ex = winExpiry(days[days.length - 1].day);
+      if (ex.expired) return { ...s, days, last, n: 0, kind: 'none', streakGames: [], expiredWin: { n: streakDays.length, lastDay: days[days.length - 1].day, until: ex.until, ago: -ex.left } };
+      return { ...s, days, last, n: streakDays.length, kind, streakGames, expiry: ex };
+    }
     return { ...s, days, last, n: streakDays.length, kind, streakGames };
   });
 }
@@ -5142,7 +5180,11 @@ function renderStreaks() {
     `<i style="left:${(i * 37 + 7) % 100}%;animation-delay:${((i * 0.53) % 3).toFixed(2)}s;--dx:${(i % 2 ? 1 : -1) * (5 + (i * 7) % 14)}px"></i>`).join('') + '</div>';
   const pick = kind => all.filter(s => s.kind === kind && s.n >= 2)
     .sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));          // 해당하는 사람 전부
-  const wins = pick('win'), loses = pick('lose');
+  // 2연승 · 2연패는 자주 생겨서 큰 카드 대신 아래 작은 줄로 (큰 카드는 3연승 · 3연패부터)
+  const wins2 = pick('win').filter(s => s.n === 2), loses2 = pick('lose').filter(s => s.n === 2);
+  const wins = pick('win').filter(s => s.n >= 3), loses = pick('lose').filter(s => s.n >= 3);
+  const expired = all.filter(s => s.expiredWin && s.expiredWin.n >= 2 && s.expiredWin.ago <= 30)   // 최근 30일 안에 사라진 연승
+    .sort((a, b) => a.expiredWin.ago - b.expiredWin.ago);
   const isWide = Math.max(1, wins.length) + Math.max(1, loses.length) <= 3;
   let delay = 0;
   _streakCache = [];
@@ -5150,7 +5192,7 @@ function renderStreaks() {
     const kind = s.kind, tag = pickStreakTag(s, usedTag), line = pickStreakLine(s, usedLine);
     const d = (delay++ * 0.12).toFixed(2);
     const lv = Math.min(5, s.n);                         // 연승·연패가 길수록 단계별 강조 (2 ~ 5+)
-    return `<div class="tcard ${kind} lv${lv}" style="animation-delay:${d}s">
+    return `<div class="tcard ${kind} lv${lv}${kind === 'win' && s.expiry ? ' has-exp' : ''}" style="animation-delay:${d}s">
       <div class="tc-spin"></div>
       <div class="tc-in">
         <div class="tc-art" style="background-image:url('${isWide ? splashOf(s.last.p.champ) : loadingArtOf(s.last.p.champ)}')"></div>
@@ -5162,6 +5204,7 @@ function renderStreaks() {
           <span class="tc-tag">${tag}</span>
           <div class="tc-name" title="${escapeHtml(s.name)}#${escapeHtml(s.tag)}">${escapeHtml(s.name)}</div>
           <div class="tc-champ">최근 · ${escapeHtml(champInfo(s.last.p.champ).name)}</div>
+          ${kind === 'win' && s.expiry ? `<div class="tc-exp${s.expiry.left <= 7 ? ' soon' : ''}" title="마지막 내전일로부터 ${WIN_EXPIRE_DAYS}일 동안 내전에 안 나오면 연승이 사라져요">⏳ ${s.expiry.left ? 'D-' + s.expiry.left : '오늘까지'} · ${s.expiry.until}까지 참석 안 하면<span class="tc-exp-l"> 연승</span> 소멸</div>` : ''}
           <div class="tc-quote">${escapeHtml(line)}</div>
           <div class="stk-dots">${s.days.slice(-5).map(d => `<i class="${d.res}" title="${d.day.slice(5)} · ${d.w}승 ${d.l}패">${d.res === 'w' ? '승' : d.res === 'l' ? '패' : '무'}</i>`).join('')}
             <button class="stk-more" onclick="showStreakHist(${_streakCache.push(s) - 1})" title="지금까지 내전 기록 전체 보기">${s.days.length > 5 ? `+${s.days.length - 5} ` : ''}더보기 ›</button></div>
@@ -5170,11 +5213,19 @@ function renderStreaks() {
     </div>`;
   };
   const ghost = kind => `<div class="tcard ghost" style="animation-delay:${(delay++ * 0.12).toFixed(2)}s"><div>
-      <span class="gi">${kind === 'win' ? '🔥' : '🧊'}</span>${kind === 'win' ? '2연승 이상<br>아직 없음<br>다음 내전 주인공은?' : '2연패 이상<br>아무도 없음<br>다들 선방 중 👏'}</div></div>`;
+      <span class="gi">${kind === 'win' ? '🔥' : '🧊'}</span>${kind === 'win' ? '3연승 이상<br>아직 없음<br>다음 내전 주인공은?' : '3연패 이상<br>아무도 없음<br>다들 선방 중 👏'}</div></div>`;
+  // 2연승 · 2연패: 이름 칩 한 줄 (누르면 기록 보기)
+  const mini = (list, kind) => `<div class="hot-mini ${kind}"><span class="hm-h">${kind === 'win' ? '🔥 2연승' : '🧊 2연패'} <b>${list.length}</b></span>${list.length
+    ? list.map(x => `<button class="hm-chip" onclick="showStreakHist(${_streakCache.push(x) - 1})" title="${kind === 'win' && x.expiry ? `${x.expiry.until}까지 참석 안 하면 연승 소멸` : ''}">${escapeHtml(x.name)}${kind === 'win' && x.expiry && x.expiry.left <= 7 ? `<i>D-${x.expiry.left}</i>` : ''}</button>`).join('')
+    : '<span class="hm-none">없음</span>'}</div>`;
+  const minis = () => (wins2.length || loses2.length) ? `<div class="hot-minis">${mini(wins2, 'win')}${mini(loses2, 'lose')}</div>` : '';
+  const rule = `<div class="hot-rule"><b>⏳ 연승 유효기간 ${WIN_EXPIRE_DAYS}일</b><span>마지막 내전일로부터 ${WIN_EXPIRE_DAYS}일 동안 내전에 안 나오면 연승이 사라져요 (연패는 그대로)</span></div>`;
+  const expHtml = () => expired.length ? `<div class="hot-expired">💨 <b>최근 사라진 연승</b> ${expired.map(x => `<span>${escapeHtml(x.name)} <s>${x.expiredWin.n}연승</s> <small>${x.expiredWin.lastDay.slice(5).replace('.', '/')} 이후 ${WIN_EXPIRE_DAYS}일 불참</small></span>`).join('')}</div>` : '';
 
-  const head = `<div class="hot-head"><span class="hot-title">HOT &amp; COLD</span><span class="hot-sub">내전 날짜 기준 2일 이상 연승 · 연패 중인 소환사 (그날 승이 많으면 승, 같으면 무승부라 제외)</span></div>`;
+  const head = `<div class="hot-head"><span class="hot-title">HOT &amp; COLD</span><span class="hot-sub">내전 날짜 기준 연승 · 연패 중인 소환사 (그날 승이 많으면 승, 같으면 무승부라 제외)</span></div>` + rule;
   if (!modeMatches().length) { box.innerHTML = recLoading() ? '' : head + '<div class="hot-none">경기 기록이 올라오면 연승·연패 카드가 여기에 나와요</div>'; return; }
-  if (!wins.length && !loses.length) { box.innerHTML = head + '<div class="hot-none">아직 2연승·2연패 이상인 사람이 없어요. 다음 내전 주인공은 누구? 🔥🧊</div>'; return; }
+  if (!wins.length && !loses.length && !wins2.length && !loses2.length) { box.innerHTML = head + '<div class="hot-none">아직 2연승·2연패 이상인 사람이 없어요. 다음 내전 주인공은 누구? 🔥🧊</div>' + expHtml(); return; }
+  if (!wins.length && !loses.length) { box.innerHTML = head + minis() + expHtml(); return; }        // 3연승 · 3연패가 없으면 작은 줄만
   const count = Math.max(1, wins.length) + Math.max(1, loses.length);    // 빈 카드 포함 실제 카드 수
   const wide = count <= 3;                                                // 3장 이하면 넓은 카드
   if (count <= 6) {
@@ -5182,7 +5233,7 @@ function renderStreaks() {
       ${wins.length ? wins.map(card).join('') : ghost('win')}
       <div class="hot-vs"><span>VS</span></div>
       ${loses.length ? loses.map(card).join('') : ghost('lose')}
-    </div>`;
+    </div>` + minis() + expHtml();
   } else {
     // 많으면 연승 줄 / 연패 줄로 나눠서, 줄마다 칸을 꽉 채우게 (한 줄 최대 5장, 넘치면 다음 줄)
     const line = (list, kind) => {
@@ -5192,7 +5243,7 @@ function renderStreaks() {
       return `<div class="hot-line ${kind}${small ? ' small' : ''}" style="--cols:${cols}">
         <div class="hot-tag">${kind === 'win' ? `🔥 연승 중 · ${list.length}명` : `🧊 연패 중 · ${list.length}명`}</div>${list.map(card).join('')}</div>`;
     };
-    box.innerHTML = head + `<div class="hot-row split">${line(wins, 'win')}${line(loses, 'lose')}</div>`;
+    box.innerHTML = head + `<div class="hot-row split">${line(wins, 'win')}${line(loses, 'lose')}</div>` + minis() + expHtml();
   }
   // 숫자 카운트업
   box.querySelectorAll('.stk-count').forEach(el => {
@@ -6193,10 +6244,17 @@ function renderDashboard() {
   const hot = st.filter(s => s.kind === 'win' && s.n >= 2).sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
   const cold = st.filter(s => s.kind === 'lose' && s.n >= 2).sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
   // 2연승 · 2연패 이상인 사람 전부 (많은 순)
-  const hcRow = (list, kind) => list.length
-    ? `<div class="hc hc-list ${kind}"><div class="hc-t hc-head">${kind === 'win' ? '🔥 연승 중' : '🧊 연패 중'} · ${list.length}명</div>
-        ${list.map(s => `<div class="hcl lv${Math.min(5, s.n)}">${champIcon(s.last.m, s.last.p.champ)}<span class="hc-n">${escapeHtml(s.name)}</span><span class="hc-v">${s.n}<small>${kind === 'win' ? '연승' : '연패'}</small></span></div>`).join('')}</div>`
-    : `<div class="hc ${kind}"><div class="hc-none">${kind === 'win' ? '🔥 2연승 이상 없음' : '🧊 2연패 이상 없음'}</div></div>`;
+  // 3연승 · 3연패부터는 한 줄씩, 2연승 · 2연패는 이름만 한 줄로 모아서 (자주 생겨서)
+  const hcRow = (list, kind) => {
+    const big = list.filter(s => s.n >= 3), two = list.filter(s => s.n === 2);
+    if (!list.length) return `<div class="hc ${kind}"><div class="hc-none">${kind === 'win' ? '🔥 2연승 이상 없음' : '🧊 2연패 이상 없음'}</div></div>`;
+    return `<div class="hc hc-list ${kind}"><div class="hc-t hc-head">${kind === 'win' ? '🔥 연승 중' : '🧊 연패 중'} · ${list.length}명</div>
+        ${big.map(s => `<div class="hcl lv${Math.min(5, s.n)}">${champIcon(s.last.m, s.last.p.champ)}<span class="hc-n">${escapeHtml(s.name)}${kind === 'win' && s.expiry ? `<em class="hc-exp${s.expiry.left <= 7 ? ' soon' : ''}">⏳ ${s.expiry.until}까지</em>` : ''}</span><span class="hc-v">${s.n}<small>${kind === 'win' ? '연승' : '연패'}</small></span></div>`).join('')}
+        ${two.length ? `<div class="hcl two"><span class="hc-two-h">2${kind === 'win' ? '연승' : '연패'}</span><span class="hc-two">${two.map(s => escapeHtml(s.name)).join(' · ')}</span></div>` : ''}</div>`;
+  };
+  const expiredSoon = st.filter(s => s.kind === 'win' && s.n >= 2 && s.expiry && s.expiry.left <= 7);
+  const expiredNow = st.filter(s => s.expiredWin && s.expiredWin.n >= 2 && s.expiredWin.ago <= 30);
+  const expNote = `<div class="hc-rule">⏳ 연승은 마지막 내전일로부터 <b>${WIN_EXPIRE_DAYS}일</b> 동안 불참하면 사라져요${expiredSoon.length ? ` · <span class="soon">곧 소멸: ${expiredSoon.map(s => `${escapeHtml(s.name)}(${s.expiry.left ? 'D-' + s.expiry.left : '오늘까지'})`).join(', ')}</span>` : ''}${expiredNow.length ? ` · <span class="gone">💨 사라진 연승: ${expiredNow.map(s => `${escapeHtml(s.name)} ${s.expiredWin.n}연승`).join(', ')}</span>` : ''}</div>`;
   // 최근 내전 MVP: ① 그날 승 수 → ② 그날 MVP 횟수 → ③ 그날 경기별 활약 점수 합 (같은 팀이라 승 수가 같아도 활약으로 갈려요)
   const dayWin = {};
   lastMs.forEach(m => {
@@ -6213,7 +6271,7 @@ function renderDashboard() {
     <div class="db-box"><div class="db-h"><b>🏆 종합 TOP 3</b><span>개인 순위 종합 점수 기준 · ${RANK_MIN}판 이상</span></div>
       <div class="podium">${pdCard(rk[1], 2)}${pdCard(rk[0], 1)}${pdCard(rk[2], 3)}</div></div>
     <div class="db-box"><div class="db-h"><b>🌡 지금 분위기</b><span>내전 날짜 기준</span></div>
-      ${hcRow(hot, 'win')}${hcRow(cold, 'lose')}
+      ${expNote}${hcRow(hot, 'win')}${hcRow(cold, 'lose')}
       ${dayKing ? `<div class="hc" style="background:rgba(200,155,60,.08);border:1px solid rgba(200,155,60,.3)">${champIcon(lastMs[lastMs.length - 1], dayKing.p.champ)}<div><div class="hc-t" title="그날 승 수 → MVP 횟수 → 활약 점수(KDA·딜 비중·킬관여·시야) 순으로 비교">👑 최근 내전(${lastDay.slice(5)}) MVP</div><div class="hc-n">${escapeHtml(dayKing.p.name)}</div><div class="hc-t">${dayKing.w}승 ${dayKing.g - dayKing.w}패 · MVP ${dayKing.mvp}회 · ${dayKing.k}/${dayKing.d}/${dayKing.a}</div></div><div class="hc-v" style="color:var(--gold2)">${dayKing.w}승</div></div>` : ''}
     </div>
   </div>`;
