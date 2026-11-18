@@ -1328,7 +1328,9 @@
     .hc-rule .soon { font-weight: 700; } .hc-rule .gone { color: #e89a9a; }
     .hc-exp { display: block; font-style: normal; font-size: .62rem; color: #c9b27a; margin-top: 1px; } .hc-exp.soon { color: #ff9f6a; font-weight: 700; }
     .hcl .hc-n { display: flex; flex-direction: column; }
-    .hcl.two { gap: 6px; padding: 7px 0 4px; flex-wrap: wrap; } .hc-two-h { flex-shrink: 0; font-size: .66rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; opacity: .85; }
+    .hcl.two { gap: 10px; margin: 2px -8px 0; padding: 7px 8px; border-radius: 8px; border-top: none; }
+    .hc.win .hcl.two { background: linear-gradient(90deg, rgba(255,120,40,.09), transparent 75%); } .hc.lose .hcl.two { background: linear-gradient(90deg, rgba(90,130,210,.09), transparent 75%); }
+    .hcl + .hcl.two { margin-top: 4px; } .hc-two-h { flex-shrink: 0; font-size: .66rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; border: 1px solid currentColor; opacity: .85; }
     .hc-list.win .hc-two-h { color: #ffb36b; } .hc-list.lose .hc-two-h { color: #8fc7ff; }
     .hc-two { flex: 1 1 100%; min-width: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 8px; }
     .hc2 { display: flex; align-items: center; gap: 5px; min-width: 0; }
@@ -6255,7 +6257,7 @@ function renderDashboard() {
     if (!list.length) return `<div class="hc ${kind}"><div class="hc-none">${kind === 'win' ? '🔥 2연승 이상 없음' : '🧊 2연패 이상 없음'}</div></div>`;
     return `<div class="hc hc-list ${kind}"><div class="hc-t hc-head">${kind === 'win' ? '🔥 연승 중' : '🧊 연패 중'} · ${list.length}명</div>
         ${big.map(s => `<div class="hcl lv${Math.min(5, s.n)}">${champIcon(s.last.m, s.last.p.champ)}<span class="hc-n">${escapeHtml(s.name)}${kind === 'win' && s.expiry ? `<em class="hc-exp${s.expiry.left <= 7 ? ' soon' : ''}">⏳ ${s.expiry.until}까지</em>` : ''}</span><span class="hc-v">${s.n}<small>${kind === 'win' ? '연승' : '연패'}</small></span></div>`).join('')}
-        ${two.length ? `<div class="hcl two"><span class="hc-two-h">2${kind === 'win' ? '연승' : '연패'}</span><div class="hc-two">${two.map(s => `<span class="hc2">${champIcon(s.last.m, s.last.p.champ)}<b>${escapeHtml(s.name)}</b></span>`).join('')}</div></div>` : ''}</div>`;
+        ${two.length ? `<div class="hcl two"><div class="hc-two">${two.map(s => `<span class="hc2">${champIcon(s.last.m, s.last.p.champ)}<b>${escapeHtml(s.name)}</b></span>`).join('')}</div><span class="hc-v">2<small>${kind === 'win' ? '연승' : '연패'}</small></span></div>` : ''}</div>`;
   };
   const expiredSoon = st.filter(s => s.kind === 'win' && s.n >= 2 && s.expiry && s.expiry.left <= 7);
   const expiredNow = st.filter(s => s.expiredWin && s.expiredWin.n >= 2 && s.expiredWin.ago <= 30);
