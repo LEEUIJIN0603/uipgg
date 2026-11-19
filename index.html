@@ -5941,7 +5941,8 @@ const HALL_RECORDS = [
   { k: 'k',    ico: '⚔️', name: '최다 킬',       v: p => p.k,   f: v => v + '킬' },
   { k: 'a',    ico: '🤝', name: '최다 어시스트', v: p => p.a,   f: v => v + '어시' },
   { k: 'dmg',  ico: '💥', name: '최다 딜량',     v: p => p.dmg, f: v => fmtNum(v) },
-  { k: 'kda',  ico: '🎯', name: '최고 KDA',      v: p => p.d ? (p.k + p.a) / p.d : (p.k + p.a) ? (p.k + p.a) * 1.2 : 0, f: (v, p) => p && !p.d ? 'Perfect' : v.toFixed(2), sub: p => `${p.k}/${p.d}/${p.a}` },
+  // 노데스(Perfect)는 어떤 KDA보다 위 · Perfect끼리는 킬+어시가 많은 쪽이 위 (킬+어시 0이면 기록 아님)
+  { k: 'kda',  ico: '🎯', name: '최고 KDA',      v: p => p.d ? (p.k + p.a) / p.d : (p.k + p.a) ? 1000 + p.k + p.a : 0, f: v => v >= 1000 ? 'Perfect' : v.toFixed(2), sub: p => `${p.k}/${p.d}/${p.a}` },
   { k: 'gold', ico: '💰', name: '최다 골드',     v: p => p.gold, f: v => fmtNum(v) },
   { k: 'cs',   ico: '🌾', name: '최다 CS',       v: p => p.cs,  f: v => v + ' CS', rift: true },
   { k: 'vis',  ico: '👁️', name: '최고 시야점수', v: p => p.vis, f: v => v + '점', rift: true },
