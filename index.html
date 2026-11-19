@@ -2475,6 +2475,26 @@
       .rk-table tr.rk-out { opacity: .7; } .rk-table tr.rk-out td { opacity: 1; }
     }
 
+    /* ══ 명예회원: 빛 · 반짝임 ══ */
+    .hof > .hof-glow { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .hof.gold > *:not(.hof-glow) { position: relative; z-index: 1; }
+    .hof-rays { position: absolute; left: 50%; top: -55%; width: 170%; aspect-ratio: 1; transform: translateX(-50%); opacity: .2;
+                background: repeating-conic-gradient(from 0deg, rgba(255,215,120,.6) 0deg 4deg, transparent 4deg 15deg); animation: hxRot 70s linear infinite;
+                -webkit-mask: radial-gradient(circle, #000 0%, transparent 55%); mask: radial-gradient(circle, #000 0%, transparent 55%); }
+    .hof-tw { position: absolute; width: 10px; height: 10px; opacity: 0; animation: hofTw 3.5s ease-in-out infinite;
+              background: radial-gradient(circle, #fff 0 1px, transparent 2px), linear-gradient(90deg, transparent 45%, rgba(255,240,190,.9) 50%, transparent 55%), linear-gradient(0deg, transparent 45%, rgba(255,240,190,.9) 50%, transparent 55%); filter: drop-shadow(0 0 4px #ffd36a); }
+    @keyframes hofTw { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1.2) rotate(45deg); } }
+    .hof-shine { position: absolute; inset: 0; pointer-events: none; z-index: 2;
+                 background: linear-gradient(115deg, transparent 35%, rgba(255,248,220,.75) 48%, rgba(255,230,160,.25) 52%, transparent 62%) -150% 0 / 250% 100% no-repeat;
+                 -webkit-mask: url(img/frame-gold.webp) center / 100% 100% no-repeat; mask: url(img/frame-gold.webp) center / 100% 100% no-repeat;
+                 mix-blend-mode: screen; animation: hofShine 5s ease-in-out infinite; }
+    .hof-fx:nth-child(2) .hof-shine { animation-delay: 1.6s; } .hof-fx:nth-child(3) .hof-shine { animation-delay: 3.2s; }
+    @keyframes hofShine { 0%, 55% { background-position: 150% 0; } 100% { background-position: -150% 0; } }
+    .hof.gold .hof-tt h3 { animation: hofTitle 4s ease-in-out infinite; }
+    @keyframes hofTitle { 0%, 100% { filter: drop-shadow(0 2px 0 #1e1203) drop-shadow(0 0 18px rgba(255,190,90,.25)); } 50% { filter: drop-shadow(0 2px 0 #1e1203) drop-shadow(0 0 30px rgba(255,205,110,.6)); } }
+    .hof.gold .hof-f { animation: hofFrameGlow 4s ease-in-out infinite; }
+    @keyframes hofFrameGlow { 0%, 100% { filter: drop-shadow(0 14px 20px rgba(0,0,0,.6)) drop-shadow(0 0 6px rgba(255,200,90,.15)); } 50% { filter: drop-shadow(0 14px 20px rgba(0,0,0,.6)) drop-shadow(0 0 18px rgba(255,205,110,.45)); } }
+    @media (prefers-reduced-motion: reduce) { .hof-rays, .hof-tw, .hof-shine, .hof.gold .hof-tt h3, .hof.gold .hof-f, .hof .hx-spark i { animation: none !important; } }
     /* ══ 불명예: 거미줄 · 거미 ══ */
     .hs > .hs-webs, .hof > .hs-webs { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
     .hof.iron > *:not(.hs-webs) { position: relative; z-index: 1; }
@@ -6096,14 +6116,16 @@ function memberBoard(kind) {
   const frameSrc = win ? 'img/frame-gold.webp' : 'img/frame-iron.webp';
   const frame = (r, i) => {
     const gen = `제 ${ROMAN[i] || (i + 1)} 대`;
-    if (!r) return `<div class="hof-fx empty"><div class="hof-fr"><div class="hof-art"><span><b>?</b>${win ? '주인을 기다리는 자리' : '아직 아무도… 다행히도'}</span></div><img class="hof-f" src="${frameSrc}" alt=""></div>
+    if (!r) return `<div class="hof-fx empty"><div class="hof-fr"><div class="hof-art"><span><b>?</b>${win ? '주인을 기다리는 자리' : '아직 아무도… 다행히도'}</span></div><img class="hof-f" src="${frameSrc}" alt="">${win ? '<i class="hof-shine"></i>' : ''}</div>
       <div class="hof-lb"><div class="g">${gen}</div><b>공 석</b><small>${win ? `다음 ${M}연승의 주인공은?` : `${M}연패의 주인공이 나오지 않기를`}</small></div></div>`;
     const ci = r.champ ? champInfo(r.champ) : null;
-    return `<div class="hof-fx"><div class="hof-fr"><div class="hof-art">${ci ? `<img src="${splashOf(r.champ)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</div><img class="hof-f" src="${frameSrc}" alt=""></div>
+    return `<div class="hof-fx"><div class="hof-fr"><div class="hof-art">${ci ? `<img src="${splashOf(r.champ)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</div><img class="hof-f" src="${frameSrc}" alt="">${win ? '<i class="hof-shine"></i>' : ''}</div>
       <div class="hof-lb"><div class="g">${gen}</div><b>${escapeHtml(r.name)}</b><small>${r.n}${unit} · ${d8(r.start)} – ${r.end.slice(5)}${ci ? ' · ' + escapeHtml(ci.name) : ''}${best[r.key] > r.n ? ` · 최고 ${best[r.key]}${unit}` : ''}</small></div></div>`;
   };
   const list = members.length ? members.map(frame).join('') : frame(null, 0);
-  return `<div class="hof ${win ? 'gold' : 'iron'}">${win ? '' : shameWebs([['88%', 110, 8, 1, .8]])}
+  const glow = '<div class="hof-glow" aria-hidden="true"><div class="hof-rays"></div><div class="hx-spark">' + Array.from({ length: 18 }, (_, i) => `<i style="left:${(i * 37 + 11) % 100}%;animation-delay:${((i * .61) % 4).toFixed(2)}s;animation-duration:${(4 + (i % 4)).toFixed(1)}s"></i>`).join('') + '</div>'
+    + Array.from({ length: 10 }, (_, i) => `<b class="hof-tw" style="left:${(i * 41 + 7) % 96}%;top:${(i * 23 + 9) % 88}%;animation-delay:${((i * .7) % 3.5).toFixed(2)}s"></b>`).join('') + '</div>';
+  return `<div class="hof ${win ? 'gold' : 'iron'}">${win ? glow : shameWebs([['88%', 110, 8, 1, .8]])}
     <div class="hof-tt"><div class="lat">${win ? 'MEMBRA · HONORARIA' : 'MEMBRA · INFAMIAE'}</div><h3>${win ? '명예회원' : '불명예회원'}</h3>
       <div class="orn"><i></i><b>${win ? '✦' : '✟'}</b><i></i></div>
 </div>
