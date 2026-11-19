@@ -2516,7 +2516,14 @@
     .hof.gold .hof-lb b { color: #fff1cc; } .hof.iron .hof-lb b { color: #e8dcdc; }
     .hof-lb small { font-size: .68rem; } .hof.gold .hof-lb small { color: #a8957a; } .hof.iron .hof-lb small { color: #8a7a7c; }
     .hof-fx.empty .hof-lb b { color: #7a6a52 !important; }
+    .hof-top { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; align-items: stretch; }
+    .hof-top .hof { margin: 0; }
+    .hof-top .hof-fx { width: calc((100% - 22px) / 2); }
+    .hof-top .hof-fx:only-child { width: 74%; }
+    .hof-top .hof-tt h3 { font-size: 2.2rem; letter-spacing: 14px; padding-left: 14px; }
+    @media (max-width: 1100px) { .hof-top { grid-template-columns: 1fr; } .hof-top .hof-fx { width: calc((100% - 44px) / 3); } .hof-top .hof-fx:only-child { width: 48%; } }
     @media (max-width: 760px) {
+      .hof-top .hof-fx, .hof-top .hof-fx:only-child { width: 100%; }
       .hof { padding: 26px 12px 22px; } .hof-fx { width: 100%; max-width: 420px; }
       .hof-tt h3 { font-size: 1.8rem; letter-spacing: 8px; padding-left: 8px; } .hof-tt .lat { letter-spacing: 5px; padding-left: 5px; font-size: .62rem; } .hof-tt .orn i { width: 56px; }
     }
@@ -2847,7 +2854,6 @@
 
 <!-- ▣ 명예의 전당 -->
 <div class="page-view" id="view-hall">
-  <div class="hx-pre">🚧 <b>실제 반영 전</b> · 관리자 링크에서만 보이는 미리보기예요 (명예의 전당 + 불명예의 전당). 일반 링크에는 아직 이 메뉴가 없어요.</div>
   <div id="hallBody"></div>
 </div><!-- /view-hall -->
 
@@ -6001,7 +6007,8 @@ function _renderHall(box) {
       ${moment('gold', '⚔️', '누적 킬왕', '지금까지 가장 많이 잡은 사람', killKing.map((x, i) => grow(i, x.m, x.p, `${escapeHtml(x.name)} <em>${x.k}킬</em>`, `${x.g}판 · 판당 ${(x.k / x.g).toFixed(1)}킬`)), '아직 기록이 없어요')}
       ${moment('gold', '💎', '와드 재벌', '제어 와드를 판당 가장 많이 산 사람 (3판 이상)', wardRich.map((x, i) => grow(i, x.m, x.p, `${escapeHtml(x.name)} <em>${(x.cw / x.g).toFixed(2)}개/판</em>`, `${x.g}판 동안 총 ${x.cw}개`)), '아직 기록이 없어요')}
     </div>`;
-  box.innerHTML = `<div class="hx-jump"><button onclick="document.getElementById('hxFame').scrollIntoView({behavior:'smooth'})">🏆 명예의 전당</button><button class="sh" onclick="document.getElementById('hxShame').scrollIntoView({behavior:'smooth'})">💀 불명예의 전당</button></div>
+  box.innerHTML = `<div class="hof-top">${memberBoard('w')}${memberBoard('l')}</div>
+  <div class="hx-jump"><button onclick="document.getElementById('hxFame').scrollIntoView({behavior:'smooth'})">🏆 명예의 전당</button><button class="sh" onclick="document.getElementById('hxShame').scrollIntoView({behavior:'smooth'})">💀 불명예의 전당</button></div>
   <div class="hx" id="hxFame">
     <div class="hx-rays"></div>${spark(24)}
     <div class="hx-hero">
@@ -6010,7 +6017,6 @@ function _renderHall(box) {
       <div class="hx-sub">깨지기 전까지 영원히 남는 ${MODE_NAME[recMode]} 내전의 전설들</div>
       <div class="hx-chips"><span>📜 기록 <b>${recs.length}</b></span><span>⚡ 총 경신 <b>${broken}</b>회</span><span>🔥 펜타킬 <b>${pentas.length}</b></span><span>🎮 ${ms.length}판 기준</span></div>
     </div>
-    ${memberBoard('w')}
     <div class="hx-sec"><span>✦ RECORD PLAQUES ✦</span><b>역대 한 판 최고 기록</b></div>
     <div class="hx-grid">${recs.map(plaque).join('')}</div>
     ${careerHtml}
@@ -6148,7 +6154,6 @@ function shameHtml(ms, retro) {
       <div class="hs-title">HALL OF SHAME</div>
       <div class="hs-sub">불명예의 전당 · 깨고 싶어도 아무도 안 깨는 기록들</div>
     </div>
-    ${memberBoard('l')}
     <div class="hs-sec"><span>✦ CURSED RECORDS ✦</span><b>한 판 최악 기록</b></div>
     <div class="hs-grid">${recs.map(plaque).join('')}</div>
     <div class="hs-sec"><span>✦ CAREER OF SHAME ✦</span><b>누적 흑역사</b></div>
