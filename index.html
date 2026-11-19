@@ -3041,7 +3041,7 @@
 
     <!-- 결과 섹션 (애니 완료 후 교체) -->
     <div class="modal-result-section" id="modalResultSection">
-      <div class="modal-hint">이름을 끌어 다른 이름 위에 놓으면 서로 자리가 바뀌어요 (라인은 그대로 · 바뀐 이름엔 🔄)</div>
+      <div class="modal-hint" id="modalHint">이름을 끌어 다른 이름 위에 놓으면 서로 자리가 바뀌어요 (라인은 그대로 · 바뀐 이름엔 🔄)</div>
       <div class="match-board" id="matchBoard">
         <div class="pred" id="predBox"></div>
         <div class="modal-teams-row" id="modalTeamsRow"></div>
@@ -4199,6 +4199,8 @@ function renderResultCards() {
   const row = document.getElementById('modalTeamsRow');
   row.innerHTML = '';
   row.appendChild(makeBoard(t1, t2, showScore));
+  const hint = document.getElementById('modalHint');
+  if (hint) hint.textContent = '이름을 끌어 다른 이름 위에 놓으면 서로 자리가 바뀌어요 (' + (t1[0] && t1[0].role ? '라인은 그대로 · ' : '') + '바뀐 이름엔 🔄)';
   if (typeof renderPrediction === 'function') renderPrediction();
   if (_lastResult.measure) {                                // 승률 측정: 결과에서 바꾼 자리를 입력칸에도 반영
     const ins = t => [...document.querySelectorAll(`#msGrid input[data-team="${t}"]`)];
@@ -4609,7 +4611,7 @@ function doAbility() {
   else if (players.some(p => isNaN(p.score)||p.score<1||p.score>10)) { err.textContent = '능력치는 1~10 사이의 숫자로 입력해 주세요! (소수점 가능)'; return; }
   err.textContent = '';
   _assignMode = 'aram';
-  const withRole = getOptIndex('optAbility') === 0;
+  const withRole = false;                                          // 증바람(칼바람)은 라인이 없어서 팀만 나눠요
   const { g1, g2 } = recMode2 ? recordSplit(players) : balancedSplit(players);
   let t1, t2;
   if (withRole) {
