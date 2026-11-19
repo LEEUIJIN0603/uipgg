@@ -2475,6 +2475,23 @@
       .rk-table tr.rk-out { opacity: .7; } .rk-table tr.rk-out td { opacity: 1; }
     }
 
+    /* ══ 불명예: 거미줄 · 거미 ══ */
+    .hs > .hs-webs, .hof > .hs-webs { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .hof.iron > *:not(.hs-webs) { position: relative; z-index: 1; }
+    .hs-webs .web { position: absolute; top: 0; color: rgba(220,210,215,.32); filter: drop-shadow(0 0 2px rgba(0,0,0,.6)); }
+    .hs-webs .web.tl { left: 0; } .hs-webs .web.tr { right: 0; transform: scaleX(-1); }
+    .hs-webs .web svg { display: block; animation: webSway 9s ease-in-out infinite alternate; transform-origin: 0 0; }
+    .hof .hs-webs .web svg { width: 96px; height: 96px; } .hof .hs-webs .web.tr svg { width: 80px; height: 80px; }
+    @keyframes webSway { from { transform: rotate(0deg) scale(1); } to { transform: rotate(1.5deg) scale(1.02); } }
+    .spd { position: absolute; top: 0; width: 0; height: var(--len); animation: spdDrop var(--dur) ease-in-out var(--dl) infinite; transform-origin: top; }
+    .spd-t { position: absolute; left: 0; top: 0; bottom: 18px; width: 1px; background: linear-gradient(180deg, rgba(230,220,225,.1), rgba(230,220,225,.6)); }
+    .spd-b { position: absolute; left: calc(-28px * var(--sc)); bottom: calc(-8px * var(--sc)); width: calc(56px * var(--sc)); height: calc(48px * var(--sc)); overflow: visible; animation: spdBob 2.4s ease-in-out infinite; filter: drop-shadow(0 0 5px rgba(255,60,80,.45)) drop-shadow(0 2px 3px rgba(0,0,0,.8)); }
+    .spd-legs { animation: spdLegs .6s ease-in-out infinite alternate; transform-origin: 0 2px; }
+    @keyframes spdDrop { 0%, 100% { height: calc(var(--len) * .25); } 45%, 60% { height: var(--len); } }
+    @keyframes spdBob { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+    @keyframes spdLegs { from { transform: scaleX(1); } to { transform: scaleX(.88); } }
+    @media (prefers-reduced-motion: reduce) { .spd, .spd-b, .spd-legs, .hs-webs .web svg { animation: none !important; } }
+    @media (max-width: 760px) { .hs-webs .web.tl svg { width: 100px; height: 100px; } .hs-webs .web.tr svg { width: 80px; height: 80px; } }
     /* ══ 명예회원 · 불명예회원 액자 ══ */
     .hof { position: relative; margin: 0 0 34px; padding: 34px 18px 30px; border-radius: 18px; text-align: center; overflow: hidden; }
     .hof.gold { background: radial-gradient(60% 45% at 50% 0%, rgba(255,205,110,.18), transparent 70%), radial-gradient(40% 50% at 50% 55%, rgba(255,220,150,.08), transparent 70%), linear-gradient(180deg, #1a1309, #100c0b 60%, #0c0b10); border: 1px solid rgba(224,176,80,.35); }
@@ -6086,13 +6103,37 @@ function memberBoard(kind) {
       <div class="hof-lb"><div class="g">${gen}</div><b>${escapeHtml(r.name)}</b><small>${r.n}${unit} · ${d8(r.start)} – ${r.end.slice(5)}${ci ? ' · ' + escapeHtml(ci.name) : ''}${best[r.key] > r.n ? ` · 최고 ${best[r.key]}${unit}` : ''}</small></div></div>`;
   };
   const list = members.length ? members.map(frame).join('') : frame(null, 0);
-  return `<div class="hof ${win ? 'gold' : 'iron'}">
+  return `<div class="hof ${win ? 'gold' : 'iron'}">${win ? '' : shameWebs([['88%', 110, 8, 1, .8]])}
     <div class="hof-tt"><div class="lat">${win ? 'MEMBRA · HONORARIA' : 'MEMBRA · INFAMIAE'}</div><h3>${win ? '명예회원' : '불명예회원'}</h3>
       <div class="orn"><i></i><b>${win ? '✦' : '✟'}</b><i></i></div>
 </div>
     <div class="hof-row">${list}</div></div>`;
 }
 
+
+// ── 불명예 장식: 모서리 거미줄 + 실을 타고 내려오는 거미 ──
+function cobwebSvg(size) {
+  const R = size, rays = 7, rings = 6, pts = [];
+  let d = '';
+  for (let i = 0; i < rays; i++) { const a = (Math.PI / 2) * i / (rays - 1); d += `M0 0L${(Math.cos(a) * R).toFixed(1)} ${(Math.sin(a) * R).toFixed(1)}`; }
+  for (let k = 1; k <= rings; k++) {
+    const r = R * k / (rings + .6);
+    for (let i = 0; i < rays - 1; i++) {
+      const a1 = (Math.PI / 2) * i / (rays - 1), a2 = (Math.PI / 2) * (i + 1) / (rays - 1), am = (a1 + a2) / 2, rm = r * .86;   // 살짝 처진 실
+      d += `M${(Math.cos(a1) * r).toFixed(1)} ${(Math.sin(a1) * r).toFixed(1)}Q${(Math.cos(am) * rm).toFixed(1)} ${(Math.sin(am) * rm).toFixed(1)} ${(Math.cos(a2) * r).toFixed(1)} ${(Math.sin(a2) * r).toFixed(1)}`;
+    }
+  }
+  return `<svg viewBox="0 0 ${R} ${R}" width="${R}" height="${R}"><path d="${d}" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round"/></svg>`;
+}
+const SPIDER_SVG = `<svg viewBox="-20 -16 40 34" class="spd-b"><g class="spd-legs" stroke="#5a4a50" stroke-width="1.7" fill="none" stroke-linecap="round">
+  <path d="M-3 0Q-10 -8 -17 -4"/><path d="M-3 2Q-11 -1 -18 3"/><path d="M-3 4Q-10 6 -16 11"/><path d="M-2 5Q-7 10 -10 16"/>
+  <path d="M3 0Q10 -8 17 -4"/><path d="M3 2Q11 -1 18 3"/><path d="M3 4Q10 6 16 11"/><path d="M2 5Q7 10 10 16"/></g>
+  <ellipse cx="0" cy="7" rx="6" ry="7.5" fill="#2e2226" stroke="#6a5a60" stroke-width=".8"/><ellipse cx="0" cy="-2" rx="4" ry="3.6" fill="#3a2c30" stroke="#6a5a60" stroke-width=".8"/>
+  <path d="M-2.6 8.5h5.2M-1.8 5.5h3.6M0 3v8" stroke="#c0283a" stroke-width="1.2"/><circle cx="-1.5" cy="-3" r=".9" fill="#ff3344"/><circle cx="1.5" cy="-3" r=".9" fill="#ff3344"/></svg>`;
+function shameWebs(spiders) {
+  const sp = spiders.map(([x, len, dur, delay, sc]) => `<div class="spd" style="left:${x};--len:${len}px;--dur:${dur}s;--dl:${delay}s;--sc:${sc}"><i class="spd-t"></i>${SPIDER_SVG}</div>`).join('');
+  return `<div class="hs-webs" aria-hidden="true"><div class="web tl">${cobwebSvg(150)}</div><div class="web tr">${cobwebSvg(120)}</div>${sp}</div>`;
+}
 let _darkMomentsHtml = '';
 // 기록 숫자 뒤 단위(데스·점·/분 등)는 작게
 const hallNum = v => String(v).replace(/^([−\-]?[\d.,:]+)\s*(.*)$/, (_, n, u) => u ? `${n}<span class="u">${u}</span>` : n);
@@ -6152,6 +6193,7 @@ function shameHtml(ms, retro) {
 `;
   return `<div class="hs" id="hxShame">
     <div class="hs-fog"></div>
+    ${shameWebs([['14%', 120, 7, 0, 1], ['82%', 190, 9, 2.5, .85], ['48%', 70, 6, 4, .7]])}
     <div class="hs-hero">
       <div class="hs-skull">💀</div>
       <div class="hs-title">HALL OF SHAME</div>
