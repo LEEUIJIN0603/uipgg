@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#050910">
   <title>의P.GG · 우리끼리 내전 전적</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Rajdhani:wght@700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Rajdhani:wght@700&family=Bebas+Neue&family=Noto+Serif+KR:wght@700;900&family=Cinzel:wght@500&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #121c2d;
@@ -2475,6 +2475,51 @@
       .rk-table tr.rk-out { opacity: .7; } .rk-table tr.rk-out td { opacity: 1; }
     }
 
+    /* ══ 명예회원 · 불명예회원 액자 ══ */
+    .hof { position: relative; margin: 0 0 34px; padding: 34px 18px 30px; border-radius: 18px; text-align: center; overflow: hidden; }
+    .hof.gold { background: radial-gradient(60% 45% at 50% 0%, rgba(255,205,110,.18), transparent 70%), radial-gradient(40% 50% at 50% 55%, rgba(255,220,150,.08), transparent 70%), linear-gradient(180deg, #1a1309, #100c0b 60%, #0c0b10); border: 1px solid rgba(224,176,80,.35); }
+    .hof.iron { background: radial-gradient(40% 50% at 50% 50%, rgba(160,20,30,.16), transparent 70%), radial-gradient(60% 35% at 50% 0%, rgba(120,10,20,.22), transparent 70%), linear-gradient(180deg, #0c0708, #060405 60%, #030203); border: 1px solid rgba(160,40,50,.4); }
+    .hof-tt { margin-bottom: 26px; }
+    .hof-tt .lat { font-family: 'Cinzel', 'Noto Serif KR', serif; letter-spacing: 10px; padding-left: 10px; font-size: .72rem; }
+    .hof.gold .hof-tt .lat { color: #c9a560; } .hof.iron .hof-tt .lat { color: #9a3a44; }
+    .hof-tt h3 { margin: 8px 0 6px; font-family: 'Noto Serif KR', serif; font-weight: 900; font-size: 2.6rem; letter-spacing: 18px; padding-left: 18px; -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hof.gold .hof-tt h3 { background-image: linear-gradient(180deg, #fff8dc 0%, #f2d38a 28%, #b8862e 52%, #f7e2a4 60%, #9c6c1f 82%, #5e3c0c 100%); filter: drop-shadow(0 2px 0 #1e1203) drop-shadow(0 0 22px rgba(255,190,90,.28)); }
+    .hof.iron .hof-tt h3 { background-image: linear-gradient(180deg, #e8e0dc 0%, #a8a0a0 30%, #4a3a3c 55%, #c9b8b8 62%, #5a2a2e 85%, #2a0a0e 100%); filter: drop-shadow(0 2px 0 #000) drop-shadow(0 0 22px rgba(200,30,40,.35)); }
+    .hof-tt .orn { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: .8rem; }
+    .hof-tt .orn i { width: 120px; height: 1px; } .hof-tt .orn i:last-child { transform: scaleX(-1); } .hof-tt .orn b { font-weight: 400; }
+    .hof.gold .orn { color: #c9a560; } .hof.gold .orn i { background: linear-gradient(90deg, transparent, #c9a560); }
+    .hof.iron .orn { color: #b8404a; } .hof.iron .orn i { background: linear-gradient(90deg, transparent, #8a2a34); }
+    .hof-tt p { margin: 10px 0 0; font-size: .74rem; letter-spacing: .5px; } .hof.gold .hof-tt p { color: #a8957a; } .hof.iron .hof-tt p { color: #8a7a7c; }
+    .hof-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 26px 22px; }
+    .hof-fx { width: calc((100% - 44px) / 3); max-width: 380px; }
+    .hof-fr { position: relative; aspect-ratio: 952 / 598; }
+    .hof-art { position: absolute; left: 14.8%; top: 26.6%; width: 70.4%; height: 50.2%; overflow: hidden; background: #140d06; }
+    .hof-art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 25%; }
+    .hof-art::after { content: ''; position: absolute; inset: 0; box-shadow: inset 0 0 26px rgba(0,0,0,.75); }
+    .hof.gold .hof-art img { filter: saturate(.95) sepia(.08); }
+    .hof.iron .hof-art img { filter: grayscale(.75) contrast(1.1) brightness(.75) sepia(.2) hue-rotate(-20deg); }
+    .hof.iron .hof-art::after { background: radial-gradient(80% 80% at 50% 45%, transparent 40%, rgba(60,0,8,.6)), linear-gradient(180deg, rgba(120,0,10,.12), rgba(0,0,0,.4)); box-shadow: inset 0 0 30px rgba(0,0,0,.9); }
+    .hof-f { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .hof.gold .hof-f { filter: drop-shadow(0 14px 20px rgba(0,0,0,.6)); }
+    .hof.iron .hof-f { filter: drop-shadow(0 14px 22px rgba(0,0,0,.8)) drop-shadow(0 0 16px rgba(150,10,20,.25)); }
+    .hof-fx.empty .hof-art { display: grid; place-items: center; }
+    .hof.gold .hof-fx.empty .hof-art { background: repeating-linear-gradient(90deg, #3a0d12 0 7px, #2c090d 7px 14px); }
+    .hof.iron .hof-fx.empty .hof-art { background: repeating-linear-gradient(90deg, #120a0b 0 7px, #0c0607 7px 14px); }
+    .hof-fx.empty .hof-art span { position: relative; z-index: 1; font-family: 'Noto Serif KR', serif; font-size: .78rem; letter-spacing: 3px; }
+    .hof-fx.empty .hof-art span b { display: block; font-size: 2.4rem; letter-spacing: 0; line-height: 1.1; }
+    .hof.gold .hof-fx.empty .hof-art span { color: rgba(232,200,120,.6); } .hof.iron .hof-fx.empty .hof-art span { color: rgba(200,120,130,.55); }
+    .hof-lb { margin: 8px auto 0; width: 76%; padding: 9px 10px 10px; }
+    .hof.gold .hof-lb { background: linear-gradient(180deg, #17110a, #0d0906); border: 1px solid #7a5c26; box-shadow: 0 0 0 3px #0d0906, 0 0 0 4px rgba(201,165,96,.5), 0 8px 16px rgba(0,0,0,.5); }
+    .hof.iron .hof-lb { background: linear-gradient(180deg, #0e0909, #050303); border: 1px solid #5a1a22; box-shadow: 0 0 0 3px #050303, 0 0 0 4px rgba(150,40,50,.5), 0 8px 16px rgba(0,0,0,.6); }
+    .hof-lb .g { font-family: 'Noto Serif KR', serif; font-size: .74rem; letter-spacing: 5px; } .hof.gold .hof-lb .g { color: #c9a560; } .hof.iron .hof-lb .g { color: #b8404a; }
+    .hof-lb b { display: block; font-family: 'Noto Serif KR', serif; font-size: 1.2rem; margin: 3px 0 2px; letter-spacing: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hof.gold .hof-lb b { color: #fff1cc; } .hof.iron .hof-lb b { color: #e8dcdc; }
+    .hof-lb small { font-size: .68rem; } .hof.gold .hof-lb small { color: #a8957a; } .hof.iron .hof-lb small { color: #8a7a7c; }
+    .hof-fx.empty .hof-lb b { color: #7a6a52 !important; }
+    @media (max-width: 760px) {
+      .hof { padding: 26px 12px 22px; } .hof-fx { width: 100%; max-width: 420px; }
+      .hof-tt h3 { font-size: 1.8rem; letter-spacing: 8px; padding-left: 8px; } .hof-tt .lat { letter-spacing: 5px; padding-left: 5px; font-size: .62rem; } .hof-tt .orn i { width: 56px; }
+    }
     /* ══ 6연승 · 6연패 명예회원 (각 전당 분위기에 맞춘 명판) ══ */
     .mbd { position: relative; border-radius: 16px; padding: 1.5px; margin: 0 0 30px; text-align: center; }
     .mbd-in { position: relative; border-radius: 15px; padding: 24px 22px 18px; overflow: hidden; }
@@ -5993,31 +6038,50 @@ const MEMBER_MIN = 6;   // 명예회원: 내전 날짜 기준 6연승/6연패부
 function streakRuns(kind) {                                     // kind: 'w' 연승 / 'l' 연패
   const out = [];
   calcStreaks().forEach(s => {
-    let n = 0, start = null, last = null;
-    const flush = () => { if (n >= MEMBER_MIN) out.push({ name: s.name, tag: s.tag, n, start, end: last }); n = 0; start = null; };
+    let n = 0, start = null, last = null, days = [];
+    const flush = () => {
+      if (n >= MEMBER_MIN) {
+        // 그 연승(연패) 동안 가장 많이 쓴 챔프 (같으면 마지막에 쓴 챔프)
+        const gs = days.flatMap(d => d.games).filter(g => g.p.win === (kind === 'w'));
+        const C = {}; gs.forEach((g, i) => { const c = C[g.p.champ] || (C[g.p.champ] = { n: 0, i: 0, m: g.m }); c.n++; c.i = i; c.m = g.m; });
+        const top = Object.entries(C).sort((a, b) => b[1].n - a[1].n || b[1].i - a[1].i)[0];
+        out.push({ key: s.key, name: s.name, tag: s.tag, n, start, end: last, reached: days[MEMBER_MIN - 1].day, champ: top ? top[0] : null, m: top ? top[1].m : null });
+      }
+      n = 0; start = null; days = [];
+    };
     s.days.forEach(d => {
-      if (d.res === kind) { if (!n) start = d.day; n++; last = d.day; }
+      if (d.res === kind) { if (!n) start = d.day; n++; last = d.day; days.push(d); }
       else if (d.res !== 'd') flush();                           // 무승부인 날은 이어짐
     });
     flush();
   });
   return out.sort((a, b) => b.n - a.n || (b.end > a.end ? 1 : -1));
 }
+// 명예회원 · 불명예회원: 처음 6연승(6연패)을 달성한 순서대로 1대, 2대 … 액자에 새겨요
+//   한 사람은 한 자리 (처음 달성한 기록) · 지금은 1대 액자부터, 다음 사람이 생기면 옆에 이어 붙어요
+const ROMAN = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ'];
 function memberBoard(kind) {
-  const win = kind === 'w', unit = win ? '연승' : '연패';
-  const runs = streakRuns(kind);
-  const M = MEMBER_MIN;
-  const tiers = [[(M + 2) + unit + ' 이상', r => r.n >= M + 2], [(M + 1) + unit, r => r.n === M + 1], [M + unit, r => r.n === M]];
-  const d8 = d => d.slice(2).replace(/\./g, '.');               // '2026.11.04' → '26.11.04'
-  const rows = tiers.map(([label, f], ti) => {
-    const list = runs.filter(f);
-    return `<div class="mbd-t${ti === 0 ? ' top' : ''}"><div class="mbd-tn">${label}</div><div class="mbd-names">${list.length
-      ? list.map(r => `<span><b>${escapeHtml(r.name)}</b><i>${r.n >= M + 2 ? r.n + unit + ' · ' : ''}${d8(r.start)} – ${r.end.slice(5)}</i></span>`).join('')
-      : `<span class="em">— ${win ? '첫 번째 주인공을 기다리는 자리' : '아직 아무도 없어요'} —</span>`}</div></div>`;
-  }).join('');
-  return `<div class="mbd ${win ? 'w' : 'l'}"><div class="mbd-in">
-    <div class="mbd-hd"><div class="mbd-emb">${win ? '🏆' : '🕯️'}</div><small>${win ? 'HONORARY MEMBERS' : 'IN MEMORIAM'}</small>
-      <h3>${M}${unit} 명예회원</h3><p>${win ? `내전 날짜 기준 ${M}연승 이상을 달성한 소환사의 이름을 새깁니다` : `${M}연패 이상… 그 이름을 오래도록 기억하겠습니다`}</p></div>${rows}</div></div>`;
+  const win = kind === 'w', unit = win ? '연승' : '연패', M = MEMBER_MIN;
+  const all = streakRuns(kind);
+  const seen = new Set(), members = all.slice().sort((a, b) => (a.reached > b.reached ? 1 : a.reached < b.reached ? -1 : a.name.localeCompare(b.name)))
+    .filter(r => !seen.has(r.key) && seen.add(r.key));
+  const best = {}; all.forEach(r => { best[r.key] = Math.max(best[r.key] || 0, r.n); });
+  const d8 = d => d.slice(2);                                    // '2026.11.04' → '26.11.04'
+  const frameSrc = win ? 'img/frame-gold.webp' : 'img/frame-iron.webp';
+  const frame = (r, i) => {
+    const gen = `제 ${ROMAN[i] || (i + 1)} 대`;
+    if (!r) return `<div class="hof-fx empty"><div class="hof-fr"><div class="hof-art"><span><b>?</b>${win ? '주인을 기다리는 자리' : '아직 아무도… 다행히도'}</span></div><img class="hof-f" src="${frameSrc}" alt=""></div>
+      <div class="hof-lb"><div class="g">${gen}</div><b>공 석</b><small>${win ? `다음 ${M}연승의 주인공은?` : `${M}연패의 주인공이 나오지 않기를`}</small></div></div>`;
+    const ci = r.champ ? champInfo(r.champ) : null;
+    return `<div class="hof-fx"><div class="hof-fr"><div class="hof-art">${ci ? `<img src="${splashOf(r.champ)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</div><img class="hof-f" src="${frameSrc}" alt=""></div>
+      <div class="hof-lb"><div class="g">${gen}</div><b>${escapeHtml(r.name)}</b><small>${r.n}${unit} · ${d8(r.start)} – ${r.end.slice(5)}${ci ? ' · ' + escapeHtml(ci.name) : ''}${best[r.key] > r.n ? ` · 최고 ${best[r.key]}${unit}` : ''}</small></div></div>`;
+  };
+  const list = members.length ? members.map(frame).join('') : frame(null, 0);
+  return `<div class="hof ${win ? 'gold' : 'iron'}">
+    <div class="hof-tt"><div class="lat">${win ? 'MEMBRA · HONORARIA' : 'MEMBRA · INFAMIAE'}</div><h3>${win ? '명예회원' : '불명예회원'}</h3>
+      <div class="orn"><i></i><b>${win ? '✦' : '✟'}</b><i></i></div>
+      <p>${win ? `내전 날짜 기준 ${M}연승 이상 · 먼저 달성한 순서대로 그 이름을 새깁니다` : `내전 날짜 기준 ${M}연패 이상 · 그 이름을 오래도록 기억하겠습니다`}</p></div>
+    <div class="hof-row">${list}</div></div>`;
 }
 
 let _darkMomentsHtml = '';
