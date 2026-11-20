@@ -2533,6 +2533,17 @@
     .cp-hd { display: flex; align-items: center; gap: 12px; } .cp-hd b { display: block; font-size: 1.3rem; color: #fff; } .cp-hd small { color: var(--muted); font-size: .7rem; }
     .cp-hd .ct-tier { margin-left: auto; margin-right: 34px; font-size: 1.1rem; height: 30px; min-width: 42px; }
     .cp-pic { position: relative; display: inline-flex; } .cp-pic .ch-box { width: 52px; height: 52px; } .cp-pic .ct-bee { width: 28px; top: -12px; right: -14px; }
+    .cp-skills { display: flex; gap: 8px; margin-top: 14px; min-height: 44px; align-items: center; }
+    .cp-sk-ld { font-size: .7rem; color: var(--muted); }
+    .cp-sk { position: relative; width: 44px; height: 44px; padding: 0; border-radius: 8px; border: 1.5px solid rgba(201,165,96,.5); background: #0b0f18; cursor: pointer; overflow: visible; transition: transform .15s; }
+    .cp-sk img { width: 100%; height: 100%; border-radius: 6px; display: block; }
+    .cp-sk i { position: absolute; right: -5px; bottom: -6px; min-width: 16px; height: 16px; padding: 0 3px; border-radius: 4px; background: #0b0f18; border: 1px solid rgba(201,165,96,.7); color: #f0c96a; font: 700 .6rem/14px 'Rajdhani', sans-serif; font-style: normal; text-align: center; }
+    .cp-sk:hover { transform: translateY(-2px); } .cp-sk.on { border-color: #ffd76a; box-shadow: 0 0 12px rgba(255,200,80,.6); }
+    .cp-skd { display: none; margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(0,0,0,.55); border: 1px solid rgba(201,165,96,.35); }
+    .cp-skd.open { display: block; animation: fadeUp .2s ease; }
+    .cp-skd-h { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; } .cp-skd-h i { font-style: normal; font-size: .64rem; font-weight: 700; color: #04080e; background: #f0c96a; border-radius: 4px; padding: 1px 6px; }
+    .cp-skd-h b { color: #fff; font-size: .88rem; } .cp-skd-h span { margin-left: auto; font-size: .66rem; color: var(--muted); }
+    .cp-skd p { margin: 0; font-size: .74rem; line-height: 1.6; color: #d6dbe6; }
     .cp-kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
     .cp-kpi div { background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 8px 10px; text-align: center; }
     .cp-kpi small { display: block; font-size: .64rem; color: var(--muted); } .cp-kpi b { font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; color: #fff; } .cp-kpi i { display: block; font-style: normal; font-size: .62rem; color: var(--muted); }
@@ -5812,6 +5823,32 @@ function renderTier() {
 }
 
 
+
+// 챔프 스킬 (패시브 + Q W E R): 라이엇 Data Dragon 한국어 데이터에서 불러와요 (한 번 불러온 챔프는 기억)
+const _skillCache = {};
+const skillText = h => escapeHtml(String(h || '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '')).replace(/\n+/g, '<br>');
+async function loadChampSkills(champ) {
+  const box = document.getElementById('cpSkills'); if (!box) return;
+  const ci = champInfo(champ), ver = DD.ver || ddVer(null);
+  try {
+    const data = _skillCache[ci.id] || (_skillCache[ci.id] = await fetch(`${DD_BASE}${ver}/data/ko_KR/champion/${encodeURIComponent(ci.id)}.json`).then(r => { if (!r.ok) throw 0; return r.json(); }).then(j => j.data[ci.id]));
+    if (document.getElementById('cpSkills') !== box) return;             // 그 사이 다른 챔프를 열었으면 무시
+    const list = [{ key: 'P', name: data.passive.name, desc: data.passive.description, img: `${DD_BASE}${ver}/img/passive/${data.passive.image.full}` }]
+      .concat(data.spells.map((sp, i) => ({ key: 'QWER'[i], name: sp.name, desc: sp.description, cd: sp.cooldownBurn, img: `${DD_BASE}${ver}/img/spell/${sp.image.full}` })));
+    box._list = list;
+    box.innerHTML = list.map((k, i) => `<button class="cp-sk" onclick="showSkill(${i}, this)" title="${escapeHtml(k.name)}"><img src="${k.img}" alt="" onerror="this.style.visibility='hidden'"><i>${k.key}</i></button>`).join('');
+  } catch (e) { box.innerHTML = '<span class="cp-sk-ld">스킬 정보를 불러오지 못했어요</span>'; }
+}
+function showSkill(i, btn) {
+  const box = document.getElementById('cpSkills'), d = document.getElementById('cpSkd'), k = box && box._list && box._list[i];
+  if (!k || !d) return;
+  const on = btn.classList.contains('on');
+  box.querySelectorAll('.cp-sk').forEach(b => b.classList.remove('on'));
+  if (on) { d.classList.remove('open'); d.innerHTML = ''; return; }
+  btn.classList.add('on');
+  d.innerHTML = `<div class="cp-skd-h"><i>${k.key === 'P' ? '패시브' : k.key}</i><b>${escapeHtml(k.name)}</b>${k.cd ? `<span>⏱ ${escapeHtml(k.cd)}초</span>` : ''}</div><p>${skillText(k.desc)}</p>`;
+  d.classList.add('open');
+}
 // 챔프 티어에서 챔프를 누르면: 요약 · 소환사별 성적 · 평균 성적(전체 평균 대비) · 빌드 · 명장면 · 최근 경기
 const CP_SKIP_ITEMS = new Set([3340, 3363, 3364, 3513, 2003, 2031, 2033, 2055, 2138, 2139, 2140, 1054, 1055, 1056, 1082, 1083]);
 function openChampPop(champ) {
@@ -5829,6 +5866,7 @@ function openChampPop(champ) {
   const head = `<div class="cp-hero" style="background-image:url('${splashOf(champ)}')"><div class="cp-shade"></div>
       <div class="cp-hd"><span class="cp-pic">${champIcon(G[n - 1].m, champ)}${tr && tr.honey ? '<img class="ct-bee" src="img/bee.webp" alt="">' : ''}</span>
         <div><b>${escapeHtml(ci.name)}</b><small>${MODE_NAME[recMode]} · 우리 내전 기준</small></div>${tierTag}</div>
+      <div class="cp-skills" id="cpSkills"><span class="cp-sk-ld">스킬 정보를 불러오는 중…</span></div><div class="cp-skd" id="cpSkd"></div>
       <div class="cp-kpi"><div><small>판수</small><b>${n}</b></div><div><small>승률</small><b class="${w / n >= .6 ? 'ct-hi' : ''}">${(w / n * 100).toFixed(1)}%</b><i>${w}승 ${n - w}패</i></div>
         <div><small>픽률</small><b>${tr ? (tr.pick * 100).toFixed(1) + '%' : '-'}</b></div><div><small>평균 KDA</small><b>${D ? ((K + A) / D).toFixed(2) : 'Perfect'}</b><i>${(K / n).toFixed(1)} / ${(D / n).toFixed(1)} / ${(A / n).toFixed(1)}</i></div></div></div>`;
   // ② 소환사별
@@ -5870,7 +5908,8 @@ function openChampPop(champ) {
   const recent = `<div class="cp-sec"><h4>🕘 최근 경기</h4>${G.slice(-5).reverse().map(g => `<div class="cp-mt ${g.p.win ? 'w' : 'l'}" onclick="cpGoMatch('${g.m.id}')">
       <span class="cp-res">${g.p.win ? '승' : '패'}</span><span class="cp-when">${hallWhen(g.m)}</span><b>${escapeHtml(g.p.name)}</b>
       <span class="cp-kda">${g.p.k} / <em>${g.p.d}</em> / ${g.p.a}</span><span class="cp-dmg">${fmtNum(g.p.dmg)} 딜</span><span class="cp-go">›</span></div>`).join('')}</div>`;
-  document.getElementById('cpBody').innerHTML = head + who + stat + build + moment + recent;
+  document.getElementById('cpBody').innerHTML = head + who + build + stat + moment + recent;
+  loadChampSkills(champ);
   document.getElementById('champPop').classList.add('open');
   document.querySelector('#champPop .hp-box').scrollTop = 0;
   layerOpen('champ', () => closeChampPop(true));
