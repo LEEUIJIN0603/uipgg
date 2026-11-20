@@ -2483,7 +2483,9 @@
     .ct-note { font-size: .7rem; color: var(--muted); margin-bottom: 8px; }
     .ct-table th.ct-s { cursor: pointer; user-select: none; } .ct-table th.ct-s:hover { color: var(--text-bright); } .ct-table th.ct-s.on { color: #f0c96a; font-weight: 700; }
     .ct-table td.ct-ch { text-align: left; } .ct-ch > div { display: flex; align-items: center; gap: 10px; } .ct-gm { display: none; } .ct-msort { display: none; }
-    .ct-bee { font-size: .8rem; margin-left: -4px; display: inline-block; animation: ctBee 2.4s ease-in-out infinite; filter: drop-shadow(0 0 4px rgba(255,200,40,.6)); }
+    .ct-pic { position: relative; display: inline-flex; flex-shrink: 0; }
+    .ct-bee { position: absolute; top: -9px; right: -11px; width: 22px; height: auto; z-index: 2; animation: ctBee 2.4s ease-in-out infinite; filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)) drop-shadow(0 0 4px rgba(255,200,40,.45)); }
+    .ct-bee-i { width: 14px; vertical-align: -3px; }
     @keyframes ctBee { 0%, 100% { transform: translateY(0) rotate(-8deg); } 50% { transform: translateY(-3px) rotate(8deg); } }
     .ct-table td.ct-who { text-align: left; } .ct-ch .ch-box { width: 34px; height: 34px; flex-shrink: 0; } .ct-ch b { font-size: .9rem; color: var(--text-bright); }
     .ct-tier { display: inline-grid; place-items: center; min-width: 34px; height: 24px; padding: 0 6px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: .95rem; color: #fff; }
@@ -5740,7 +5742,7 @@ function renderTier() {
   const shown = ctShowLow ? rows : rows.filter(r => r.tier !== 9);
   const more = lowN ? `<button class="ct-more" onclick="ctShowLow=!ctShowLow;renderTier()">${ctShowLow ? '▲ 표본 부족 챔프 접기' : `▼ ${ctMin}판 미만이라 티어가 없는 챔프 ${lowN}개 더 보기`}</button>` : '';
   let rank = 0;
-  box.innerHTML = `<div class="ct-note">우리 내전 ${games}판 기준 · 승률은 판수가 적으면 50% 쪽으로 보정해서 티어를 매겨요 (KDA · 픽률도 조금 반영) · 🐝 꿀챔 = OP·1티어 중 3판 이상 승률 70% 이상 · 제목을 누르면 정렬</div>
+  box.innerHTML = `<div class="ct-note">우리 내전 ${games}판 기준 · 승률은 판수가 적으면 50% 쪽으로 보정해서 티어를 매겨요 (KDA · 픽률도 조금 반영) · <img src="img/bee.webp" alt="" class="ct-bee-i"> 꿀챔 = OP·1티어 중 3판 이상 승률 70% 이상 · 제목을 누르면 정렬</div>
   <div class="rk-wrap"><table class="rk-table ct-table">
     <tr><th>#</th><th class="l">챔피언</th>${th('tier', '티어')}${th('wr', '승률')}${th('pick', '픽률')}${th('g', '판수')}${th('kda', 'KDA')}${th('dpm', '분당 딜')}${showPos ? '<th>주 라인</th>' : ''}<th class="l">많이 한 소환사</th></tr>
     ${shown.map(r => {
@@ -5749,7 +5751,7 @@ function renderTier() {
       const ci = champInfo(r.champ);
       return `<tr class="${ok ? '' : 'ct-low'}">
         <td><span class="rk-no">${ok ? rank : '–'}</span></td>
-        <td class="ct-ch"><div>${champIcon(r.m, r.champ)}<b>${escapeHtml(ci.name)}</b>${r.honey ? '<span class="ct-bee" title="꿀챔 · 3판 이상 승률 70% 이상">🐝</span>' : ''}</div></td>
+        <td class="ct-ch"><div><span class="ct-pic">${champIcon(r.m, r.champ)}${r.honey ? '<img class="ct-bee" src="img/bee.webp" alt="꿀챔" title="꿀챔 · 3판 이상 승률 70% 이상">' : ''}</span><b>${escapeHtml(ci.name)}</b></div></td>
         <td class="ct-tc"><span class="ct-tier ${tc}">${tn}</span></td>
         <td data-l="승률" class="ct-wr"><b class="${r.wr >= .6 ? 'ct-hi' : r.wr < .4 ? 'ct-lo' : ''}">${pct(r.wr)}</b><small class="ct-sub">${r.w}승 ${r.g - r.w}패</small></td>
         <td data-l="픽률">${pct(r.pick)}</td>
