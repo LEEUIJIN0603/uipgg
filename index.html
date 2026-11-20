@@ -2475,6 +2475,19 @@
       .rk-table tr.rk-out { opacity: .7; } .rk-table tr.rk-out td { opacity: 1; }
     }
 
+    /* 명예의 전당 메뉴: 금빛으로 빛나게 */
+    .nav-btn.nav-hall { position: relative; color: #f3d27a; font-weight: 700; }
+    .nav-btn.nav-hall .nav-ico { color: #ffd76a; animation: navHallIco 2.6s ease-in-out infinite; }
+    .nav-btn.nav-hall .nav-ico svg { filter: drop-shadow(0 0 3px rgba(255,200,80,.8)); }
+    @keyframes navHallIco { 0%, 100% { filter: drop-shadow(0 0 2px rgba(255,200,80,.35)); } 50% { filter: drop-shadow(0 0 9px rgba(255,210,90,.95)); } }
+    .nav-btn.nav-hall .nav-hall-t { background: linear-gradient(100deg, #c8902c 0%, #ffe7a6 30%, #fff8dc 40%, #ffe7a6 50%, #c8902c 80%) 0 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: navHallTxt 3.2s linear infinite; }
+    @keyframes navHallTxt { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+    .nav-btn.nav-hall::after { content: '✦'; position: absolute; font-size: .55rem; color: #ffe39a; text-shadow: 0 0 6px #ffcf5a; animation: navHallSpk 2.6s ease-in-out infinite; pointer-events: none; }
+    .nav-btn.nav-hall::after { right: 16%; top: 6px; }
+    @media (min-width: 761px) { .side-nav .nav-btn.nav-hall::after { left: 24px; right: auto; top: 3px; } }
+    @keyframes navHallSpk { 0%, 100% { opacity: 0; transform: scale(.4); } 50% { opacity: 1; transform: scale(1.1); } }
+    .nav-btn.nav-hall:not(.active) { background: linear-gradient(90deg, rgba(255,200,80,.08), transparent 80%); }
+    @media (prefers-reduced-motion: reduce) { .nav-btn.nav-hall .nav-ico, .nav-btn.nav-hall .nav-hall-t, .nav-btn.nav-hall::after { animation: none !important; } }
     /* ══ 챔프 티어 ══ */
     .ct-badge { font-size: .66rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; letter-spacing: 0; }
     .ct-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
@@ -2755,8 +2768,8 @@
     <button class="nav-btn" onclick="switchPage('record',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg></span>전적</button>
     <button class="nav-btn" onclick="switchPage('rank',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>순위</button>
     <button class="nav-btn" onclick="switchPage('summoner',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></span>소환사 정보</button>
-    <button class="nav-btn" onclick="switchPage('hall',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4 18h16"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 3 3 8.5V11h18V8.5z"/></svg></span>명예의 전당</button>
     <button class="nav-btn adm-only" onclick="switchPage('tier',this)" title="관리자 링크에서만 보여요"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h11"/><path d="M4 18h6"/><circle cx="19" cy="15" r="2.5"/><path d="M19 17.5V21"/></svg></span>챔프 티어</button>
+    <button class="nav-btn nav-hall" onclick="switchPage('hall',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4 18h16"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 3 3 8.5V11h18V8.5z"/></svg></span><span class="nav-hall-t">명예의 전당</span></button>
     <div class="nav-sep" aria-hidden="true"></div>
     <button class="nav-btn" onclick="switchPage('assign',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg></span>팀 배정</button>
     <button class="nav-btn adm-only" onclick="switchPage('stats',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="1"/><rect x="12" y="8" width="3" height="10" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/></svg></span>접속통계</button>
