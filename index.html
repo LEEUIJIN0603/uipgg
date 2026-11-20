@@ -2498,6 +2498,10 @@
     .ct-table td.ct-ch { text-align: left; } .ct-ch > div { display: flex; align-items: center; gap: 10px; } .ct-gm { display: none; } .ct-msort { display: none; }
     .ct-pic { position: relative; display: inline-flex; flex-shrink: 0; }
     .ct-bee { position: absolute; top: -9px; right: -11px; width: 22px; height: auto; z-index: 2; animation: ctBee 2.4s ease-in-out infinite; filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)) drop-shadow(0 0 4px rgba(255,200,40,.45)); }
+    .ln-i { display: inline-flex; align-items: center; gap: 3px; margin-right: 6px; font-size: .68rem; color: var(--muted); }
+    .ln-i img { width: 18px; height: 18px; opacity: .9; } .ln-i em { font-style: normal; }
+    .ln-i.sm img { width: 15px; height: 15px; } .ln-i.sm { margin-right: 4px; }
+    .ct-table td.ct-ln { white-space: nowrap; } .ct-mln { display: none; } .cp-ln { white-space: nowrap; }
     .ct-bee-i { width: 14px; vertical-align: -3px; }
     @keyframes ctBee { 0%, 100% { transform: translateY(0) rotate(-8deg); } 50% { transform: translateY(-3px) rotate(8deg); } }
     .ct-table td.ct-who { text-align: left; } .ct-ch .ch-box { width: 34px; height: 34px; flex-shrink: 0; } .ct-ch b { font-size: .9rem; color: var(--text-bright); }
@@ -2521,6 +2525,8 @@
       .ct-table .rk-no { font-size: .8rem; } .ct-table .ct-tier { min-width: 30px; height: 22px; font-size: .85rem; padding: 0 4px; }
       .ct-table td.ct-wr { text-align: right; font-size: .8rem; } .ct-table td.ct-g { text-align: right; font-size: .76rem; color: var(--muted); } .ct-gm { display: inline; font-size: .62rem; }
       .ct-table td.ct-tc { text-align: center; }
+      .ct-ch > div > b { flex: 0 1 auto; } .ct-ch > div { flex-wrap: wrap; row-gap: 2px; }
+      .ct-mln { display: flex; flex-basis: 100%; padding-left: 44px; margin-top: -2px; } .ct-mln .ln-i img { width: 14px; height: 14px; } .ct-mln .ln-i { font-size: .62rem; }
       .ct-msort { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; } .ct-msort .rk-btn { padding: 5px 10px; font-size: .74rem; }
     }
     /* 챔프 상세 창 */
@@ -5746,6 +5752,12 @@ function renderRank() {
 //   판수가 적으면 승률이 출렁여서, 승률은 50% 쪽으로 살짝 당겨서(판수 보정) 점수를 매겨요
 let ctLane = 'ALL', ctSort = 'tier', ctAsc = false, ctMin = 2, ctShowLow = false;
 const CT_TIER = [['OP', 'op'], ['1', 't1'], ['2', 't2'], ['3', 't3'], ['4', 't4'], ['5', 't5']];
+// 라인 표시: 가장 많이 간 라인 + (30% 이상이면) 두 번째 라인까지
+function topLanes(pos) {
+  const e = Object.entries(pos || {}).sort((a, b) => b[1] - a[1]), tot = e.reduce((t, x) => t + x[1], 0);
+  return e.filter((x, i) => i === 0 || (i === 1 && x[1] / tot >= .3)).map(x => x[0]);
+}
+const laneIcons = (lanes, cls) => lanes.map(l => ICONS[l] ? `<span class="ln-i ${cls || ''}" title="${POS_KO[l]}"><img src="${ICONS[l]}" alt=""><em>${POS_KO[l]}</em></span>` : '').join('');
 function tierRows(lane) {
   const ms = modeMatches(), C = {};
   let slots = 0;                                                     // 픽률 분모: 그 라인 자리 수 (전체면 판수 × 10)
@@ -5765,7 +5777,7 @@ function tierRows(lane) {
     const score = (adj - .5) * 100 + Math.min(pick, .6) * 25 + Math.min(kda, 8) * .6;
     const main = Object.entries(c.pos).sort((a, b) => b[1] - a[1])[0];
     const top = Object.values(c.who).sort((a, b) => b.g - a.g || b.w - a.w)[0];
-    return { ...c, wr, adj, pick, kda, score, main: main ? main[0] : null, top, dpm: c.dmg / Math.max(1, c.mins) };
+    return { ...c, wr, adj, pick, kda, score, main: main ? main[0] : null, lanes: topLanes(c.pos), top, dpm: c.dmg / Math.max(1, c.mins) };
   });
   // 티어: 기준 판수 이상인 챔프끼리 점수 순으로 상위 8% OP · 25% 1 · 50% 2 · 75% 3 · 90% 4 · 나머지 5
   const ok = rows.filter(r => r.g >= ctMin).sort((a, b) => b.score - a.score);
@@ -5808,14 +5820,14 @@ function renderTier() {
       const ci = champInfo(r.champ);
       return `<tr class="ct-row${ok ? '' : ' ct-low'}" onclick="openChampPop('${String(r.champ).replace(/'/g, '')}')" title="눌러서 자세히 보기">
         <td><span class="rk-no">${ok ? rank : '–'}</span></td>
-        <td class="ct-ch"><div><span class="ct-pic">${champIcon(r.m, r.champ)}${r.honey ? '<img class="ct-bee" src="img/bee.webp" alt="꿀챔" title="꿀챔 · 3판 이상 승률 70% 이상">' : ''}</span><b>${escapeHtml(ci.name)}</b></div></td>
+        <td class="ct-ch"><div><span class="ct-pic">${champIcon(r.m, r.champ)}${r.honey ? '<img class="ct-bee" src="img/bee.webp" alt="꿀챔" title="꿀챔 · 3판 이상 승률 70% 이상">' : ''}</span><b>${escapeHtml(ci.name)}</b>${recMode === 'rift' && r.lanes.length ? `<span class="ct-mln">${laneIcons(r.lanes)}</span>` : ''}</div></td>
         <td class="ct-tc"><span class="ct-tier ${tc}">${tn}</span></td>
         <td data-l="승률" class="ct-wr"><b class="${r.wr >= .6 ? 'ct-hi' : r.wr < .4 ? 'ct-lo' : ''}">${pct(r.wr)}</b><small class="ct-sub">${r.w}승 ${r.g - r.w}패</small></td>
         <td data-l="픽률">${pct(r.pick)}</td>
         <td data-l="판수" class="ct-g">${r.g}<span class="ct-gm">판</span></td>
         <td data-l="KDA">${r.d ? r.kda.toFixed(2) : 'Perfect'}<small class="ct-sub">${(r.k / r.g).toFixed(1)} / ${(r.d / r.g).toFixed(1)} / ${(r.a / r.g).toFixed(1)}</small></td>
         <td data-l="분당 딜">${Math.round(r.dpm).toLocaleString()}</td>
-        ${showPos ? `<td data-l="주 라인" class="rk-pos">${r.main && ICONS[r.main] ? `<img src="${ICONS[r.main]}" alt=""><span class="rk-pos-t">${POS_KO[r.main]}</span>` : '-'}</td>` : ''}
+        ${showPos ? `<td data-l="주 라인" class="ct-ln">${r.lanes.length ? laneIcons(r.lanes) : '-'}</td>` : ''}
         <td class="l ct-who" data-l="많이 한 소환사">${r.top ? `${escapeHtml(r.top.name)} <small>${r.top.g}판 ${r.top.w}승</small>` : ''}</td>
       </tr>`;
     }).join('')}
@@ -5870,11 +5882,11 @@ function openChampPop(champ) {
       <div class="cp-kpi"><div><small>판수</small><b>${n}</b></div><div><small>승률</small><b class="${w / n >= .6 ? 'ct-hi' : ''}">${(w / n * 100).toFixed(1)}%</b><i>${w}승 ${n - w}패</i></div>
         <div><small>픽률</small><b>${tr ? (tr.pick * 100).toFixed(1) + '%' : '-'}</b></div><div><small>평균 KDA</small><b>${D ? ((K + A) / D).toFixed(2) : 'Perfect'}</b><i>${(K / n).toFixed(1)} / ${(D / n).toFixed(1)} / ${(A / n).toFixed(1)}</i></div></div></div>`;
   // ② 소환사별
-  const P = {}; G.forEach(g => { const k = g.p.puuid || g.p.name; const x = P[k] || (P[k] = { name: g.p.name, g: 0, w: 0, k: 0, d: 0, a: 0, dmg: 0, mins: 0 }); x.name = g.p.name; x.g++; if (g.p.win) x.w++; x.k += g.p.k; x.d += g.p.d; x.a += g.p.a; x.dmg += g.p.dmg; x.mins += mins(g); });
+  const P = {}; G.forEach(g => { const k = g.p.puuid || g.p.name; const x = P[k] || (P[k] = { name: g.p.name, g: 0, w: 0, k: 0, d: 0, a: 0, dmg: 0, mins: 0, pos: {} }); x.name = g.p.name; if (g.p.pos) x.pos[g.p.pos] = (x.pos[g.p.pos] || 0) + 1; x.g++; if (g.p.win) x.w++; x.k += g.p.k; x.d += g.p.d; x.a += g.p.a; x.dmg += g.p.dmg; x.mins += mins(g); });
   const ps = Object.values(P).sort((a, b) => b.g - a.g || b.w / b.g - a.w / a.g);
   const best = Object.values(P).filter(x => x.g >= Math.min(2, Math.max(...ps.map(y => y.g)))).sort((a, b) => ((b.w + 1) / (b.g + 2)) - ((a.w + 1) / (a.g + 2)) || (b.k + b.a) / Math.max(1, b.d) - (a.k + a.a) / Math.max(1, a.d))[0];
   const who = `<div class="cp-sec"><h4>👑 누가 잘했나</h4><div class="cp-tags"><span>🛠 장인 <b>${escapeHtml(ps[0].name)}</b> ${ps[0].g}판</span>${best ? `<span>🏅 제일 잘한 사람 <b>${escapeHtml(best.name)}</b> ${best.g}판 ${Math.round(best.w / best.g * 100)}%</span>` : ''}</div>
-    <table class="cp-tb"><tr><th class="l">소환사</th><th>판수</th><th>승률</th><th>KDA</th><th>분당 딜</th></tr>${ps.map(x => `<tr><td class="l">${escapeHtml(x.name)}</td><td>${x.g}</td><td class="${x.w / x.g >= .6 ? 'ct-hi' : ''}">${Math.round(x.w / x.g * 100)}%<small> ${x.w}승 ${x.g - x.w}패</small></td><td>${x.d ? ((x.k + x.a) / x.d).toFixed(2) : 'Perfect'}</td><td>${Math.round(x.dmg / Math.max(1, x.mins)).toLocaleString()}</td></tr>`).join('')}</table></div>`;
+    <table class="cp-tb"><tr><th class="l">소환사</th>${recMode === 'rift' ? '<th>라인</th>' : ''}<th>판수</th><th>승률</th><th>KDA</th><th>분당 딜</th></tr>${ps.map(x => `<tr><td class="l">${escapeHtml(x.name)}</td>${recMode === 'rift' ? `<td class="cp-ln">${Object.keys(x.pos).length ? laneIcons(Object.entries(x.pos).sort((a, b) => b[1] - a[1]).map(e => e[0]).slice(0, 2), 'sm') : '-'}</td>` : ''}<td>${x.g}</td><td class="${x.w / x.g >= .6 ? 'ct-hi' : ''}">${Math.round(x.w / x.g * 100)}%<small> ${x.w}승 ${x.g - x.w}패</small></td><td>${x.d ? ((x.k + x.a) / x.d).toFixed(2) : 'Perfect'}</td><td>${Math.round(x.dmg / Math.max(1, x.mins)).toLocaleString()}</td></tr>`).join('')}</table></div>`;
   // ③ 평균 성적 (같은 모드 전체 평균과 비교)
   const all = []; ms.forEach(m => m.players.forEach(p => all.push({ m, p })));
   const avg = (list, f) => list.reduce((t, g) => t + f(g), 0) / Math.max(1, list.length);
