@@ -2500,15 +2500,45 @@
     .ct-more:hover { color: var(--text-bright); border-color: var(--gold); }
     @media (max-width: 760px) {
       /* 모바일: 한 줄 요약 (순위 · 챔프 · 티어 · 승률 · 판수) */
-      .ct-table tr { grid-template-columns: 26px minmax(0, 1fr) 44px 64px 38px !important; padding: 8px 12px !important; column-gap: 8px !important; }
+      .ct-table tr { grid-template-columns: 18px minmax(0, 1fr) 36px 56px 30px !important; padding: 8px 10px !important; column-gap: 6px !important; }
       .ct-table td { order: 0 !important; grid-column: auto !important; margin: 0 !important; padding: 0 !important; border: none !important; align-self: center !important; }
       .ct-table td[data-l]::before { display: none !important; }
       .ct-table td:not(.ct-ch):not(.ct-tc):not(.ct-wr):not(.ct-g):not(:first-child) { display: none !important; }
-      .ct-table td.ct-ch b { font-size: .84rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ct-ch > div { gap: 8px; min-width: 0; } .ct-ch .ch-box { width: 30px; height: 30px; }
+      .ct-table td.ct-ch b { font-size: .82rem; line-height: 1.25; word-break: keep-all; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } .ct-ch > div { gap: 14px; min-width: 0; } .ct-ch .ch-box { width: 30px; height: 30px; }
+      .ct-table .rk-no { font-size: .8rem; } .ct-table .ct-tier { min-width: 30px; height: 22px; font-size: .85rem; padding: 0 4px; }
       .ct-table td.ct-wr { text-align: right; font-size: .8rem; } .ct-table td.ct-g { text-align: right; font-size: .76rem; color: var(--muted); } .ct-gm { display: inline; font-size: .62rem; }
       .ct-table td.ct-tc { text-align: center; }
       .ct-msort { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; } .ct-msort .rk-btn { padding: 5px 10px; font-size: .74rem; }
     }
+    /* 챔프 상세 창 */
+    .ct-table tr.ct-row { cursor: pointer; } .ct-table tr.ct-row:hover td { background: rgba(240,201,106,.06); }
+    .cp-box { width: min(640px, 100%) !important; padding: 0 0 14px !important; max-height: 86vh; }
+    .cp-box .hp-close { z-index: 3; }
+    .cp-hero { position: relative; padding: 22px 20px 16px; background-size: cover; background-position: center 20%; border-radius: 14px 14px 0 0; overflow: hidden; }
+    .cp-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,14,24,.55), rgba(10,14,24,.95)); }
+    .cp-hero > *:not(.cp-shade) { position: relative; }
+    .cp-hd { display: flex; align-items: center; gap: 12px; } .cp-hd b { display: block; font-size: 1.3rem; color: #fff; } .cp-hd small { color: var(--muted); font-size: .7rem; }
+    .cp-hd .ct-tier { margin-left: auto; margin-right: 34px; font-size: 1.1rem; height: 30px; min-width: 42px; }
+    .cp-pic { position: relative; display: inline-flex; } .cp-pic .ch-box { width: 52px; height: 52px; } .cp-pic .ct-bee { width: 28px; top: -12px; right: -14px; }
+    .cp-kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+    .cp-kpi div { background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 8px 10px; text-align: center; }
+    .cp-kpi small { display: block; font-size: .64rem; color: var(--muted); } .cp-kpi b { font-family: 'Rajdhani', sans-serif; font-size: 1.3rem; color: #fff; } .cp-kpi i { display: block; font-style: normal; font-size: .62rem; color: var(--muted); }
+    .cp-sec { padding: 14px 20px 4px; } .cp-sec h4 { margin: 0 0 8px; font-size: .84rem; color: #f0c96a; } .cp-sec h4 small { color: var(--muted); font-weight: 400; font-size: .66rem; margin-left: 4px; }
+    .cp-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; } .cp-tags span { font-size: .72rem; color: var(--text); background: var(--panel2); border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px; } .cp-tags b { color: #ffe2a0; }
+    .cp-tb { width: 100%; border-collapse: collapse; font-size: .76rem; } .cp-tb th { color: var(--muted); font-weight: 500; font-size: .66rem; padding: 4px; } .cp-tb td { padding: 5px 4px; text-align: center; border-top: 1px solid rgba(255,255,255,.06); }
+    .cp-tb .l { text-align: left; } .cp-tb small { color: var(--muted); font-size: .62rem; }
+    .cp-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; } .cp-stats div { background: var(--panel2); border-radius: 8px; padding: 7px 8px; }
+    .cp-stats small { display: block; font-size: .62rem; color: var(--muted); } .cp-stats b { font-size: .92rem; color: var(--text-bright); } .cp-stats i { font-style: normal; font-size: .64rem; margin-left: 4px; color: var(--muted); } .cp-stats i.up { color: #5fd38a; } .cp-stats i.dn { color: #ff7b7b; }
+    .cp-build > div { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; } .cp-bh { width: 52px; font-size: .68rem; color: var(--muted); flex-shrink: 0; }
+    .cp-it { display: inline-flex; align-items: center; gap: 6px; } .cp-it img, .cp-it > span:not(.aug) img { width: 30px; height: 30px; border-radius: 6px; } .cp-it.sp img { width: 24px; height: 24px; margin-right: -3px; } .cp-it small { font-size: .64rem; color: var(--muted); }
+    .cp-it > span { display: inline-flex; width: 30px; height: 30px; border-radius: 6px; background: var(--panel2); overflow: hidden; } .cp-it .aug { width: auto; height: auto; background: none; }
+    .cp-mt { display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin-bottom: 6px; border-radius: 8px; cursor: pointer; font-size: .76rem; background: var(--panel2); border-left: 3px solid; }
+    .cp-mt.w { border-color: #4aa3ff; } .cp-mt.l { border-color: #e84040; } .cp-mt:hover { filter: brightness(1.15); }
+    .cp-res { font-weight: 700; } .cp-mt.w .cp-res { color: #7db8ff; } .cp-mt.l .cp-res { color: #ff8a8a; }
+    .cp-when { color: var(--muted); font-size: .68rem; min-width: 96px; } .cp-mt b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-bright); font-weight: 500; }
+    .cp-kda em { font-style: normal; color: #ff7b7b; } .cp-dmg { color: var(--muted); font-size: .68rem; } .cp-go { color: var(--muted); }
+    .mt-card.cp-flash { box-shadow: 0 0 0 2px #f0c96a, 0 0 24px rgba(240,201,106,.5) !important; transition: box-shadow .3s; }
+    @media (max-width: 760px) { .cp-kpi, .cp-stats { grid-template-columns: repeat(2, 1fr); } .cp-dmg { display: none; } .cp-when { min-width: 0; } .cp-sec { padding: 12px 14px 2px; } .cp-hero { padding: 18px 14px 14px; } }
     /* ══ 명예회원: 빛 · 반짝임 ══ */
     .hof > .hof-glow { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
     .hof.gold > *:not(.hof-glow) { position: relative; z-index: 1; }
@@ -2979,6 +3009,9 @@
 </main>
 </div><!-- app -->
 
+<div class="hist-pop" id="champPop" onclick="if (event.target === this) closeChampPop()">
+    <div class="hp-box cp-box"><button class="hp-close" onclick="closeChampPop()">✕</button><div id="cpBody"></div></div>
+</div>
 <div class="hist-pop" id="histPop" onclick="if (event.target === this) closeStreakHist()">
     <div class="hp-box">
       <button class="hp-close" onclick="closeStreakHist()">✕</button>
@@ -5749,7 +5782,7 @@ function renderTier() {
       const ok = r.tier !== 9; if (ok) rank++;
       const [tn, tc] = ok ? CT_TIER[r.tier] : ['-', 'none'];
       const ci = champInfo(r.champ);
-      return `<tr class="${ok ? '' : 'ct-low'}">
+      return `<tr class="ct-row${ok ? '' : ' ct-low'}" onclick="openChampPop('${String(r.champ).replace(/'/g, '')}')" title="눌러서 자세히 보기">
         <td><span class="rk-no">${ok ? rank : '–'}</span></td>
         <td class="ct-ch"><div><span class="ct-pic">${champIcon(r.m, r.champ)}${r.honey ? '<img class="ct-bee" src="img/bee.webp" alt="꿀챔" title="꿀챔 · 3판 이상 승률 70% 이상">' : ''}</span><b>${escapeHtml(ci.name)}</b></div></td>
         <td class="ct-tc"><span class="ct-tier ${tc}">${tn}</span></td>
@@ -5763,6 +5796,80 @@ function renderTier() {
       </tr>`;
     }).join('')}
   </table></div>${more}`;
+}
+
+
+// 챔프 티어에서 챔프를 누르면: 요약 · 소환사별 성적 · 평균 성적(전체 평균 대비) · 빌드 · 명장면 · 최근 경기
+const CP_SKIP_ITEMS = new Set([3340, 3363, 3364, 3513, 2003, 2031, 2033, 2055, 2138, 2139, 2140, 1054, 1055, 1056, 1082, 1083]);
+function openChampPop(champ) {
+  const ms = modeMatches().slice().sort((a, b) => (a.date || 0) - (b.date || 0));
+  const G = []; ms.forEach(m => m.players.forEach(p => { if (p.champ === champ) G.push({ m, p }); }));
+  if (!G.length) return;
+  if (typeof logVisit === 'function') logVisit('챔프 상세', champInfo(champ).name);
+  const ci = champInfo(champ), n = G.length, w = G.filter(g => g.p.win).length;
+  const sum = f => G.reduce((t, g) => t + f(g), 0);
+  const mins = g => g.m.len / 60;
+  const tr = tierRows('ALL').rows.find(r => r.champ === champ);
+  const tierTag = tr && tr.tier !== 9 ? `<span class="ct-tier ${CT_TIER[tr.tier][1]}">${CT_TIER[tr.tier][0]}</span>` : '<span class="ct-tier none">-</span>';
+  const K = sum(g => g.p.k), D = sum(g => g.p.d), A = sum(g => g.p.a);
+  // ① 요약
+  const head = `<div class="cp-hero" style="background-image:url('${splashOf(champ)}')"><div class="cp-shade"></div>
+      <div class="cp-hd"><span class="cp-pic">${champIcon(G[n - 1].m, champ)}${tr && tr.honey ? '<img class="ct-bee" src="img/bee.webp" alt="">' : ''}</span>
+        <div><b>${escapeHtml(ci.name)}</b><small>${MODE_NAME[recMode]} · 우리 내전 기준</small></div>${tierTag}</div>
+      <div class="cp-kpi"><div><small>판수</small><b>${n}</b></div><div><small>승률</small><b class="${w / n >= .6 ? 'ct-hi' : ''}">${(w / n * 100).toFixed(1)}%</b><i>${w}승 ${n - w}패</i></div>
+        <div><small>픽률</small><b>${tr ? (tr.pick * 100).toFixed(1) + '%' : '-'}</b></div><div><small>평균 KDA</small><b>${D ? ((K + A) / D).toFixed(2) : 'Perfect'}</b><i>${(K / n).toFixed(1)} / ${(D / n).toFixed(1)} / ${(A / n).toFixed(1)}</i></div></div></div>`;
+  // ② 소환사별
+  const P = {}; G.forEach(g => { const k = g.p.puuid || g.p.name; const x = P[k] || (P[k] = { name: g.p.name, g: 0, w: 0, k: 0, d: 0, a: 0, dmg: 0, mins: 0 }); x.name = g.p.name; x.g++; if (g.p.win) x.w++; x.k += g.p.k; x.d += g.p.d; x.a += g.p.a; x.dmg += g.p.dmg; x.mins += mins(g); });
+  const ps = Object.values(P).sort((a, b) => b.g - a.g || b.w / b.g - a.w / a.g);
+  const best = Object.values(P).filter(x => x.g >= Math.min(2, Math.max(...ps.map(y => y.g)))).sort((a, b) => ((b.w + 1) / (b.g + 2)) - ((a.w + 1) / (a.g + 2)) || (b.k + b.a) / Math.max(1, b.d) - (a.k + a.a) / Math.max(1, a.d))[0];
+  const who = `<div class="cp-sec"><h4>👑 누가 잘했나</h4><div class="cp-tags"><span>🛠 장인 <b>${escapeHtml(ps[0].name)}</b> ${ps[0].g}판</span>${best ? `<span>🏅 제일 잘한 사람 <b>${escapeHtml(best.name)}</b> ${best.g}판 ${Math.round(best.w / best.g * 100)}%</span>` : ''}</div>
+    <table class="cp-tb"><tr><th class="l">소환사</th><th>판수</th><th>승률</th><th>KDA</th><th>분당 딜</th></tr>${ps.map(x => `<tr><td class="l">${escapeHtml(x.name)}</td><td>${x.g}</td><td class="${x.w / x.g >= .6 ? 'ct-hi' : ''}">${Math.round(x.w / x.g * 100)}%<small> ${x.w}승 ${x.g - x.w}패</small></td><td>${x.d ? ((x.k + x.a) / x.d).toFixed(2) : 'Perfect'}</td><td>${Math.round(x.dmg / Math.max(1, x.mins)).toLocaleString()}</td></tr>`).join('')}</table></div>`;
+  // ③ 평균 성적 (같은 모드 전체 평균과 비교)
+  const all = []; ms.forEach(m => m.players.forEach(p => all.push({ m, p })));
+  const avg = (list, f) => list.reduce((t, g) => t + f(g), 0) / Math.max(1, list.length);
+  const stats = [['분당 딜', g => g.p.dmg / mins(g), v => Math.round(v).toLocaleString()], ['분당 CS', g => g.p.cs / mins(g), v => v.toFixed(1)], ['분당 골드', g => g.p.gold / mins(g), v => Math.round(v).toLocaleString()],
+    ['판당 킬', g => g.p.k, v => v.toFixed(1)], ['판당 데스', g => g.p.d, v => v.toFixed(1), true], ['판당 어시', g => g.p.a, v => v.toFixed(1)], ['받은 피해/분', g => (g.p.taken || 0) / mins(g), v => Math.round(v).toLocaleString()]]
+    .concat(recMode === 'rift' ? [['판당 시야', g => g.p.vis, v => v.toFixed(1)]] : []);
+  const stat = `<div class="cp-sec"><h4>📊 평균 성적 <small>우리 내전 전체 평균 대비</small></h4><div class="cp-stats">${stats.map(([t, f, fmt, low]) => {
+      const a = avg(G, f), b = avg(all, f), d = b ? (a - b) / b * 100 : 0, good = low ? d < 0 : d > 0;
+      return `<div><small>${t}</small><b>${fmt(a)}</b><i class="${Math.abs(d) < 3 ? '' : good ? 'up' : 'dn'}">${Math.abs(d) < 3 ? '평균' : (d > 0 ? '+' : '') + Math.round(d) + '%'}</i></div>`; }).join('')}</div></div>`;
+  // ④ 빌드
+  const cnt = (keyF) => { const C = {}; G.forEach(g => { [...new Set(keyF(g))].forEach(k => { if (k == null || k === '') return; const c = C[k] || (C[k] = { k, n: 0, w: 0, m: g.m }); c.n++; if (g.p.win) c.w++; c.m = g.m; }); }); return Object.values(C).sort((a, b) => b.n - a.n || b.w - a.w); };
+  const items = cnt(g => (g.p.items || []).slice(0, 6).filter(id => id >= 3000 && !CP_SKIP_ITEMS.has(+id))).slice(0, 3);
+  const runes = cnt(g => [g.p.ks]).slice(0, 2);
+  const spells = cnt(g => [(g.p.sp || []).slice().sort().join('-')]).slice(0, 2);
+  const augs = recMode === 'aram' ? cnt(g => realAugs(g.p)).slice(0, 3) : [];
+  const wr = c => `<small>${c.n}판 · ${Math.round(c.w / c.n * 100)}%</small>`;
+  const build = `<div class="cp-sec"><h4>🧩 많이 쓴 빌드</h4><div class="cp-build">
+      ${items.length ? `<div><span class="cp-bh">아이템</span>${items.map(c => `<span class="cp-it">${itemIcon(c.m, c.k)}${wr(c)}</span>`).join('')}</div>` : ''}
+      ${runes.length ? `<div><span class="cp-bh">핵심 룬</span>${runes.map(c => `<span class="cp-it rn">${runeIcon(c.k)}${wr(c)}</span>`).join('')}</div>` : ''}
+      ${spells.length ? `<div><span class="cp-bh">주문</span>${spells.map(c => `<span class="cp-it sp">${String(c.k).split('-').map(id => spellIcon(c.m, id)).join('')}${wr(c)}</span>`).join('')}</div>` : ''}
+      ${augs.length ? `<div><span class="cp-bh">증강</span>${augs.map(c => `<span class="cp-it ag">${augIcon(c.k)}${wr(c)}</span>`).join('')}</div>` : ''}
+    </div></div>`;
+  // ⑥ 명장면 + 최근 경기
+  const top = (f) => G.slice().sort((a, b) => f(b) - f(a))[0];
+  const kk = top(g => g.p.k), dd = top(g => g.p.dmg);
+  const pent = G.filter(g => (g.p.penta || 0) > 0 || g.p.multi >= 5).length, nod = G.filter(g => g.p.d === 0).length;
+  const moment = `<div class="cp-sec"><h4>✨ 이 챔프 명장면</h4><div class="cp-tags">
+      <span>🗡 최다 킬 <b>${kk.p.k}킬</b> ${escapeHtml(kk.p.name)} · ${hallWhen(kk.m)}</span>
+      <span>💥 최고 딜 <b>${fmtNum(dd.p.dmg)}</b> ${escapeHtml(dd.p.name)} · ${hallWhen(dd.m)}</span>
+      ${pent ? `<span>🔥 펜타킬 <b>${pent}번</b></span>` : ''}${nod ? `<span>🛡 노데스 <b>${nod}판</b></span>` : ''}</div></div>`;
+  const recent = `<div class="cp-sec"><h4>🕘 최근 경기</h4>${G.slice(-5).reverse().map(g => `<div class="cp-mt ${g.p.win ? 'w' : 'l'}" onclick="cpGoMatch('${g.m.id}')">
+      <span class="cp-res">${g.p.win ? '승' : '패'}</span><span class="cp-when">${hallWhen(g.m)}</span><b>${escapeHtml(g.p.name)}</b>
+      <span class="cp-kda">${g.p.k} / <em>${g.p.d}</em> / ${g.p.a}</span><span class="cp-dmg">${fmtNum(g.p.dmg)} 딜</span><span class="cp-go">›</span></div>`).join('')}</div>`;
+  document.getElementById('cpBody').innerHTML = head + who + stat + build + moment + recent;
+  document.getElementById('champPop').classList.add('open');
+  document.querySelector('#champPop .hp-box').scrollTop = 0;
+  layerOpen('champ', () => closeChampPop(true));
+}
+function closeChampPop(fromBack) { document.getElementById('champPop').classList.remove('open'); if (!fromBack) layerClose('champ'); }
+function cpGoMatch(id) {                                             // 최근 경기 → 전적 메뉴에서 그 경기를 펼쳐서 보여주기
+  closeChampPop();
+  const mode = recMode, btn = [...document.querySelectorAll('.nav-btn')].find(b => b.getAttribute('onclick') === "switchPage('record',this)");
+  switchPage('record', btn, true);
+  if (recMode !== mode) switchRecMode(mode, true);
+  recOpen.add(id); renderMatchList();
+  setTimeout(() => { const c = document.querySelector(`.mt-card[data-id="${id}"]`); if (c) { c.scrollIntoView({ behavior: 'smooth', block: 'start' }); c.classList.add('cp-flash'); setTimeout(() => c.classList.remove('cp-flash'), 1800); } }, 120);
 }
 
 // ══════════════════ 소환사 정보 ══════════════════
