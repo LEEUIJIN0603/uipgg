@@ -5066,15 +5066,40 @@ function exportMatches() {
   msg.className = 'rec-msg';
   msg.textContent = `💾 백업 파일 matches.json (${list.length}경기)을 저장했어요 · 전적은 이미 자동으로 공유되니 따로 올릴 필요는 없어요`;
 }
-// GitHub에 함께 올린 matches.json을 불러와 기준으로 삼기
-function loadSharedMatches() {
+// 공유 전적 불러오기 (Supabase가 기준 · 안 되면 예전 matches.json)
+//   · 휴대폰은 예전에 열어 둔 탭을 다시 보여줄 때 새로 불러오지 않아서 '지난 내전까지만' 보이는 일이 있었어요
+//     → 화면으로 돌아오면(탭 전환 · 앱 복귀 · 뒤로 가기 복원) 다시 불러오고, 바뀐 게 있을 때만 화면을 새로 그려요
+//   · 저장소 연결이 잠깐 끊기면 몇 번 다시 시도하고, 그래도 안 되면 잠시 뒤 다시 시도해요
+let _sharedSig = '', _sharedLoadAt = 0, _sharedBusy = false, _sharedRetryT = null;
+const withTimeout = (pr, ms) => Promise.race([pr, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+async function dbLoadRetry() {
+  let err;
+  for (const wait of [0, 700, 2000]) {
+    if (wait) await new Promise(r => setTimeout(r, wait));
+    try { return await withTimeout(dbLoadMatches(), 12000); } catch (e) { err = e; }
+  }
+  throw err;
+}
+function loadSharedMatches(quiet) {
   if (!/^https?:$/.test(location.protocol)) { sharedState = 'missing'; renderRecord(); renderShareInfo(); return; }
-  const fromFile = () => fetch('matches.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject('missing'));
-  // 공유 저장소(Supabase)가 기준. 연결이 안 되면 예전 matches.json 파일로 대신 보여줘요
-  (DB_ON ? dbLoadMatches().then(list => { sharedSrc = 'db'; return list; }).catch(() => { sharedSrc = 'file'; return fromFile(); })
-         : (sharedSrc = 'file', fromFile()))
+  if (_sharedBusy) return;
+  _sharedBusy = true;
+  const fromFile = () => fetch('matches.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject('missing'));
+  let src = 'file';
+  // 처음 열 때는 한 번만 시도하고 바로 보여준 뒤, 실패했으면 뒤에서 다시 시도 (조용히 다시 불러올 때는 몇 번 재시도)
+  (DB_ON ? (quiet ? dbLoadRetry() : withTimeout(dbLoadMatches(), 10000)).then(list => { src = 'db'; return list; }).catch(() => { src = 'file'; return fromFile(); })
+         : fromFile())
     .then(data => {
       const shared = (Array.isArray(data) ? data : data.matches || []).filter(m => m && m.id && Array.isArray(m.players));
+      // 저장소 대신 예전 파일로 보여준 경우: 잠시 뒤 저장소를 다시 시도
+      clearTimeout(_sharedRetryT);
+      if (DB_ON && src === 'file') _sharedRetryT = setTimeout(() => loadSharedMatches(true), quiet ? 30000 : 4000);
+      // 저장소에서 받았는데 지금 보이는 것보다 경기가 적으면(일시 오류) 덮어쓰지 않고 다시 시도
+      if (quiet && sharedSrc === 'db' && src === 'file') return;
+      const sig = src + '|' + shared.length + '|' + shared.map(m => m.id + ':' + (m.mode || '') + ':' + (m.players ? m.players.length : 0)).join(',');
+      _sharedLoadAt = Date.now();
+      if (quiet && sig === _sharedSig) return;                            // 바뀐 게 없으면 화면 그대로
+      _sharedSig = sig; sharedSrc = src;
       sharedIds = new Set(shared.map(m => m.id));
       sharedState = 'ok';
       const localOnly = matches.filter(m => !sharedIds.has(m.id));          // 페이지를 연 뒤 방금 올린 경기만
@@ -5087,10 +5112,23 @@ function loadSharedMatches() {
       saveRec(); renderRecord(); loadDD();
     })
     .catch(() => {
+      if (quiet && sharedState === 'ok') return;                            // 이미 보여주고 있던 기록은 그대로
       sharedState = 'missing';                       // 아직 공유 파일이 없음 → 지금 있는 건 전부 내 기록
       saveRec(); renderRecord(); renderShareInfo();
-    });
+    })
+    .finally(() => { _sharedBusy = false; });
 }
+// 화면으로 돌아왔을 때 다시 불러오기 (30초 이상 지났으면)
+function refreshSharedIfStale(force) {
+  if (document.visibilityState !== 'visible') return;
+  if (!force && Date.now() - _sharedLoadAt < 30000) return;
+  loadSharedMatches(true);
+}
+document.addEventListener('visibilitychange', () => refreshSharedIfStale());
+window.addEventListener('pageshow', e => { if (e.persisted) refreshSharedIfStale(true); });   // 뒤로 가기 · 탭 복원
+window.addEventListener('focus', () => refreshSharedIfStale());
+window.addEventListener('online', () => refreshSharedIfStale(true));
+setInterval(() => refreshSharedIfStale(), 5 * 60 * 1000);              // 켜 둔 채로 있어도 5분마다 확인
 // 공유 상태 안내 한 줄
 function renderShareInfo() {
   const el = document.getElementById('recShare');
