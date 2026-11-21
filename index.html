@@ -947,7 +947,7 @@
     .wr-bar .l { background: #c24040; text-align: right; padding-right: 4px; flex: 1; }
     .wr-bar .w:empty, .wr-bar .l:empty { padding: 0; }
     .wr-bar .w[style*="width:100%"] + .l { display: none; }
-    .wr-pct { font-weight: 700; min-width: 34px; }
+    .wr-pct { font-weight: 700; min-width: 34px; } .wr-g { display: none; }
     .wr-pct.hi { color: var(--gold2); } .wr-pct.lo { color: var(--muted); }
     .rk-most { display: flex; gap: 6px; justify-content: flex-start; }
     .rk-most > div { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: .58rem; color: var(--muted); }
@@ -1516,6 +1516,9 @@
       .rk-table .rk-score .bar { width: 40px; }
       .rk-table td[data-l]::before { content: attr(data-l); display: block; font-size: .6rem; color: var(--muted); margin-bottom: 3px; white-space: nowrap; }
       .rk-table td.rk-c-wr { grid-column: 1 / -1; order: 1; }
+      .rk-table td.rk-c-g:not(.sk) { display: none; }                    /* 판수는 승률 줄 옆으로 → 카드 한 줄 줄이기 */
+      .rk-table .wr-g { display: inline; margin-left: 8px; font-size: .74rem; color: var(--muted); }
+      .rk-table tr:has(td.rk-c-g.sk) .wr-g { display: none; }
       .rk-table td.sk { background: rgba(240,201,106,.10); border-radius: 8px; padding-left: 8px; padding-right: 6px; box-shadow: inset 2px 0 0 #f0c96a; }
       .rk-table td.sk[data-l]::before { color: #f0c96a; font-weight: 700; }
       .rk-table td.sk.rk-c-score { box-shadow: none; padding: 4px 8px; }
@@ -5742,7 +5745,7 @@ function renderRank() {
         <td class="rk-c-score"><div class="rk-score"><b>${r.score.toFixed(1)}</b><div class="bar"><i style="width:${Math.round(r.score)}%"></i></div></div></td>
         <td class="rk-c-g" data-l="판수">${r.g}</td>
         <td class="rk-c-wr" data-l="승률"><div class="wr"><div class="wr-bar"><div class="w" style="width:${wrp}%">${r.w ? r.w + '승' : ''}</div><div class="l">${r.g - r.w ? (r.g - r.w) + '패' : ''}</div></div>
-          <span class="wr-pct${wrp >= 60 ? ' hi' : wrp < 40 ? ' lo' : ''}">${wrp}%</span></div></td>
+          <span class="wr-pct${wrp >= 60 ? ' hi' : wrp < 40 ? ' lo' : ''}">${wrp}%</span><span class="wr-g">${r.g}판</span></div></td>
         <td class="kda rk-c-kda" data-l="평균 K/D/A">${(r.k / r.g).toFixed(1)} / <span class="dd">${(r.d / r.g).toFixed(1)}</span> / ${(r.a / r.g).toFixed(1)}
           <span class="kda-r${r.kda >= 4 ? ' hi' : ''}">${r.d ? r.kda.toFixed(2) + ':1' : 'Perfect'}</span></td>
         <td data-l="${lane === 'SPT' ? '분당 시야' : '분당 CS'}">${lane === 'SPT' ? r.f.vpm.toFixed(2) : r.f.cspm.toFixed(1)}</td>
