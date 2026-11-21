@@ -2570,6 +2570,24 @@
     .cp-kda em { font-style: normal; color: #ff7b7b; } .cp-dmg { color: var(--muted); font-size: .68rem; } .cp-go { color: var(--muted); }
     .mt-card.cp-flash { box-shadow: 0 0 0 2px #f0c96a, 0 0 24px rgba(240,201,106,.5) !important; transition: box-shadow .3s; }
     @media (max-width: 760px) { .cp-kpi, .cp-stats { grid-template-columns: repeat(2, 1fr); } .cp-dmg { display: none; } .cp-when { min-width: 0; } .cp-sec { padding: 12px 14px 2px; } .cp-hero { padding: 18px 14px 14px; } }
+    /* 액자 안에 새긴 이름 */
+    .hof-eng { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4px 8px; }
+    .hof-fx:not(.empty) .hof-art::after { background: radial-gradient(85% 85% at 50% 50%, rgba(0,0,0,.15), rgba(0,0,0,.55)), linear-gradient(180deg, rgba(0,0,0,.05) 30%, rgba(0,0,0,.55)); }
+    .hof-eng .g { font-family: 'Noto Serif KR', serif; font-size: .78rem; letter-spacing: 6px; padding-left: 6px; }
+    .hof-eng b { font-family: 'Noto Serif KR', serif; font-weight: 900; font-size: 1.55rem; letter-spacing: 2px; line-height: 1.2; margin: 2px 0 3px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hof-eng small { font-size: .66rem; letter-spacing: .5px; }
+    .hof-eng b.l { font-size: 1.2rem; letter-spacing: 1px; } .hof-eng b.xl { font-size: .98rem; letter-spacing: 0; }
+    .hof-top .hof-fx:not(:only-child) .hof-eng b { font-size: 1.3rem; } .hof-top .hof-fx:not(:only-child) .hof-eng b.l { font-size: 1.02rem; } .hof-top .hof-fx:not(:only-child) .hof-eng b.xl { font-size: .86rem; }
+    .hof.gold .hof-eng .g { color: #f3d98a; text-shadow: 0 1px 3px #000; }
+    .hof.gold .hof-eng b { background: linear-gradient(180deg, #fff8dc 0%, #f2d38a 35%, #c8902c 60%, #fbe6a4 75%, #a87422 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 2px rgba(0,0,0,.9)) drop-shadow(0 0 10px rgba(255,190,80,.35)); }
+    .hof.gold .hof-eng small { color: #f0e2c0; text-shadow: 0 1px 3px #000; }
+    .hof.iron .hof-eng .g { color: #d0606a; text-shadow: 0 1px 3px #000; }
+    .hof.iron .hof-eng b { background: linear-gradient(180deg, #f2ecea 0%, #b8b0b0 40%, #6a5a5c 65%, #d8cccc 80%, #7a4a4e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 2px rgba(0,0,0,.95)) drop-shadow(0 0 10px rgba(200,30,40,.4)); }
+    .hof.iron .hof-eng small { color: #cdbfc0; text-shadow: 0 1px 3px #000; }
+    .hof-fx.empty .hof-eng b { -webkit-text-fill-color: initial; background: none !important; filter: none !important; font-size: 1.2rem; letter-spacing: 8px; }
+    .hof.gold .hof-fx.empty .hof-eng b { color: rgba(232,200,120,.75); } .hof.iron .hof-fx.empty .hof-eng b { color: rgba(200,140,150,.7); }
+    .hof-fx.empty .hof-eng small { opacity: .75; }
+    @media (max-width: 760px) { .hof-eng b { font-size: 1.35rem; } }
     /* ══ 명예회원: 빛 · 반짝임 ══ */
     .hof > .hof-glow { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
     .hof.gold > *:not(.hof-glow) { position: relative; z-index: 1; }
@@ -6401,7 +6419,8 @@ function streakRuns(kind) {                                     // kind: 'w' 연
         const gs = days.flatMap(d => d.games).filter(g => g.p.win === (kind === 'w'));
         const C = {}; gs.forEach((g, i) => { const c = C[g.p.champ] || (C[g.p.champ] = { n: 0, i: 0, m: g.m }); c.n++; c.i = i; c.m = g.m; });
         const top = Object.entries(C).sort((a, b) => b[1].n - a[1].n || b[1].i - a[1].i)[0];
-        out.push({ key: s.key, name: s.name, tag: s.tag, n, start, end: last, reached: days[MEMBER_MIN - 1].day, champ: top ? top[0] : null, m: top ? top[1].m : null });
+        const lg = gs[gs.length - 1];                                  // 그 연승(연패)의 마지막 판에 쓴 챔프 → 액자 배경
+        out.push({ key: s.key, name: s.name, tag: s.tag, n, start, end: last, reached: days[MEMBER_MIN - 1].day, champ: top ? top[0] : null, m: top ? top[1].m : null, lastChamp: lg ? lg.p.champ : null });
       }
       n = 0; start = null; days = [];
     };
@@ -6415,6 +6434,7 @@ function streakRuns(kind) {                                     // kind: 'w' 연
 }
 // 명예회원 · 불명예회원: 처음 6연승(6연패)을 달성한 순서대로 1대, 2대 … 액자에 새겨요
 //   한 사람은 한 자리 (처음 달성한 기록) · 지금은 1대 액자부터, 다음 사람이 생기면 옆에 이어 붙어요
+const nameW = t => [...String(t)].reduce((w, c) => w + (/[\u3131-\uD79D]/.test(c) ? 1 : .6), 0);   // 한글 1칸 · 영문/숫자 0.6칸
 const ROMAN = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ'];
 function memberBoard(kind) {
   const win = kind === 'w', unit = win ? '연승' : '연패', M = MEMBER_MIN;
@@ -6426,11 +6446,12 @@ function memberBoard(kind) {
   const frameSrc = win ? 'img/frame-gold.webp' : 'img/frame-iron.webp';
   const frame = (r, i) => {
     const gen = `제 ${ROMAN[i] || (i + 1)} 대`;
-    if (!r) return `<div class="hof-fx empty"><div class="hof-fr"><div class="hof-art"><span><b>?</b>${win ? '주인을 기다리는 자리' : '아직 아무도… 다행히도'}</span></div><img class="hof-f" src="${frameSrc}" alt="">${win ? '<i class="hof-shine"></i>' : ''}</div>
-      <div class="hof-lb"><div class="g">${gen}</div><b>공 석</b><small>${win ? `다음 ${M}연승의 주인공은?` : `${M}연패의 주인공이 나오지 않기를`}</small></div></div>`;
-    const ci = r.champ ? champInfo(r.champ) : null;
-    return `<div class="hof-fx"><div class="hof-fr"><div class="hof-art">${ci ? `<img src="${splashOf(r.champ)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</div><img class="hof-f" src="${frameSrc}" alt="">${win ? '<i class="hof-shine"></i>' : ''}</div>
-      <div class="hof-lb"><div class="g">${gen}</div><b>${escapeHtml(r.name)}</b><small>${r.n}${unit} · ${d8(r.start)} – ${r.end.slice(5)}${ci ? ' · ' + escapeHtml(ci.name) : ''}${best[r.key] > r.n ? ` · 최고 ${best[r.key]}${unit}` : ''}</small></div></div>`;
+    const shine = win ? '<i class="hof-shine"></i>' : '';
+    if (!r) return `<div class="hof-fx empty"><div class="hof-fr"><div class="hof-art"><div class="hof-eng"><span class="g">${gen}</span><b>공 석</b><small>${win ? `다음 ${M}연승의 주인공은?` : '아직 아무도… 다행히도'}</small></div></div><img class="hof-f" src="${frameSrc}" alt="">${shine}</div></div>`;
+    const ch = r.lastChamp || r.champ;
+    return `<div class="hof-fx"><div class="hof-fr"><div class="hof-art">${ch ? `<img src="${splashOf(ch)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+        <div class="hof-eng"><span class="g">${gen}</span><b class="${nameW(r.name) > 9 ? 'xl' : nameW(r.name) > 6 ? 'l' : ''}">${escapeHtml(r.name)}</b><small>${r.n}${unit} · ${d8(r.start)} – ${r.end.slice(5)}${best[r.key] > r.n ? ` · 최고 ${best[r.key]}${unit}` : ''}</small></div></div>
+      <img class="hof-f" src="${frameSrc}" alt="">${shine}</div></div>`;
   };
   const list = members.length ? members.map(frame).join('') : frame(null, 0);
   const glow = '<div class="hof-glow" aria-hidden="true"><div class="hof-rays"></div><div class="hx-spark">' + Array.from({ length: 18 }, (_, i) => `<i style="left:${(i * 37 + 11) % 100}%;animation-delay:${((i * .61) % 4).toFixed(2)}s;animation-duration:${(4 + (i % 4)).toFixed(1)}s"></i>`).join('') + '</div>'
