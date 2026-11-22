@@ -2490,6 +2490,13 @@
     .ct-badge { font-size: .66rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; letter-spacing: 0; }
     .ct-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
     .ct-lanes { display: flex; flex-wrap: wrap; gap: 6px; }
+    #view-tier > .mode-tabs { display: none; }                          /* 챔프 티어는 위 탭 대신 한 줄 버튼으로 */
+    .ct-seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 5px; border-radius: 12px; background: rgba(120,150,220,.08); border: 1px solid rgba(120,150,220,.18); }
+    .ct-seg button { padding: 7px 14px; border: none; border-radius: 8px; background: transparent; color: #7fa8ff; font-family: inherit; font-size: .84rem; font-weight: 700; cursor: pointer; transition: background .15s, color .15s; }
+    .ct-seg button:hover { background: rgba(120,160,255,.12); }
+    .ct-seg button.on { background: #3b63d6; color: #fff; box-shadow: 0 2px 8px rgba(59,99,214,.45); }
+    .ct-seg button.aram { color: #ff5a4f; } .ct-seg button.aram:hover { background: rgba(255,90,80,.12); }
+    .ct-seg button.aram.on { background: #d9423a; color: #fff; box-shadow: 0 2px 8px rgba(217,66,58,.45); }
     .ct-min { font-size: .74rem; color: var(--muted); } .ct-min select { margin-left: 6px; background: var(--panel2); color: var(--text-bright); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; font-family: inherit; }
     .ct-note { font-size: .7rem; color: var(--muted); margin-bottom: 8px; }
     .ct-table th.ct-s { cursor: pointer; user-select: none; } .ct-table th.ct-s:hover { color: var(--text-bright); } .ct-table th.ct-s.on { color: #f0c96a; font-weight: 700; }
@@ -2525,6 +2532,7 @@
       .ct-table td.ct-tc { text-align: center; }
       .ct-ch > div > b { flex: 0 1 auto; } .ct-ch > div { flex-wrap: wrap; row-gap: 2px; }
       .ct-mln { display: flex; flex-basis: 100%; padding-left: 44px; margin-top: -2px; } .ct-mln .ln-i img { width: 14px; height: 14px; } .ct-mln .ln-i { font-size: .62rem; }
+      .ct-seg { display: flex; flex-wrap: nowrap; width: 100%; padding: 4px; gap: 1px; } .ct-seg button { flex: 1 1 0; min-width: 0; padding: 7px 0; font-size: .76rem; white-space: nowrap; }
       .ct-msort { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; } .ct-msort .rk-btn { padding: 5px 10px; font-size: .74rem; }
     }
     /* 챔프 상세 창 */
@@ -5842,14 +5850,21 @@ function tierRows(lane) {
   return { rows, games };
 }
 function setCtLane(l) { ctLane = l; renderTier(); }
+function setCtSeg(k) {
+  if (k === 'ARAM') { if (recMode !== 'aram') switchRecMode('aram', true); else renderTier(); return; }
+  ctLane = k;
+  if (recMode !== 'rift') switchRecMode('rift', true); else renderTier();
+}
 function setCtSort(k) { ctAsc = ctSort === k ? !ctAsc : false; ctSort = k; renderTier(); }
 function setCtMin(v) { ctMin = v; renderTier(); }
 function renderTier() {
   const box = document.getElementById('ctBody'), bar = document.getElementById('ctBar');
   if (!box || !bar) return;
   const lane = recMode === 'rift' ? ctLane : 'ALL';
-  bar.innerHTML = (recMode === 'rift' ? '<div class="ct-lanes">' + [['ALL', '전체']].concat(RK_LANES.filter(([k]) => k !== 'ALL')).map(([k, t]) =>
-      `<button class="rk-btn rk-lane${lane === k ? ' active' : ''}" onclick="setCtLane('${k}')">${k !== 'ALL' && ICONS[k] ? `<img src="${ICONS[k]}" alt="">` : ''}${t}</button>`).join('') + '</div>' : '')
+  // 탭 없이 한 줄로: 탑 · 정글 · 미드 · 바텀 · 서폿 · 전체 · 칼바람
+  const segs = [['TOP', '탑'], ['JGL', '정글'], ['MID', '미드'], ['BOT', '바텀'], ['SPT', '서폿'], ['ALL', '전체'], ['ARAM', '칼바람']];
+  const cur = recMode === 'aram' ? 'ARAM' : lane;
+  bar.innerHTML = '<div class="ct-seg">' + segs.map(([k, t]) => `<button class="${k === 'ARAM' ? 'aram' : ''}${cur === k ? ' on' : ''}" onclick="setCtSeg('${k}')">${t}</button>`).join('') + '</div>'
     + `<div class="ct-msort">${[['tier', '티어'], ['wr', '승률'], ['pick', '픽률'], ['g', '판수'], ['kda', 'KDA']].map(([k, t]) => `<button class="rk-btn${ctSort === k ? ' active' : ''}" onclick="setCtSort('${k}')">${t}${ctSort === k ? (ctAsc ? ' ↑' : ' ↓') : ''}</button>`).join('')}</div>`
     + `<div class="ct-min">티어 기준 <select onchange="setCtMin(+this.value)">${[1, 2, 3, 5].map(v => `<option value="${v}"${ctMin === v ? ' selected' : ''}>${v}판 이상</option>`).join('')}</select></div>`;
   if (!modeMatches().length) { box.innerHTML = recLoading() ? loadingHtml('rec-empty') : `<div class="rec-empty">아직 ${MODE_NAME[recMode]} 경기 기록이 없어요.</div>`; return; }
