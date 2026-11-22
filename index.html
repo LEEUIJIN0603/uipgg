@@ -2478,20 +2478,14 @@
       .rk-table tr.rk-out { opacity: .7; } .rk-table tr.rk-out td { opacity: 1; }
     }
 
-    /* 명예의 전당 메뉴: 금빛으로 빛나게 */
-    .nav-btn.nav-hall { position: relative; color: #f3d27a; font-weight: 700; }
-    .nav-btn.nav-hall .nav-ico { color: #ffd76a; animation: navHallIco 2.6s ease-in-out infinite; }
-    .nav-btn.nav-hall .nav-ico svg { filter: drop-shadow(0 0 3px rgba(255,200,80,.8)); }
-    @keyframes navHallIco { 0%, 100% { filter: drop-shadow(0 0 2px rgba(255,200,80,.35)); } 50% { filter: drop-shadow(0 0 9px rgba(255,210,90,.95)); } }
-    .nav-btn.nav-hall .nav-hall-t { background: linear-gradient(100deg, #c8902c 0%, #ffe7a6 30%, #fff8dc 40%, #ffe7a6 50%, #c8902c 80%) 0 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: navHallTxt 3.2s linear infinite; }
+    /* 명예의 전당 메뉴: 은은한 금빛 (다른 메뉴와 너무 차이 나지 않게) */
+    .nav-btn.nav-hall { position: relative; color: #cdb57a; }
+    .nav-btn.nav-hall .nav-ico { color: #d9bd72; animation: navHallIco 3.6s ease-in-out infinite; }
+    @keyframes navHallIco { 0%, 100% { filter: drop-shadow(0 0 0 rgba(255,200,80,0)); } 50% { filter: drop-shadow(0 0 4px rgba(255,205,110,.55)); } }
+    .nav-btn.nav-hall .nav-hall-t { background: linear-gradient(100deg, #bfa468 0%, #bfa468 35%, #f1dfae 45%, #bfa468 55%, #bfa468 100%) 0 0 / 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: navHallTxt 5s linear infinite; }
     @keyframes navHallTxt { from { background-position: 100% 0; } to { background-position: -150% 0; } }
-    .nav-btn.nav-hall::after { content: '✦'; position: absolute; font-size: .55rem; color: #ffe39a; text-shadow: 0 0 6px #ffcf5a; animation: navHallSpk 2.6s ease-in-out infinite; pointer-events: none; }
-    .nav-btn.nav-hall::after { right: 16%; top: 6px; }
-    @media (min-width: 761px) { .side-nav .nav-btn.nav-hall::after { left: 24px; right: auto; top: 3px; } }
-    @keyframes navHallSpk { 0%, 100% { opacity: 0; transform: scale(.4); } 50% { opacity: 1; transform: scale(1.1); } }
-    .nav-btn.nav-hall:not(.active) { background: linear-gradient(90deg, rgba(255,200,80,.08), transparent 80%); }
     .nav-btn.nav-hall.active .nav-ico { color: #ffd76a; }
-    @media (prefers-reduced-motion: reduce) { .nav-btn.nav-hall .nav-ico, .nav-btn.nav-hall .nav-hall-t, .nav-btn.nav-hall::after { animation: none !important; } }
+    @media (prefers-reduced-motion: reduce) { .nav-btn.nav-hall .nav-ico, .nav-btn.nav-hall .nav-hall-t { animation: none !important; } }
     /* ══ 챔프 티어 ══ */
     .ct-badge { font-size: .66rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; letter-spacing: 0; }
     .ct-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
