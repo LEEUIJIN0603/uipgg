@@ -6431,13 +6431,13 @@ function _renderHall(box) {
     .filter(x => x.n >= 2).sort((a, b) => b.n - a.n || (b.end > a.end ? 1 : -1)).slice(0, 3);
   const G = {};
   ms.forEach(m => m.players.forEach(p => { const k = p.puuid || p.name; const x = G[k] || (G[k] = { name: p.name, k: 0, cw: 0, g: 0, p, m }); x.name = p.name; x.k += p.k; x.cw += p.cw || 0; x.g++; x.p = p; x.m = m; }));
-  const killKing = Object.values(G).sort((a, b) => b.k - a.k || a.g - b.g).slice(0, 3);
+  const killKing = Object.values(G).filter(x => x.g >= 3).sort((a, b) => b.k / b.g - a.k / a.g || b.g - a.g).slice(0, 3);   // 3판 이상 · 판당 킬 많은 순
   const wardRich = Object.values(G).filter(x => x.g >= 3).sort((a, b) => b.cw / b.g - a.cw / a.g || b.g - a.g).slice(0, 3);
   const grow = (i, m, p, main, sub) => `<div class="hx-mr"><span class="hx-rk r${i + 1}">${i + 1}</span>${champIcon(m, p.champ)}<div class="hx-mn"><b>${main}</b><span>${sub}</span></div></div>`;
   const careerHtml = `<div class="hx-sec"><span>✦ CAREER OF GLORY ✦</span><b>누적 명예 기록</b></div>
     <div class="hx-mos hx-career">
       ${moment('gold', '🔥', '역대 최장 연승', '내전 날짜 기준', longWin.map((x, i) => grow(i, x.last.m, x.last.p, `${escapeHtml(x.name)} <em>${x.n}연승</em>`, x.end ? x.end.slice(5).replace('.', '/') + '까지' : '')), '아직 2연승 이상이 없어요')}
-      ${moment('gold', '⚔️', '누적 킬왕', '지금까지 가장 많이 잡은 사람', killKing.map((x, i) => grow(i, x.m, x.p, `${escapeHtml(x.name)} <em>${x.k}킬</em>`, `${x.g}판 · 판당 ${(x.k / x.g).toFixed(1)}킬`)), '아직 기록이 없어요')}
+      ${moment('gold', '⚔️', '평균 킬왕', '판당 가장 많이 잡은 사람 (3판 이상)', killKing.map((x, i) => grow(i, x.m, x.p, `${escapeHtml(x.name)} <em>판당 ${(x.k / x.g).toFixed(1)}킬</em>`, `${x.g}판 동안 총 ${x.k}킬`)), '아직 기록이 없어요')}
       ${moment('gold', '💎', '와드 재벌', '제어 와드를 판당 가장 많이 산 사람 (3판 이상)', wardRich.map((x, i) => grow(i, x.m, x.p, `${escapeHtml(x.name)} <em>${(x.cw / x.g).toFixed(2)}개/판</em>`, `${x.g}판 동안 총 ${x.cw}개`)), '아직 기록이 없어요')}
     </div>`;
   box.innerHTML = `<div class="hof-top">${memberBoard('w')}${memberBoard('l')}</div>
