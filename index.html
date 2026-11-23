@@ -7108,11 +7108,14 @@ function dayDigest(day) {
   }
   // 역대 한 판 기록 경신 (그 전날까지의 최고 기록을 넘었을 때)
   if (before.length) {
-    [['k', '최다 킬', v => v + '킬'], ['a', '최다 어시스트', v => v + '어시'], ['dmg', '최다 딜량', v => v.toLocaleString()]].forEach(([key, label, f]) => {
-      const prevMax = Math.max(0, ...before.flatMap(m => m.players.map(p => p[key] || 0)));
+    // 명예의 전당 '역대 한 판 최고 기록'과 같은 항목 (킬 · 어시 · 딜 · KDA · 골드 · CS · 시야 · 받은 피해)
+    HALL_RECORDS.forEach(r => {
+      if (r.rift && recMode !== 'rift') return;
+      const val = p => { const v = r.v(p); return v == null || !isFinite(v) ? -Infinity : v; };
+      const prevMax = Math.max(0, ...before.flatMap(m => m.players.map(val)));
       let best = null;
-      dayMs.forEach(m => m.players.forEach(p => { if ((p[key] || 0) > prevMax && (!best || p[key] > best.p[key])) best = { p, m }; }));
-      if (best) out.records.push(`한 판 ${label} **${f(best.p[key])}** · ${best.p.name} (${champInfo(best.p.champ).name})`);
+      dayMs.forEach(m => m.players.forEach(p => { const v = val(p); if (v > prevMax && (!best || v > best.v)) best = { p, m, v }; }));
+      if (best) out.records.push(`한 판 ${r.name.replace(/^(최다|최고) /, '$1 ')} **${r.f(best.v, best.p)}${r.sub ? ` (${r.sub(best.p)})` : ''}** · ${best.p.name} (${champInfo(best.p.champ).name})`);
     });
   }
   // 이변: 승부 예측 35% 이하였던 팀이 이긴 판
