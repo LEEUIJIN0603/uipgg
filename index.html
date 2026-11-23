@@ -6600,7 +6600,7 @@ function shameHtml(ms, retro) {
     .filter(x => x.n >= 2).sort((a, b) => b.n - a.n).slice(0, 3);
   const D = {};
   ms.forEach(m => m.players.forEach(p => { const k = p.puuid || p.name; const x = D[k] || (D[k] = { name: p.name, d: 0, cw: 0, g: 0, p, m }); x.name = p.name; x.d += p.d; x.cw += p.cw || 0; x.g++; x.p = p; x.m = m; }));
-  const deathKing = Object.values(D).sort((a, b) => b.d - a.d).slice(0, 3);
+  const deathKing = Object.values(D).filter(x => x.g >= 3).sort((a, b) => b.d / b.g - a.d / a.g || b.g - a.g).slice(0, 3);   // 3판 이상 · 판당 데스 많은 순 (많이 참가해도 불리하지 않게)
   const wardPoor = Object.values(D).filter(x => x.g >= 3).sort((a, b) => a.cw / a.g - b.cw / b.g || b.g - a.g).slice(0, 3);   // 3판 이상 · 판당 제어와드 적은 순
   const rank = (i) => `<span class="hs-rk">${i + 1}</span>`;
   _darkMomentsHtml = `    <div class="hs-mos">
@@ -6622,7 +6622,7 @@ function shameHtml(ms, retro) {
     <div class="hs-sec"><span>✦ CAREER OF SHAME ✦</span><b>누적 흑역사</b></div>
     <div class="hs-mos${recMode !== 'rift' ? ' two' : ''}">
       ${box('lose', '🧊', '역대 최장 연패', '내전 날짜 기준', longLose.map((x, i) => row(rank(i) + champIcon(x.last.m, x.last.p.champ), `${escapeHtml(x.name)} <em>${x.n}연패</em>`, `${x.end ? x.end.slice(5).replace('.', '/') + '까지' : ''}`)), '아직 2연패 이상이 없어요')}
-      ${box('dead', '⚰️', '누적 데스왕', '지금까지 가장 많이 죽은 사람', deathKing.map((x, i) => row(rank(i) + champIcon(x.m, x.p.champ), `${escapeHtml(x.name)} <em>${x.d}데스</em>`, `${x.g}판 · 판당 ${(x.d / x.g).toFixed(1)}데스`)), '아직 기록이 없어요')}
+      ${box('dead', '⚰️', '평균 데스왕', '판당 가장 많이 죽은 사람 (3판 이상)', deathKing.map((x, i) => row(rank(i) + champIcon(x.m, x.p.champ), `${escapeHtml(x.name)} <em>판당 ${(x.d / x.g).toFixed(1)}데스</em>`, `${x.g}판 동안 총 ${x.d}데스`)), '아직 기록이 없어요')}
       ${recMode !== 'rift' ? '' : box('ward', '🪙', '와드 빈곤층', '제어 와드를 판당 가장 적게 산 사람 (3판 이상)', wardPoor.map((x, i) => row(rank(i) + champIcon(x.m, x.p.champ), `${escapeHtml(x.name)} <em>${(x.cw / x.g).toFixed(2)}개/판</em>`, `${x.g}판 동안 총 ${x.cw}개`)), '아직 기록이 없어요')}
     </div>
     <div class="hs-foot">🤫 웃자고 만든 기록이에요. 다음 내전에서 명예 회복하면 돼요!</div>
