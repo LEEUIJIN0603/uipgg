@@ -810,6 +810,7 @@
     #recMatchList { margin-top: 14px; }
     .day-head { display: flex; align-items: baseline; gap: 10px; margin: 0 0 10px; padding-left: 2px; flex-wrap: wrap; }
     .dh-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px rgba(200,155,60,.7); align-self: center; }
+    .dh-set { align-self: center; font-size: .72rem; font-weight: 700; color: #04080e; background: var(--gold2); border-radius: 999px; padding: 2px 9px; }
     .dh-date { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.45rem; color: var(--gold2); line-height: 1; }
     .dh-wd { font-size: .74rem; color: #a8b3c4; }
     .dh-chip { font-size: .68rem; font-weight: 700; color: var(--gold2); background: var(--gold-dim); border: 1px solid rgba(200,155,60,.35); border-radius: 999px; padding: 1px 9px; }
@@ -4931,21 +4932,23 @@ async function parseRofl(file) {
                  : 'G' + Math.round(meta.gameLength) + '-' + players.map(p => p.puuid.slice(0, 4)).sort().join('');
   const aram = players.some(p => p.sp.includes(32)) || players.every(p => !p.pos);
   // 파일 이름 = 날짜_순번_게임번호 (예: 20261103_2_KR-8440553569.rofl)
+  //   같은 날 내전을 두 번 이상 하면 날짜 뒤에 차수: 날짜_2차_순번_게임번호 (예: 20261123_2차_1_KR-8440553569.rofl) → 다른 내전으로 따로 집계
   //   날짜 = 내전한 날, 순번 = 그날 몇 번째 판. 순번대로 정렬해요 (화면에는 날짜 + 몇 번째 판만 표시)
   //   순번이 없으면 파일 시각으로 순서를 맞춰요
-  let date = file.lastModified || Date.now(), dayOnly = false, seq = 0;
-  const dm = file.name.match(/^(\d{4})(\d{2})(\d{2})(?:[_\-\s]+(\d{1,3})(?=[_\-\s.]))?/);
+  let date = file.lastModified || Date.now(), dayOnly = false, seq = 0, set = 1;
+  const dm = file.name.match(/^(\d{4})(\d{2})(\d{2})(?:[_\-\s]+(\d{1,2})차)?(?:[_\-\s]+(\d{1,3})(?=[_\-\s.]))?/);
   if (dm) {
     const y = +dm[1], mo = +dm[2], d = +dm[3];
     const day = new Date(y, mo - 1, d);
     if (day.getFullYear() === y && day.getMonth() === mo - 1 && day.getDate() === d) {
-      if (dm[4]) { seq = +dm[4]; day.setHours(0, seq, 0, 0); }          // 순번 1, 2, 3… 순서 그대로
+      if (dm[4]) set = Math.max(1, +dm[4]);                                // 그날 몇 번째 내전(차수)
+      if (dm[5]) { seq = +dm[5]; day.setHours(set - 1, seq, 0, 0); }    // 순번 1, 2, 3… 순서 그대로 (2차는 1차 뒤로)
       else { const t = new Date(date); day.setHours(t.getHours(), t.getMinutes(), t.getSeconds()); }
       date = day.getTime(); dayOnly = true;
     }
   }
   return {
-    id, date, dayOnly, seq, len: Math.round(N(meta.gameLength) / 1000),
+    id, date, dayOnly, seq, set, len: Math.round(N(meta.gameLength) / 1000),
     mode: aram ? 'aram' : 'rift',
     ver: vm ? `${vm[1]}.${vm[2]}` : '',
     surrender: stats.some(p => p.GAME_ENDED_IN_SURRENDER === '1' || p.GAME_ENDED_IN_EARLY_SURRENDER === '1'),
@@ -4984,8 +4987,8 @@ async function handleRecFiles(fileList) {
         else if (r === 'dup') {
           const ex = matches.find(x => x.id === m.id);
           let changed = false;
-          if (m.dayOnly && ex && (!ex.dayOnly || ex.date !== m.date || (ex.seq || 0) !== m.seq)) {
-            ex.date = m.date; ex.dayOnly = true; ex.seq = m.seq; fixed++; changed = true;
+          if (m.dayOnly && ex && (!ex.dayOnly || ex.date !== m.date || (ex.seq || 0) !== m.seq || (ex.set || 1) !== (m.set || 1))) {
+            ex.date = m.date; ex.dayOnly = true; ex.seq = m.seq; ex.set = m.set; fixed++; changed = true;
           }
           if (ex && ((ex.players[0] && ex.players[0].xv) || 0) < 2) {   // 예전에 올린 경기: 칭호·증강 기록 채우기
             const byKey = {}; m.players.forEach(p => { byKey[p.puuid || p.name] = p; });
@@ -5007,7 +5010,7 @@ async function handleRecFiles(fileList) {
   if (cnt.rift) parts.push(`✅ 소환사 협곡 ${cnt.rift}경기`);
   if (cnt.aram) parts.push(`✅ 칼바람 증바람 ${cnt.aram}경기`);
   if (added) parts[parts.length - 1] += ' 추가했어요';
-  if (fixed) parts.push(`📅 이미 있던 ${fixed}경기의 날짜·순번을 파일 이름대로 고쳤어요`);
+  if (fixed) parts.push(`📅 이미 있던 ${fixed}경기의 날짜·순번·차수를 파일 이름대로 고쳤어요`);
   if (refreshed) parts.push(`🏷 이미 있던 ${refreshed}경기에 칭호·증강 기록을 채웠어요`);
   if (dup) parts.push(`이미 있는 경기 ${dup}개는 건너뛰었어요`);
   if (noDate) parts.push(`파일 이름 앞에 날짜(예: 20261103_1_)가 없는 ${noDate}개는 파일 시각으로 저장했어요`);
@@ -5343,7 +5346,15 @@ const STREAK_LINES = {
     { key: 'cold3', ok: () => true, text: f => `${f.n}연패는 반등 서사의 시작일 뿐` }
   ]
 };
-const dayKey = m => fmtDate(m.date).slice(0, 10);
+// 내전 단위: 날짜 (같은 날 2차·3차는 파일 이름의 '2차'로 따로 · 예: '2026.11.23 2차')
+const dayKey = m => fmtDate(m.date).slice(0, 10) + ((m.set || 1) > 1 ? ` ${m.set}차` : '');
+const dateOf = day => String(day).slice(0, 10);
+// 화면 표시용 차수: 그날 2차 이상이 있으면 첫 내전에도 '1차'를 붙여요
+function setTag(day) {
+  const m = String(day).match(/ (\d+)차$/);
+  if (m) return `<span class="dh-set">${m[1]}차</span>`;
+  return matches.some(x => (x.set || 1) > 1 && dateOf(dayKey(x)) === day) ? '<span class="dh-set">1차</span>' : '';
+}
 // 그날 몇 번째 판인지: 파일 이름의 순번은 정렬에만 쓰고, 화면에는 협곡/칼바람 따로 1번부터 다시 매겨요
 function gameNo(m) {
   const same = matches.filter(x => modeOf(x) === modeOf(m) && dayKey(x) === dayKey(m))
@@ -5380,7 +5391,7 @@ function closeStreakHist(fromBack) { document.getElementById('histPop').classLis
 // 연승/연패는 '내전 날짜' 기준: 그날 승이 많으면 승, 패가 많으면 패, 같으면 무승부(연승·연패 계산에서 빼요)
 // 연승 유효기간: 그 소환사의 마지막 내전일로부터 30일이 지나면 연승은 무효 (연패는 그대로)
 const WIN_EXPIRE_DAYS = 30;
-const dayMs = d => new Date(d.replace(/\./g, '-') + 'T00:00:00').getTime();
+const dayMs = d => new Date(d.slice(0, 10).replace(/\./g, '-') + 'T00:00:00').getTime();
 function winExpiry(lastDay) {                                     // → { until: 'M/D', left: 남은 일수 (0 = 오늘까지), expired }
   const today = dayMs(fmtDate(Date.now()).slice(0, 10));
   const untilMs = dayMs(lastDay) + WIN_EXPIRE_DAYS * 86400000;
@@ -5575,7 +5586,7 @@ function renderMatchList() {
     return `<div class="day-group" data-day="${g.day}">
       <div class="day-head">
         <span class="dh-dot"></span>
-        <span class="dh-date">${g.day.slice(5).replace('.', '/')}</span>
+        <span class="dh-date">${dateOf(g.day).slice(5).replace('.', '/')}</span>${setTag(g.day)}
         <span class="dh-wd">${g.day.slice(0, 4)} · ${WD[d.getDay()]}요일</span>
         <span class="dh-chip">${g.ms.length}판</span>
         <span class="dh-len">총 ${Math.round(total / 60)}분</span>
@@ -6191,7 +6202,7 @@ function renderSmMatches(name) {
     + groups.map(g => {
       const d = new Date(g.ms[0].date), gw = g.ms.filter(m => me(m).win).length;
       return `<div class="day-group">
-        <div class="day-head"><span class="dh-dot"></span><span class="dh-date">${g.day.slice(5).replace('.', '/')}</span>
+        <div class="day-head"><span class="dh-dot"></span><span class="dh-date">${dateOf(g.day).slice(5).replace('.', '/')}</span>${setTag(g.day)}
           <span class="dh-wd">${g.day.slice(0, 4)} · ${WD[d.getDay()]}요일</span><span class="dh-chip">${g.ms.length}판 · ${gw}승 ${g.ms.length - gw}패</span></div>
         <div class="day-list">${g.ms.map(m => { const p = me(m); return `<div class="sm-me ${p.win ? 'w' : 'l'}"><b>${p.win ? '승리' : '패배'}</b>${champIcon(m, p.champ)}<span>${escapeHtml(champInfo(p.champ).name)}</span><em>${p.k} / ${p.d} / ${p.a}</em></div>` + matchCard(m); }).join('')}</div></div>`;
     }).join('');
@@ -6680,7 +6691,7 @@ let _calYm = null;                                        // [년, 월(0~11)] ·
 function calHtml() {
   const ms = modeMatches();
   const byDay = {};
-  ms.forEach(m => { const d = dayKey(m); const x = byDay[d] || (byDay[d] = { g: 0, min: 0, k: 0 }); x.g++; x.min += m.len / 60; x.k += m.players.reduce((t, p) => t + p.k, 0); });
+  ms.forEach(m => { const d = dateOf(dayKey(m)); const x = byDay[d] || (byDay[d] = { g: 0, min: 0, k: 0 }); x.g++; x.min += m.len / 60; x.k += m.players.reduce((t, p) => t + p.k, 0); });
   const days = Object.keys(byDay).sort();
   if (!_calYm) { const last = days.length ? days[days.length - 1] : fmtDate(Date.now()); _calYm = [+last.slice(0, 4), +last.slice(5, 7) - 1]; }
   const [y, mo] = _calYm;
