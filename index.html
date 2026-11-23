@@ -2486,6 +2486,10 @@
     @keyframes navHallTxt { from { background-position: 100% 0; } to { background-position: -150% 0; } }
     .nav-btn.nav-hall.active .nav-ico { color: #ffd76a; }
     @media (prefers-reduced-motion: reduce) { .nav-btn.nav-hall .nav-ico, .nav-btn.nav-hall .nav-hall-t { animation: none !important; } }
+    /* 새 메뉴 NEW 표시 */
+    .nav-btn.nav-new { position: relative; }
+    .new-badge { display: inline-block; margin-left: 6px; padding: 1px 5px 0; border-radius: 4px; background: #e8342c; color: #fff; font: 700 .56rem/1.4 'Rajdhani', sans-serif; letter-spacing: .5px; font-style: normal; vertical-align: 2px; box-shadow: 0 0 6px rgba(232,52,44,.55); }
+    @media (max-width: 760px) { .nav-btn.nav-new { overflow: visible; } .new-badge { position: absolute; top: 2px; left: 50%; margin-left: 5px; padding: 0 3px; font-size: .48rem; line-height: 1.5; z-index: 2; } }
     /* ══ 챔프 티어 ══ */
     .ct-badge { font-size: .66rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; letter-spacing: 0; }
     .ct-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
@@ -2809,7 +2813,7 @@
     <button class="nav-btn" onclick="switchPage('record',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg></span>전적</button>
     <button class="nav-btn" onclick="switchPage('rank',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>순위</button>
     <button class="nav-btn" onclick="switchPage('summoner',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></span>소환사 정보</button>
-    <button class="nav-btn adm-only" onclick="switchPage('tier',this)" title="관리자 링크에서만 보여요"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h11"/><path d="M4 18h6"/><circle cx="19" cy="15" r="2.5"/><path d="M19 17.5V21"/></svg></span>챔프 티어</button>
+    <button class="nav-btn nav-new" onclick="switchPage('tier',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h11"/><path d="M4 18h6"/><circle cx="19" cy="15" r="2.5"/><path d="M19 17.5V21"/></svg></span>챔프 티어<i class="new-badge">NEW</i></button>
     <button class="nav-btn nav-hall" onclick="switchPage('hall',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4 18h16"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 3 3 8.5V11h18V8.5z"/></svg></span><span class="nav-hall-t">명예의 전당</span></button>
     <div class="nav-sep" aria-hidden="true"></div>
     <button class="nav-btn" onclick="switchPage('assign',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg></span>팀 배정</button>
@@ -2986,7 +2990,7 @@
   </div>
 </div><!-- /view-rank -->
 
-<!-- ▣ 챔프 티어 (관리자 링크에서만) -->
+<!-- ▣ 챔프 티어 -->
 <div class="page-view" id="view-tier">
   <div class="tabs mode-tabs">
     <button class="tab-btn active" data-mode="rift" onclick="switchRecMode('rift')">
@@ -2999,7 +3003,7 @@
     </button>
   </div>
   <div class="card">
-    <div class="card-title"><span>▸ 챔피언 티어</span><span class="ct-badge">🔧 관리자 전용</span></div>
+    <div class="card-title"><span>▸ 챔피언 티어</span></div>
     <div class="ct-bar" id="ctBar"></div>
     <div id="ctBody"></div>
   </div>
@@ -5809,7 +5813,7 @@ function renderRank() {
 }
 
 
-// ══════════════════ 챔프 티어 (관리자 링크에서만) ══════════════════
+// ══════════════════ 챔프 티어 ══════════════════
 //   우리 내전 전적만으로 챔피언별 승률 · 픽률 · KDA를 모아서 OP / 1 ~ 5티어로 나눠요
 //   판수가 적으면 승률이 출렁여서, 승률은 50% 쪽으로 살짝 당겨서(판수 보정) 점수를 매겨요
 let ctLane = 'ALL', ctSort = 'tier', ctAsc = false, ctMin = 2, ctShowLow = false;
