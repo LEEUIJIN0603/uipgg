@@ -810,6 +810,7 @@
     #recMatchList { margin-top: 14px; }
     .day-head { display: flex; align-items: baseline; gap: 10px; margin: 0 0 10px; padding-left: 2px; flex-wrap: wrap; }
     .dh-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px rgba(200,155,60,.7); align-self: center; }
+    .kpi-set { font-size: .5em; font-weight: 700; margin-left: 4px; opacity: .85; vertical-align: .15em; }
     .dh-set { align-self: center; font-size: .72rem; font-weight: 700; color: #04080e; background: var(--gold2); border-radius: 999px; padding: 2px 9px; }
     .dh-date { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.45rem; color: var(--gold2); line-height: 1; }
     .dh-wd { font-size: .74rem; color: #a8b3c4; }
@@ -6763,7 +6764,7 @@ function renderDashboard() {
     ${(() => { const R = dayPredictions(); if (!R.length) return '';
         const ok = R.filter(x => x.ok).length;
         return `<div class="kpi" data-ico="🔮" title="내전 날마다 그날의 최종 승리 팀을 맞혔는지 (그날 시작 전 기록으로 예측 · 무승부인 날은 제외)"><div class="kpi-l">승부 예측 적중률</div><div class="kpi-v">${Math.round(ok / R.length * 100)}<small>%</small></div><div class="kpi-s">내전 ${R.length}일 중 ${ok}일 적중</div></div>`; })()}
-    <div class="kpi" data-ico="📅"><div class="kpi-l">최근 내전</div><div class="kpi-v">${lastDay.slice(5).replace('.', '/')}</div><div class="kpi-s">${lastMs.length}판 진행</div></div>
+    <div class="kpi" data-ico="📅"><div class="kpi-l">최근 내전</div><div class="kpi-v">${dateOf(lastDay).slice(5).replace('.', '/')}${lastDay.length > 10 ? `<small class="kpi-set">${lastDay.slice(11)}</small>` : ''}</div><div class="kpi-s">${lastMs.length}판 진행</div></div>
   </div></div>`;
 
   // ② 종합 TOP 3 + 지금 가장 뜨거운/차가운
