@@ -2492,6 +2492,20 @@
     .nav-btn.nav-new { position: relative; }
     .new-badge { display: inline-block; margin-left: 6px; padding: 1px 5px 0; border-radius: 4px; background: #e8342c; color: #fff; font: 700 .56rem/1.4 'Rajdhani', sans-serif; letter-spacing: .5px; font-style: normal; vertical-align: 2px; box-shadow: 0 0 6px rgba(232,52,44,.55); }
     @media (max-width: 760px) { .nav-btn.nav-new { overflow: visible; } .new-badge { position: absolute; top: 2px; left: 50%; margin-left: 5px; padding: 0 3px; font-size: .48rem; line-height: 1.5; z-index: 2; } }
+    @media (max-width: 760px) {           /* 메뉴가 많아서 두 단어 메뉴는 두 줄로 (글자 겹침 방지) */
+      .side-nav .nav-btn { white-space: normal; word-break: keep-all; line-height: 1.15; overflow: visible; font-size: .6rem; }
+    }
+    .new-badge.soon { background: #6b4bd6; box-shadow: 0 0 6px rgba(120,90,230,.6); }
+    /* 증바람 대회 (커밍순) */
+    .cup-soon { min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border-radius: 18px; border: 1px solid var(--border);
+                background: radial-gradient(50% 45% at 50% 40%, rgba(120,90,230,.16), transparent 70%), var(--panel); padding: 40px 20px; }
+    .cup-ico { width: 70px; height: 70px; color: #a98bff; filter: drop-shadow(0 0 14px rgba(150,110,255,.55)); margin-bottom: 18px; } .cup-ico svg { width: 100%; height: 100%; }
+    .cup-t { font-size: 1.1rem; font-weight: 700; color: var(--text-bright); letter-spacing: 2px; }
+    .cup-cs { margin: 10px 0 8px; font-family: 'Bebas Neue', sans-serif; font-size: 3.4rem; letter-spacing: 10px; padding-left: 10px; line-height: 1;
+              background: linear-gradient(100deg, #8f74ff 0%, #d9ccff 45%, #8f74ff 90%) 0 0 / 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: cupShine 4s linear infinite; }
+    @keyframes cupShine { from { background-position: 100% 0; } to { background-position: -120% 0; } }
+    .cup-s { color: var(--muted); font-size: .82rem; }
+    @media (max-width: 760px) { .cup-cs { font-size: 2.4rem; letter-spacing: 6px; padding-left: 6px; } }
     /* ══ 챔프 티어 ══ */
     .ct-badge { font-size: .66rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; letter-spacing: 0; }
     .ct-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
@@ -2817,6 +2831,7 @@
     <button class="nav-btn" onclick="switchPage('summoner',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></span>소환사 정보</button>
     <button class="nav-btn nav-new" onclick="switchPage('tier',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h11"/><path d="M4 18h6"/><circle cx="19" cy="15" r="2.5"/><path d="M19 17.5V21"/></svg></span>챔프 티어<i class="new-badge">NEW</i></button>
     <button class="nav-btn nav-hall" onclick="switchPage('hall',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M4 18h16"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 3 3 8.5V11h18V8.5z"/></svg></span><span class="nav-hall-t">명예의 전당</span></button>
+    <button class="nav-btn nav-new" onclick="switchPage('cup',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h4v4H3z"/><path d="M3 15h4v4H3z"/><path d="M7 7h3v10H7"/><path d="M10 12h4"/><path d="M14 9h7v6h-7z"/></svg></span>증바람 대회<i class="new-badge soon">SOON</i></button>
     <div class="nav-sep" aria-hidden="true"></div>
     <button class="nav-btn" onclick="switchPage('assign',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg></span>팀 배정</button>
     <button class="nav-btn adm-only" onclick="switchPage('stats',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="1"/><rect x="12" y="8" width="3" height="10" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/></svg></span>접속통계</button>
@@ -3010,6 +3025,16 @@
     <div id="ctBody"></div>
   </div>
 </div><!-- /view-tier -->
+
+<!-- ▣ 증바람 대회 (준비 중) -->
+<div class="page-view" id="view-cup">
+  <div class="cup-soon">
+    <div class="cup-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h4v4H3z"/><path d="M3 15h4v4H3z"/><path d="M7 7h3v10H7"/><path d="M10 12h4"/><path d="M14 9h7v6h-7z"/></svg></div>
+    <div class="cup-t">증바람 대회</div>
+    <div class="cup-cs">COMING SOON</div>
+    <div class="cup-s">준비 중이에요</div>
+  </div>
+</div><!-- /view-cup -->
 
 <!-- ▣ 소환사 정보 -->
 <div class="page-view" id="view-summoner">
@@ -7619,7 +7644,7 @@ async function logVisit(menu, detail) {
     });
   } catch (e) { /* 기록 실패해도 사이트는 그대로 */ }
 }
-const PAGE_NAME = { dash: '대시보드', assign: '팀 배정', record: '전적', rank: '순위', summoner: '소환사 정보', hall: '명예의 전당', tier: '챔프 티어', stats: '접속통계' };
+const PAGE_NAME = { dash: '대시보드', assign: '팀 배정', record: '전적', rank: '순위', summoner: '소환사 정보', hall: '명예의 전당', tier: '챔프 티어', cup: '증바람 대회', stats: '접속통계' };
 if (VISIT_ON) {
   const note = document.getElementById('visitNote');
   if (note) note.textContent = '이 사이트는 더 나은 운영을 위해 방문 통계(접속 시간 · 대략적인 지역 · 기기 종류 · 본 메뉴)를 익명으로 기록해요.';
