@@ -1184,6 +1184,9 @@
     .hot-row.wide .stk-dots i { width: 16px; height: 16px; line-height: 16px; font-size: .58rem; }
     .hot-row.wide .stk-more { height: 16px; line-height: 14px; font-size: .62rem; }
     /* 전체 내전 기록 팝업 */
+    .hp-list .hp-more-row { display: none; } .hp-list.all .hp-more-row { display: grid; }
+    .hp-more { display: block; width: 100%; margin: 8px 0 4px; padding: 9px; background: transparent; border: 1px dashed var(--border); border-radius: 10px; color: var(--muted); font-family: inherit; font-size: .78rem; cursor: pointer; }
+    .hp-more:hover { color: var(--text-bright); border-color: var(--gold); }
     .hist-pop { display: none; position: fixed; inset: 0; z-index: 1500; background: rgba(2,5,10,.72); align-items: center; justify-content: center; padding: 20px; }
     .hist-pop.open { display: flex; animation: fadeUp .25s ease; }
     .hp-box { position: relative; width: min(520px, 100%); max-height: 80vh; overflow-y: auto; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 20px 20px 14px; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
@@ -5399,9 +5402,10 @@ function showStreakHist(i) {
   pop.querySelector('.hp-title').innerHTML = `${escapeHtml(s.name)}<small>#${escapeHtml(s.tag)}</small>`;
   pop.querySelector('.hp-sub').textContent = `${MODE_NAME[recMode]} · 내전 ${s.days.length}일 · ${tw}승 ${tl}패 ${td}무 (날짜 기준)`;
   pop.querySelector('.hp-rel').innerHTML = relationsHtml(s.key);
-  pop.querySelector('.hp-list').innerHTML = all.map(d => `
-    <div class="hp-row">
-      <span class="hp-date">${d.day.slice(5).replace('.', '/')}<small>${d.day.slice(0, 4)}</small></span>
+  const HP_SHOW = 5;                                             // 최근 5번만 보여주고 나머지는 '더보기'로
+  pop.querySelector('.hp-list').innerHTML = all.map((d, di) => `
+    <div class="hp-row${di >= HP_SHOW ? ' hp-more-row' : ''}">
+      <span class="hp-date">${dateOf(d.day).slice(5).replace('.', '/')}<small>${d.day.slice(0, 4)}${d.day.length > 10 ? ` · ${d.day.slice(11)}` : ''}</small></span>
       <span class="hp-res ${d.res}">${d.res === 'w' ? '승' : d.res === 'l' ? '패' : '무'}</span>
       ${(() => {
         const bd = g => matchBadges(g.m)[g.m.players.indexOf(g.p)] || '';          // 그 판 MVP(이긴 팀 1등) · ACE(진 팀 1등)
@@ -5409,7 +5413,8 @@ function showStreakHist(i) {
         return `<span class="hp-rec">${d.w}승 ${d.l}패${nM || nA ? `<small>${nM ? `<em class="mvp">MVP ${nM}</em>` : ''}${nA ? `<em class="ace">ACE ${nA}</em>` : ''}</small>` : ''}</span>
       <span class="hp-ch">${d.games.map(g => { const b = bd(g); return `<span class="hp-g ${g.p.win ? 'w' : 'l'}" title="${gameNo(g.m)}번째 판 · ${escapeHtml(champInfo(g.p.champ).name)} ${g.p.k}/${g.p.d}/${g.p.a} ${g.p.win ? '승' : '패'}${b ? ' · ' + b.toUpperCase() : ''}">${champIcon(g.m, g.p.champ, 'sm')}${b ? `<i class="hp-bd ${b}">${b.toUpperCase()}</i>` : ''}</span>`; }).join('')}</span>`;
       })()}
-    </div>`).join('');
+    </div>`).join('') + (all.length > HP_SHOW ? `<button class="hp-more" onclick="const l=this.parentElement;l.classList.toggle('all');this.textContent=l.classList.contains('all')?'▲ 접기':'▼ 더보기 (+${all.length - HP_SHOW}번)'">▼ 더보기 (+${all.length - HP_SHOW}번)</button>` : '');
+  pop.querySelector('.hp-list').classList.remove('all');
   pop.classList.add('open');
   layerOpen('hist', () => closeStreakHist(true));
 }
