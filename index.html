@@ -6523,7 +6523,7 @@ function _renderHall(box) {
   <div class="hs-div"><span>⬇ 그리고… 잊고 싶은 기록들</span></div>
   ${shameHtml(ms, retro)}
   <div class="gx" id="hxMoments">
-    <div class="gx-hero"><span>✦ MATCH MOMENTS ✦</span><b>경기 업적</b><small>한 판 한 판에서 나온 빛나는 순간과 흑역사</small></div>
+    <div class="gx-hero"><span>✦ MATCH MOMENTS ✦</span><b>경기 업적</b><small>한 판 한 판에서 나온 빛나는 순간</small></div>
     <div class="gx-sub good">🌟 빛나는 순간</div>
     <div class="hx-lens">${lenMedal(byLen[0], '최단 경기', '⚡')}${lenMedal(byLen[byLen.length - 1], '최장 경기', '⏳')}</div>
     <div class="hx-mos">
@@ -6531,8 +6531,6 @@ function _renderHall(box) {
       ${moment('shield', '🛡️', '노데스 게임', '0데스로 끝낸 판', nodeath.slice().reverse().sort((a, b) => (b.p.k + b.p.a) - (a.p.k + a.p.a)).map(x => mrow(x.m, x.p, `${x.p.k}/0/${x.p.a}`)), '아직 노데스 게임이 없어요')}
       ${moment('upset', '😱', '대역전승', '예측 25% 이하 팀의 승리', upsets.slice().reverse().map(u => `<div class="hx-mr"><div class="hx-pct ${u.w}">${u.pct}%</div><div class="hx-mn"><b>${u.w === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} 역전승</b><span>${hallWhen(u.m)} · ${u.m.players.filter(p => p.team === u.w).map(p => escapeHtml(p.name)).join(', ')}</span></div></div>`), '아직 대역전승이 없어요')}
     </div>
-    <div class="gx-sub bad">🌑 흑역사 순간</div>
-    ${_darkMomentsHtml}
   </div>`;
 }
 
