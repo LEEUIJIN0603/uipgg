@@ -1988,7 +1988,10 @@
     .hx-sec b { font-size: 1.15rem; color: #fff1cc; letter-spacing: 2px; }
     /* 트로피 명판 */
     .hx-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 30px; }
-    .hx-grid > .hx-pl { flex: 0 1 calc(20% - 13px); min-width: 170px; }   /* 한 줄 5장 (한 판 6 + 누적 4 = 2줄) */
+    #hxFame .hx-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-auto-rows: 1fr; }   /* 한 줄 5장 · 위아래 줄 높이 같게 */
+    #hxFame .hx-grid > .hx-pl { min-width: 0; }
+    @media (max-width: 1100px) { #hxFame .hx-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 760px) { #hxFame .hx-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     .hx-pl { padding: 1.5px; border-radius: 16px; background: linear-gradient(160deg, #ffe7a0, #8a5a16 40%, #3a2a10 60%, #e0b050); animation: tcDeal .7s cubic-bezier(.2,.9,.3,1.2) both;
              transition: transform .25s ease, box-shadow .25s ease; }
     .hx-pl:hover { transform: translateY(-6px); box-shadow: 0 14px 34px rgba(255,180,60,.28); }
@@ -6471,14 +6474,16 @@ function _renderHall(box) {
   const lenMedal = (m, label, ico) => `<div class="hx-len"><span class="hx-len-ico">${ico}</span><div><small>${label}</small><b>${fmtLen(m.len)}</b><span>${hallWhen(m)} · ${winnerOf(m) === 'blue' ? '🔵 블루' : '🔴 레드'} 승</span><div class="hx-len-w">🏆 ${m.players.filter(p => p.team === winnerOf(m)).map(p => escapeHtml(p.name)).join(' · ')}</div></div></div>`;
   // 누적 명예: MVP · ACE 횟수 1위 (같은 횟수면 모두)
   const G = {};
-  ms.forEach(m => { const bd = matchBadges(m), day = dayKey(m); m.players.forEach((p, i) => { const k = p.puuid || p.name; const x = G[k] || (G[k] = { name: p.name, g: 0, k: 0, mvp: 0, ace: 0, days: new Set(), ch: {}, p, m }); x.name = p.name; x.g++; x.k += p.k;
+  ms.forEach(m => { const bd = matchBadges(m), day = dayKey(m); m.players.forEach((p, i) => { const k = p.puuid || p.name; const x = G[k] || (G[k] = { name: p.name, g: 0, w: 0, k: 0, mvp: 0, ace: 0, days: new Set(), ch: {}, p, m }); x.name = p.name; x.g++; if (p.win) x.w++; x.k += p.k;
     const c = x.ch[p.champ] || (x.ch[p.champ] = { n: 0, w: 0, m }); c.n++; if (p.win) c.w++; c.m = m; x.days.add(day); if (bd[i] === 'mvp') x.mvp++; if (bd[i] === 'ace') x.ace++; x.p = p; x.m = m; }); });
   Object.values(G).forEach(x => {
     x.nd = x.days.size; x.kpg = x.g >= 3 ? +(x.k / x.g).toFixed(1) : 0;
     const top = Object.entries(x.ch).sort((a, b) => b[1].n - a[1].n || b[1].w - a[1].w)[0];
     x.mainC = top[0]; x.mainN = top[1].n; x.mainW = top[1].w; x.mainM = top[1].m;          // 장인왕: 한 챔프로 가장 많이 한 판수
     x.mainK = x.mainN * 1000 + x.mainW;                                                     // 판수가 같으면 승률(=승 수)로 1등
-    x.nch = Object.keys(x.ch).length;                                                       // 챔프 부자: 해 본 챔피언 수
+    x.nch = Object.keys(x.ch).length;
+    x.mvpK = x.mvp ? x.mvp * 1e6 + Math.round(x.w / x.g * 1e5) : 0;              // MVP 횟수가 같으면 승률 높은 사람
+    x.aceK = x.ace ? x.ace * 1e6 + (x.g - x.w) : 0;                                // ACE 횟수가 같으면 패배가 많은 사람                                                       // 챔프 부자: 해 본 챔피언 수
   });
   const topBy = key => { const mx = Math.max(0, ...Object.values(G).map(x => x[key])); return mx ? Object.values(G).filter(x => x[key] === mx).sort((a, b) => a.g - b.g) : []; };
   // 누적 1위 카드 (같은 값이면 모두)
@@ -6491,7 +6496,11 @@ function _renderHall(box) {
     return `<div class="hx-pl cum" style="animation-delay:${(i * .07).toFixed(2)}s"><div class="hx-pl-in">
       <div class="hx-medal"><span>${ico}</span></div><span class="hx-kind cum">누적</span>
       <div class="hx-pl-lab">${name}</div>
-      <div class="hx-pl-val">${fmt(w[0][key])}${w.length > 1 ? `<small>${w.length}명 공동 1위</small>` : ''}${key === 'mainK' ? (() => { const same = Object.values(G).filter(x => x.mainN === w[0].mainN).length; return same > w.length ? `<small class="hx-tb">같은 ${w[0].mainN}판 ${same}명 중 승률 1위</small>` : ''; })() : ''}</div>
+      <div class="hx-pl-val">${fmt(w[0][key])}${w.length > 1 ? `<small>${w.length}명 공동 1위</small>` : ''}${(() => {
+        const tb = { mainK: ['mainN', '판', '승률'], mvpK: ['mvp', '회', '승률'], aceK: ['ace', '회', '패배 수'] }[key]; if (!tb) return '';
+        const same = Object.values(G).filter(x => x[tb[0]] === w[0][tb[0]]).length;
+        return same > w.length ? `<small class="hx-tb">같은 ${w[0][tb[0]]}${tb[1]} ${same}명 중 ${tb[2]} 1위</small>` : '';
+      })()}</div>
       ${w.map(x => `<div class="hx-pl-who">${pic ? champIcon(x.mainM, x.mainC) : champIcon(x.m, x.p.champ)}<b>${escapeHtml(x.name)}</b></div><div class="hx-pl-when">${sub(x)}</div>`).join('')}
       <div class="hx-pl-prev">${note}</div>
     </div></div>`;
@@ -6501,8 +6510,8 @@ function _renderHall(box) {
     + careerPlaque('⚔️', '평균 킬왕', 'kpg', v => `${v.toFixed(1)}<span class="u">킬/판</span>`, x => `${x.g}판 동안 총 ${x.k}킬`, n0 + 1, '3판 이상')
     + careerPlaque('🛠️', '장인왕', 'mainK', v => `${Math.floor(v / 1000)}<span class="u">판</span>`, x => `${escapeHtml(champInfo(x.mainC).name)}로 ${x.mainW}승 ${x.mainN - x.mainW}패`, n0 + 2, '', true)
     + careerPlaque('🌈', '챔프 부자', 'nch', v => `${v}<span class="u">챔프</span>`, x => `${x.g}판 동안`, n0 + 3)
-    + careerPlaque('👑', '누적 MVP', 'mvp', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.mvp / x.g * 100)}%`, n0 + 4)
-    + careerPlaque('🛡️', '누적 ACE', 'ace', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.ace / x.g * 100)}%`, n0 + 5);
+    + careerPlaque('👑', '누적 MVP', 'mvpK', v => `${Math.floor(v / 1e6)}<span class="u">회</span>`, x => `${x.g}판 ${x.w}승 · 승률 ${Math.round(x.w / x.g * 100)}%`, n0 + 4)
+    + careerPlaque('🛡️', '누적 ACE', 'aceK', v => `${Math.floor(v / 1e6)}<span class="u">회</span>`, x => `${x.g}판 ${x.g - x.w}패 중 ACE`, n0 + 5);
   box.innerHTML = `<div class="hof-top">${memberBoard('w')}${memberBoard('l')}</div>
   <div class="hx-jump"><button onclick="document.getElementById('hxFame').scrollIntoView({behavior:'smooth'})">🏆 명예의 전당</button><button class="sh" onclick="document.getElementById('hxShame').scrollIntoView({behavior:'smooth'})">💀 불명예의 전당</button></div>
   <div class="hx" id="hxFame">
