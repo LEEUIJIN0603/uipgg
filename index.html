@@ -2024,9 +2024,10 @@
     .hx-mo.upset { background: linear-gradient(160deg, #d9a6ff, #3e1a6a 50%, #a46bff); box-shadow: 0 0 26px rgba(170,110,255,.22); }
     .hx-mo.gold { background: linear-gradient(160deg, #ffe39a, #6a4a12 50%, #e0b050); box-shadow: 0 0 26px rgba(240,190,80,.22); }
     .hx-mo.gold .hx-mo-n { display: none; }
-    .hx-career { margin-top: 4px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .hx-career { margin-top: 4px; display: flex; flex-wrap: wrap; justify-content: center; }
+    .hx-career > .hx-mo { flex: 0 1 calc((100% - 28px) / 3); }
     .hx-career .hx-mo, .hx-career .hx-mo-in { min-width: 0; }
-    @media (max-width: 1100px) { .hx-career { grid-template-columns: minmax(0, 1fr); } }
+    @media (max-width: 1100px) { .hx-career > .hx-mo { flex-basis: 100%; } }
     .hx-rk { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; font: 700 .7rem 'Rajdhani', sans-serif; color: #1a1408; background: #8a7a5a; }
     .hx-rk.r1 { background: linear-gradient(135deg, #ffe7a0, #d9a63c); } .hx-rk.r2 { background: linear-gradient(135deg, #f0f0f0, #a9b0bb); } .hx-rk.r3 { background: linear-gradient(135deg, #f0c09a, #a8663a); }
     .hx-mo-in { height: 100%; border-radius: 15px; padding: 14px 16px; background: linear-gradient(180deg, #161a28, #10131e); }
@@ -6461,7 +6462,9 @@ function _renderHall(box) {
   const longWin = stG.map(s => { let best = 0, cur = 0, end = null; s.days.forEach(d => { if (d.res === 'w') { cur++; if (cur > best) { best = cur; end = d.day; } } else if (d.res === 'l') cur = 0; }); return { name: s.name, n: best, end, last: s.last }; })
     .filter(x => x.n >= 2).sort((a, b) => b.n - a.n || (b.end > a.end ? 1 : -1)).slice(0, 3);
   const G = {};
-  ms.forEach(m => m.players.forEach(p => { const k = p.puuid || p.name; const x = G[k] || (G[k] = { name: p.name, k: 0, cw: 0, g: 0, p, m }); x.name = p.name; x.k += p.k; x.cw += p.cw || 0; x.g++; x.p = p; x.m = m; }));
+  ms.forEach(m => { const bd = matchBadges(m); m.players.forEach((p, i) => { const k = p.puuid || p.name; const x = G[k] || (G[k] = { name: p.name, k: 0, cw: 0, g: 0, mvp: 0, ace: 0, p, m }); x.name = p.name; x.k += p.k; x.cw += p.cw || 0; x.g++; if (bd[i] === 'mvp') x.mvp++; if (bd[i] === 'ace') x.ace++; x.p = p; x.m = m; }); });
+  const mvpKing = Object.values(G).filter(x => x.mvp > 0).sort((a, b) => b.mvp - a.mvp || a.g - b.g).slice(0, 3);
+  const aceKing = Object.values(G).filter(x => x.ace > 0).sort((a, b) => b.ace - a.ace || a.g - b.g).slice(0, 3);
   const killKing = Object.values(G).filter(x => x.g >= 3).sort((a, b) => b.k / b.g - a.k / a.g || b.g - a.g).slice(0, 3);   // 3판 이상 · 판당 킬 많은 순
   const wardRich = Object.values(G).filter(x => x.g >= 3).sort((a, b) => b.cw / b.g - a.cw / a.g || b.g - a.g).slice(0, 3);
   const grow = (i, m, p, main, sub) => `<div class="hx-mr"><span class="hx-rk r${i + 1}">${i + 1}</span>${champIcon(m, p.champ)}<div class="hx-mn"><b>${main}</b><span>${sub}</span></div></div>`;
@@ -6470,6 +6473,8 @@ function _renderHall(box) {
       ${moment('gold', '🔥', '역대 최장 연승', '내전 날짜 기준', longWin.map((x, i) => grow(i, x.last.m, x.last.p, `${escapeHtml(x.name)} <em>${x.n}연승</em>`, x.end ? x.end.slice(5).replace('.', '/') + '까지' : '')), '아직 2연승 이상이 없어요')}
       ${moment('gold', '⚔️', '평균 킬왕', '판당 가장 많이 잡은 사람 (3판 이상)', killKing.map((x, i) => grow(i, x.m, x.p, `${escapeHtml(x.name)} <em>판당 ${(x.k / x.g).toFixed(1)}킬</em>`, `${x.g}판 동안 총 ${x.k}킬`)), '아직 기록이 없어요')}
       ${moment('gold', '💎', '와드 재벌', '제어 와드를 판당 가장 많이 산 사람 (3판 이상)', wardRich.map((x, i) => grow(i, x.m, x.p, `${escapeHtml(x.name)} <em>${(x.cw / x.g).toFixed(2)}개/판</em>`, `${x.g}판 동안 총 ${x.cw}개`)), '아직 기록이 없어요')}
+      ${moment('gold', '👑', '누적 MVP 최다', '이긴 팀에서 가장 잘한 횟수', mvpKing.map((x, i) => grow(i, x.m, x.p, `${escapeHtml(x.name)} <em>MVP ${x.mvp}회</em>`, `${x.g}판 중 ${Math.round(x.mvp / x.g * 100)}%`)), '아직 MVP가 없어요')}
+      ${moment('gold', '🛡️', '누적 ACE 최다', '진 팀에서 가장 잘한 횟수', aceKing.map((x, i) => grow(i, x.m, x.p, `${escapeHtml(x.name)} <em>ACE ${x.ace}회</em>`, `${x.g}판 중 ${Math.round(x.ace / x.g * 100)}%`)), '아직 ACE가 없어요')}
     </div>`;
   box.innerHTML = `<div class="hof-top">${memberBoard('w')}${memberBoard('l')}</div>
   <div class="hx-jump"><button onclick="document.getElementById('hxFame').scrollIntoView({behavior:'smooth'})">🏆 명예의 전당</button><button class="sh" onclick="document.getElementById('hxShame').scrollIntoView({behavior:'smooth'})">💀 불명예의 전당</button></div>
