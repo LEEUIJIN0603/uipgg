@@ -511,6 +511,7 @@
     .rand-grid.no-role .role-chips { display:none; }
     .role-chip { min-width:62px; background:#152134; border:1px solid var(--border); border-radius:8px; color:var(--muted); font-family:'Bebas Neue',sans-serif; font-size:.92rem; letter-spacing:1px; padding:9px 10px; cursor:pointer; transition:border-color .15s, color .15s, background .15s; }
     .role-chip:hover { border-color:var(--gold); color:var(--text); }
+    .role-chip.auto-ex { text-decoration: line-through; opacity: .45; border-style: dashed; }
     .role-chip.fixed { border-color:var(--gold); background:var(--gold-dim); color:var(--gold2); }
     .role-chip.excluded { border-color:rgba(232,64,64,.55); background:rgba(232,64,64,.1); color:#f08a8a; text-decoration:line-through; }
 
@@ -2904,7 +2905,7 @@
         <span class="bal-st"></span>
       </label>
       <div class="bal-note" id="balNote-random"></div>
-      <div class="fix-hint" id="randFixHint">라인 칩을 누르면 <b>보통 → 🚫제외 → 📌고정</b> 순으로 바뀌어요. 고정은 1개, 제외는 여러 개 가능해요. 같은 라인을 2명이 고정하면 그 라인은 팀만 랜덤으로 갈려요.</div>
+      <div class="fix-hint" id="randFixHint">라인 칩을 누르면 <b>보통 → 🚫제외 → 📌고정</b> 순으로 바뀌어요. <b>지금까지 40% 넘게 간 라인</b>(5판 이상 한 사람)은 줄이 그어져 자동으로 빠져요. 고정은 1개, 제외는 여러 개 가능해요. 같은 라인을 2명이 고정하면 그 라인은 팀만 랜덤으로 갈려요.</div>
       <div class="rand-grid" id="randGrid"></div>
       <button class="btn-main" id="btnRand" onclick="doRandom()">⚔&nbsp; 팀 배정 시작</button>
       <div class="error-msg" id="errRand"></div>
@@ -3474,6 +3475,7 @@ function fillAll() {
   const picked = shuffle(pool);
   getActiveInputs().forEach((inp, i) => { if (i < picked.length) inp.value = picked[i]; });
   renderMembers();
+  if (typeof paintAutoLanes === 'function') paintAutoLanes();
 }
 
 // 탭 전환 시 used 상태 갱신
@@ -3500,8 +3502,31 @@ for (let i = 0; i < 10; i++) {
 }
 rg.addEventListener('click', e => {
   const chip = e.target.closest('.role-chip');
-  if (chip) cycleChip(chip);
+  if (chip) { cycleChip(chip); paintAutoLanes(); }
 });
+rg.addEventListener('input', () => paintAutoLanes());
+// ── 자주 간 라인 자동 제외: 협곡에서 그 라인 비율이 40%를 넘으면 배정하지 않아요 (5판 이상 한 사람만) ──
+const AUTO_LANE_MAX = .4, AUTO_LANE_MIN_G = 5;
+function laneShares(name) {
+  const k = normName(name); if (!k) return null;
+  const pos = {}; let g = 0;
+  (typeof matches !== 'undefined' ? matches : []).forEach(m => { if (modeOf(m) !== 'rift') return; m.players.forEach(p => { if (normName(p.name) === k && p.pos) { g++; pos[p.pos] = (pos[p.pos] || 0) + 1; } }); });
+  return g >= AUTO_LANE_MIN_G ? { g, pos } : null;
+}
+function autoExcluded(name) {
+  const sh = laneShares(name); if (!sh) return [];
+  return ROLES.filter(r => (sh.pos[r] || 0) / sh.g > AUTO_LANE_MAX).map(r => ({ r, pct: Math.round((sh.pos[r] || 0) / sh.g * 100) }));
+}
+function paintAutoLanes() {
+  document.querySelectorAll('#randGrid .rp-row').forEach(row => {
+    const ax = autoExcluded(row.querySelector('input[type=text]').value.trim());
+    row.querySelectorAll('.role-chip').forEach(c => {
+      const a = ax.find(x => x.r === c.dataset.role);
+      c.classList.toggle('auto-ex', !!a && c.dataset.state === '0');
+      c.title = a ? `지금까지 ${a.pct}% 간 라인이라 자동 제외 (📌 고정하면 배정 가능)` : '';
+    });
+  });
+}
 
 // 능력치 입력칸 — 한 줄: [참가자 N  능력치 1~10] [이름 입력] [숫자]
 const ag = document.getElementById('abilityGrid');
@@ -4800,6 +4825,13 @@ function doRandom() {
       excluded: chips.filter(c => c.dataset.state === '2').map(c => c.dataset.role),
     };
   });
+  // 자주 간 라인(40% 초과)은 자동 제외 · 직접 📌고정한 사람은 그대로 · 조건이 안 맞으면 자동 제외를 풀어요
+  const manual = entries.map(e => e.excluded.slice());
+  let autoOff = false;
+  entries.forEach(e => { if (!e.fixed && e.name) autoExcluded(e.name).forEach(a => { if (!e.excluded.includes(a.r)) e.excluded.push(a.r); }); });
+  if (entries.every(e => e.name) && buildRoleAssignment(entries).error && !buildRoleAssignment(entries.map((e, i) => ({ ...e, excluded: manual[i] }))).error) {
+    entries.forEach((e, i) => { e.excluded = manual[i]; }); autoOff = true;
+  }
   const err = document.getElementById('errRand');
   if (entries.some(e => !e.name)) { err.textContent = '10명의 이름을 모두 입력해 주세요!'; return; }
 
@@ -4820,7 +4852,7 @@ function doRandom() {
     t1 = players.slice(0, 5).map(n => ({ name: n }));
     t2 = players.slice(5).map(n => ({ name: n }));
   }
-  err.textContent = '';
+  err.textContent = autoOff ? '※ 자주 간 라인을 모두 빼면 배정이 안 돼서 이번에는 자동 제외 없이 배정했어요' : '';
   startAnim('rand-flip','btnRand',[...t1,...t2],document.getElementById('resRand'),doRandom,false);
 }
 
@@ -5314,6 +5346,7 @@ const MULTI = { 2: '더블킬', 3: '트리플킬', 4: '쿼드라킬', 5: '펜타
 // ── 화면 그리기 ──
 function renderRecord() {
   if (typeof renderMembers === 'function') renderMembers();
+  if (typeof paintAutoLanes === 'function') paintAutoLanes();
   loadAugments();
   renderShareInfo();
   renderStreaks();
