@@ -3730,18 +3730,31 @@ function paintBal() {
   });
 }
 // 후보를 여러 번 뽑아 예측 승률 차이가 작은 것 중 무작위
+// 같은 라인 두 사람의 그 라인 점수 차이 (라인 점수가 없으면 그 사람 전체 점수, 기록 없으면 50)
+function laneGaps(T, t1, t2) {
+  const sc = m => { const e = T[normName(m.name)]; if (!e) return 50; return m.role && e[m.role] != null ? e[m.role] : (e.ALL != null ? e.ALL : 50); };
+  return t1.map(a => { const b = t2.find(x => x.role === a.role); return b ? Math.abs(sc(a) - sc(b)) : 0; });
+}
+// 밸런스 배정: 팀 승률 50:50 + (협곡) 라인 맞대결 차이까지 함께 봐요
+//   ① 같은 라인 점수 차이가 25점을 넘는 배정은 버리고 (없으면 35 → 45 → 제한 없음으로 조금씩 풀기)
+//   ② 남은 것 중 '승률 차이 + 라인 차이 합'이 가장 작은 쪽 근처에서 무작위로
+const LANE_GAP_MAX = 25;
 function pickBalanced(gen, mode, tries, first) {
   const T = balTable(mode), cands = [];
   for (let i = 0; i < tries; i++) {
     const r = i === 0 && first ? first : gen();
     if (!r || r.error) continue;
     const pr = predictWith(T, r.t1, r.t2);
-    cands.push({ r, d: Math.abs(pr.p - 0.5), p: pr.p });
+    const gaps = mode === 'rift' && r.t1[0] && r.t1[0].role ? laneGaps(T, r.t1, r.t2) : [0];
+    const maxGap = Math.max(...gaps), sumGap = gaps.reduce((t, g) => t + g, 0);
+    cands.push({ r, p: pr.p, maxGap, cost: Math.abs(pr.p - 0.5) * 100 + sumGap * 0.25 });
   }
   if (!cands.length) return first;
-  const best = Math.min(...cands.map(c => c.d));
-  const pool = cands.filter(c => c.d <= best + 0.02);              // 가장 좋은 것 + 2%p 이내는 모두 후보
-  return pool[Math.floor(Math.random() * pool.length)].r;
+  let pool = [];
+  for (const lim of [LANE_GAP_MAX, LANE_GAP_MAX + 10, LANE_GAP_MAX + 20, Infinity]) { pool = cands.filter(c => c.maxGap <= lim); if (pool.length) break; }
+  const best = Math.min(...pool.map(c => c.cost));
+  const near = pool.filter(c => c.cost <= best + 2);                 // 가장 좋은 것 근처는 모두 후보 (매번 같은 팀이 안 나오게)
+  return near[Math.floor(Math.random() * near.length)].r;
 }
 // 증바람 탭: 10명을 5:5로 나누는 126가지를 전부 따져서 균형 좋은 것 중 무작위
 function recordSplit(players) {
