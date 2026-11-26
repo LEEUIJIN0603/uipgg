@@ -6431,7 +6431,7 @@ function renderHall() {
 function _renderHall(box) {
   const ms = modeMatches().sort((a, b) => (a.date || 0) - (b.date || 0));
   if (!ms.length) { box.innerHTML = recLoading() ? loadingHtml('db-empty') : `<div class="db-empty">아직 ${MODE_NAME[recMode]} 경기 기록이 없어요.</div>`; return; }
-  const HALL_HIDE = ['dmg', 'cs'];                                  // 명예의 전당에서는 빼는 항목 (기록 경신 알림에는 그대로)
+  const HALL_HIDE = ['dmg', 'cs', 'gold', 'taken'];                                  // 명예의 전당에서는 빼는 항목 (기록 경신 알림에는 그대로)
   const recs = HALL_RECORDS.filter(r => !HALL_HIDE.includes(r.k)).map(r => {
     const hist = [];
     ms.forEach(m => {
@@ -6470,11 +6470,17 @@ function _renderHall(box) {
   const lenMedal = (m, label, ico) => `<div class="hx-len"><span class="hx-len-ico">${ico}</span><div><small>${label}</small><b>${fmtLen(m.len)}</b><span>${hallWhen(m)} · ${winnerOf(m) === 'blue' ? '🔵 블루' : '🔴 레드'} 승</span><div class="hx-len-w">🏆 ${m.players.filter(p => p.team === winnerOf(m)).map(p => escapeHtml(p.name)).join(' · ')}</div></div></div>`;
   // 누적 명예: MVP · ACE 횟수 1위 (같은 횟수면 모두)
   const G = {};
-  ms.forEach(m => { const bd = matchBadges(m), day = dayKey(m); m.players.forEach((p, i) => { const k = p.puuid || p.name; const x = G[k] || (G[k] = { name: p.name, g: 0, k: 0, mvp: 0, ace: 0, days: new Set(), p, m }); x.name = p.name; x.g++; x.k += p.k; x.days.add(day); if (bd[i] === 'mvp') x.mvp++; if (bd[i] === 'ace') x.ace++; x.p = p; x.m = m; }); });
-  Object.values(G).forEach(x => { x.nd = x.days.size; x.kpg = x.g >= 3 ? +(x.k / x.g).toFixed(1) : 0; });
+  ms.forEach(m => { const bd = matchBadges(m), day = dayKey(m); m.players.forEach((p, i) => { const k = p.puuid || p.name; const x = G[k] || (G[k] = { name: p.name, g: 0, k: 0, mvp: 0, ace: 0, days: new Set(), ch: {}, p, m }); x.name = p.name; x.g++; x.k += p.k;
+    const c = x.ch[p.champ] || (x.ch[p.champ] = { n: 0, w: 0, m }); c.n++; if (p.win) c.w++; c.m = m; x.days.add(day); if (bd[i] === 'mvp') x.mvp++; if (bd[i] === 'ace') x.ace++; x.p = p; x.m = m; }); });
+  Object.values(G).forEach(x => {
+    x.nd = x.days.size; x.kpg = x.g >= 3 ? +(x.k / x.g).toFixed(1) : 0;
+    const top = Object.entries(x.ch).sort((a, b) => b[1].n - a[1].n || b[1].w - a[1].w)[0];
+    x.mainC = top[0]; x.mainN = top[1].n; x.mainW = top[1].w; x.mainM = top[1].m;          // 장인왕: 한 챔프로 가장 많이 한 판수
+    x.nch = Object.keys(x.ch).length;                                                       // 챔프 부자: 해 본 챔피언 수
+  });
   const topBy = key => { const mx = Math.max(0, ...Object.values(G).map(x => x[key])); return mx ? Object.values(G).filter(x => x[key] === mx).sort((a, b) => a.g - b.g) : []; };
   // 누적 1위 카드 (같은 값이면 모두)
-  const careerPlaque = (ico, name, key, fmt, sub, i, cond) => {
+  const careerPlaque = (ico, name, key, fmt, sub, i, cond, pic) => {
     const w = topBy(key); if (!w.length) return '';
     // 아래 줄: 2위와의 차이 (1위가 혼자면 2위 이름 · 공동이면 그다음 순위)
     const mx = w[0][key], nx = Object.values(G).filter(x => x[key] > 0 && x[key] < mx).sort((a, b) => b[key] - a[key]);
@@ -6484,15 +6490,17 @@ function _renderHall(box) {
       <div class="hx-medal"><span>${ico}</span></div><span class="hx-kind cum">누적</span>
       <div class="hx-pl-lab">${name}</div>
       <div class="hx-pl-val">${fmt(w[0][key])}${w.length > 1 ? `<small>${w.length}명 공동 1위</small>` : ''}</div>
-      ${w.map(x => `<div class="hx-pl-who">${champIcon(x.m, x.p.champ)}<b>${escapeHtml(x.name)}</b></div><div class="hx-pl-when">${sub(x)}</div>`).join('')}
+      ${w.map(x => `<div class="hx-pl-who">${pic ? champIcon(x.mainM, x.mainC) : champIcon(x.m, x.p.champ)}<b>${escapeHtml(x.name)}</b></div><div class="hx-pl-when">${sub(x)}</div>`).join('')}
       <div class="hx-pl-prev">${note}</div>
     </div></div>`;
   };
   const n0 = recs.length;
   const cumHtml = careerPlaque('🎮', '내전 참여왕', 'nd', v => `${v}<span class="u">일</span>`, x => `총 ${x.g}판 참가`, n0)
     + careerPlaque('⚔️', '평균 킬왕', 'kpg', v => `${v.toFixed(1)}<span class="u">킬/판</span>`, x => `${x.g}판 동안 총 ${x.k}킬`, n0 + 1, '3판 이상')
-    + careerPlaque('👑', '누적 MVP', 'mvp', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.mvp / x.g * 100)}%`, n0 + 2)
-    + careerPlaque('🛡️', '누적 ACE', 'ace', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.ace / x.g * 100)}%`, n0 + 3);
+    + careerPlaque('🛠️', '장인왕', 'mainN', v => `${v}<span class="u">판</span>`, x => `${escapeHtml(champInfo(x.mainC).name)}로 ${x.mainW}승 ${x.mainN - x.mainW}패`, n0 + 2, '', true)
+    + careerPlaque('🌈', '챔프 부자', 'nch', v => `${v}<span class="u">챔프</span>`, x => `${x.g}판 동안`, n0 + 3)
+    + careerPlaque('👑', '누적 MVP', 'mvp', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.mvp / x.g * 100)}%`, n0 + 4)
+    + careerPlaque('🛡️', '누적 ACE', 'ace', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.ace / x.g * 100)}%`, n0 + 5);
   box.innerHTML = `<div class="hof-top">${memberBoard('w')}${memberBoard('l')}</div>
   <div class="hx-jump"><button onclick="document.getElementById('hxFame').scrollIntoView({behavior:'smooth'})">🏆 명예의 전당</button><button class="sh" onclick="document.getElementById('hxShame').scrollIntoView({behavior:'smooth'})">💀 불명예의 전당</button></div>
   <div class="hx" id="hxFame">
