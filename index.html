@@ -1988,7 +1988,7 @@
     .hx-sec b { font-size: 1.15rem; color: #fff1cc; letter-spacing: 2px; }
     /* 트로피 명판 */
     .hx-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-bottom: 30px; }
-    .hx-grid > .hx-pl { flex: 0 1 calc(25% - 12px); min-width: 190px; }
+    .hx-grid > .hx-pl { flex: 0 1 calc(20% - 13px); min-width: 170px; }   /* 한 줄 5장 (한 판 6 + 누적 4 = 2줄) */
     .hx-pl { padding: 1.5px; border-radius: 16px; background: linear-gradient(160deg, #ffe7a0, #8a5a16 40%, #3a2a10 60%, #e0b050); animation: tcDeal .7s cubic-bezier(.2,.9,.3,1.2) both;
              transition: transform .25s ease, box-shadow .25s ease; }
     .hx-pl:hover { transform: translateY(-6px); box-shadow: 0 14px 34px rgba(255,180,60,.28); }
@@ -2000,6 +2000,8 @@
                 background: linear-gradient(180deg, #ffe08a, #b07a1e); display: grid; place-items: center; box-shadow: 0 4px 12px rgba(0,0,0,.4); }
     .hx-medal span { font-size: 1rem; margin-top: -2px; }
     .hx-kind { position: absolute; top: 10px; right: 10px; font-size: .6rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; color: #d9c08a; border: 1px solid rgba(217,192,138,.45); background: rgba(0,0,0,.25); }
+    .hs-kind { color: #c9a8ac; border-color: rgba(184,64,74,.45); top: 10px; right: 10px; z-index: 2; }
+    .hs-kind.hx-kind.cum { color: #fff; background: linear-gradient(90deg, #8a1a24, #c0283a); border-color: transparent; }
     .hx-kind.cum { color: #1a1206; background: linear-gradient(90deg, #ffe39a, #d9a63c); border-color: transparent; }
     .hx-pl-lab { color: #e8cf8c; font-size: .9rem; font-weight: 700; letter-spacing: 1px; }
     .hx-pl-val { font-family: 'Rajdhani', 'Bebas Neue', sans-serif; font-weight: 700; font-size: 2rem; line-height: 1.15; margin: 2px 0 10px;
@@ -6463,18 +6465,25 @@ function _renderHall(box) {
   const lenMedal = (m, label, ico) => `<div class="hx-len"><span class="hx-len-ico">${ico}</span><div><small>${label}</small><b>${fmtLen(m.len)}</b><span>${hallWhen(m)} · ${winnerOf(m) === 'blue' ? '🔵 블루' : '🔴 레드'} 승</span><div class="hx-len-w">🏆 ${m.players.filter(p => p.team === winnerOf(m)).map(p => escapeHtml(p.name)).join(' · ')}</div></div></div>`;
   // 누적 명예: MVP · ACE 횟수 1위 (같은 횟수면 모두)
   const G = {};
-  ms.forEach(m => { const bd = matchBadges(m); m.players.forEach((p, i) => { const k = p.puuid || p.name; const x = G[k] || (G[k] = { name: p.name, g: 0, mvp: 0, ace: 0, p, m }); x.name = p.name; x.g++; if (bd[i] === 'mvp') x.mvp++; if (bd[i] === 'ace') x.ace++; x.p = p; x.m = m; }); });
+  ms.forEach(m => { const bd = matchBadges(m), day = dayKey(m); m.players.forEach((p, i) => { const k = p.puuid || p.name; const x = G[k] || (G[k] = { name: p.name, g: 0, k: 0, mvp: 0, ace: 0, days: new Set(), p, m }); x.name = p.name; x.g++; x.k += p.k; x.days.add(day); if (bd[i] === 'mvp') x.mvp++; if (bd[i] === 'ace') x.ace++; x.p = p; x.m = m; }); });
+  Object.values(G).forEach(x => { x.nd = x.days.size; x.kpg = x.g >= 3 ? +(x.k / x.g).toFixed(1) : 0; });
   const topBy = key => { const mx = Math.max(0, ...Object.values(G).map(x => x[key])); return mx ? Object.values(G).filter(x => x[key] === mx).sort((a, b) => a.g - b.g) : []; };
-  const careerPlaque = (ico, name, key, unit, i) => {
+  // 누적 1위 카드 (같은 값이면 모두)
+  const careerPlaque = (ico, name, key, fmt, sub, i, note) => {
     const w = topBy(key); if (!w.length) return '';
     return `<div class="hx-pl cum" style="animation-delay:${(i * .07).toFixed(2)}s"><div class="hx-pl-in">
       <div class="hx-medal"><span>${ico}</span></div><span class="hx-kind cum">누적</span>
       <div class="hx-pl-lab">${name}</div>
-      <div class="hx-pl-val">${w[0][key]}<span class="u">${unit}</span>${w.length > 1 ? `<small>${w.length}명 공동 1위</small>` : ''}</div>
-      ${w.map(x => `<div class="hx-pl-who">${champIcon(x.m, x.p.champ)}<b>${escapeHtml(x.name)}</b></div><div class="hx-pl-when">${x.g}판 중 ${Math.round(x[key] / x.g * 100)}%</div>`).join('')}
+      <div class="hx-pl-val">${fmt(w[0][key])}${w.length > 1 ? `<small>${w.length}명 공동 1위</small>` : ''}</div>
+      ${w.map(x => `<div class="hx-pl-who">${champIcon(x.m, x.p.champ)}<b>${escapeHtml(x.name)}</b></div><div class="hx-pl-when">${sub(x)}</div>`).join('')}
+      ${note ? `<div class="hx-pl-prev">${note}</div>` : ''}
     </div></div>`;
   };
-  const cumHtml = careerPlaque('👑', '누적 MVP', 'mvp', '회', recs.length) + careerPlaque('🛡️', '누적 ACE', 'ace', '회', recs.length + 1);
+  const n0 = recs.length;
+  const cumHtml = careerPlaque('🎮', '내전 참여왕', 'nd', v => `${v}<span class="u">일</span>`, x => `총 ${x.g}판 참가`, n0)
+    + careerPlaque('⚔️', '평균 킬왕', 'kpg', v => `${v.toFixed(1)}<span class="u">킬/판</span>`, x => `${x.g}판 동안 총 ${x.k}킬`, n0 + 1, '3판 이상 · 판당 킬 기준')
+    + careerPlaque('👑', '누적 MVP', 'mvp', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.mvp / x.g * 100)}%`, n0 + 2)
+    + careerPlaque('🛡️', '누적 ACE', 'ace', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.ace / x.g * 100)}%`, n0 + 3);
   box.innerHTML = `<div class="hof-top">${memberBoard('w')}${memberBoard('l')}</div>
   <div class="hx-jump"><button onclick="document.getElementById('hxFame').scrollIntoView({behavior:'smooth'})">🏆 명예의 전당</button><button class="sh" onclick="document.getElementById('hxShame').scrollIntoView({behavior:'smooth'})">💀 불명예의 전당</button></div>
   <div class="hx" id="hxFame">
@@ -6596,7 +6605,6 @@ const SHAME_RECORDS = [
   { k: 'dpm',  ico: '😶', name: '최저 분당 딜량',    quip: '20분 이상 판 · 평화주의자', v: (p, m) => m.len >= 1200 ? p.dmg / (m.len / 60) : null, f: v => Math.round(v) + '/분' },
   { k: 'kp',   ico: '🧭', name: '최저 킬관여율',     quip: '어디 계셨어요?',        v: (p, m) => { const tk = m.players.filter(x => x.team === p.team).reduce((t, x) => t + x.k, 0); return tk >= 10 ? (p.k + p.a) / tk : null; }, f: v => Math.round(v * 100) + '%' },
   { k: 'vis',  ico: '🙈', name: '최저 시야점수',     quip: '20분 이상 판 · 눈 감고 롤', v: (p, m) => m.len >= 1200 && modeOf(m) === 'rift' ? p.vis : null, f: v => v + '점' },
-  { k: 'eff',  ico: '🪙', name: '골드 먹튀',         quip: '골드 대비 딜 최저',      v: (p, m) => p.gold >= 8000 ? p.dmg / p.gold : null, f: v => v.toFixed(2) + ' 딜/골드', sub: p => `${fmtNum(p.gold)}골드 · ${fmtNum(p.dmg)}딜` }
 ];
 function shameHtml(ms, retro) {
   // ① 한 판 최악 기록 (경신 이력 포함)
@@ -6612,7 +6620,7 @@ function shameHtml(ms, retro) {
   const plaque = ({ r, hist }, i) => {
     const cur = hist[hist.length - 1], prev = hist[hist.length - 2];
     return `<div class="hs-pl" style="animation-delay:${(i * .07).toFixed(2)}s"><div class="hs-pl-in">
-      <div class="hs-tape">${r.ico}</div>
+      <div class="hs-tape">${r.ico}</div><span class="hx-kind hs-kind">한 판</span>
       <div class="hs-lab">${r.name}</div>
       <div class="hs-val">${hallNum(r.f(cur.v))}${r.sub ? `<small>${r.sub(cur.p)}</small>` : ''}</div>
       <div class="hs-who">${champIcon(cur.m, cur.p.champ)}<b>${escapeHtml(cur.p.name)}</b></div>
@@ -6651,14 +6659,19 @@ function shameHtml(ms, retro) {
       <div class="hs-title">HALL OF SHAME</div>
       <div class="hs-sub">불명예의 전당 · 깨고 싶어도 아무도 안 깨는 기록들</div>
     </div>
-    <div class="hs-sec"><span>✦ CURSED RECORDS ✦</span><b>한 판 최악 기록</b></div>
-    <div class="hs-grid">${recs.map(plaque).join('')}</div>
-    <div class="hs-sec"><span>✦ CAREER OF SHAME ✦</span><b>누적 흑역사</b></div>
-    <div class="hs-mos${recMode !== 'rift' ? ' two' : ''}">
-      ${box('lose', '🧊', '역대 최장 연패', '내전 날짜 기준', longLose.map((x, i) => row(rank(i) + champIcon(x.last.m, x.last.p.champ), `${escapeHtml(x.name)} <em>${x.n}연패</em>`, `${x.end ? x.end.slice(5).replace('.', '/') + '까지' : ''}`)), '아직 2연패 이상이 없어요')}
-      ${box('dead', '⚰️', '평균 데스왕', '판당 가장 많이 죽은 사람 (3판 이상)', deathKing.map((x, i) => row(rank(i) + champIcon(x.m, x.p.champ), `${escapeHtml(x.name)} <em>판당 ${(x.d / x.g).toFixed(1)}데스</em>`, `${x.g}판 동안 총 ${x.d}데스`)), '아직 기록이 없어요')}
-      ${recMode !== 'rift' ? '' : box('ward', '🪙', '와드 빈곤층', '제어 와드를 판당 가장 적게 산 사람 (3판 이상)', wardPoor.map((x, i) => row(rank(i) + champIcon(x.m, x.p.champ), `${escapeHtml(x.name)} <em>${(x.cw / x.g).toFixed(2)}개/판</em>`, `${x.g}판 동안 총 ${x.cw}개`)), '아직 기록이 없어요')}
-    </div>
+    <div class="hs-sec"><span>✦ CURSED RECORDS ✦</span><b>불명예 기록</b></div>
+    <div class="hs-grid">${recs.map(plaque).join('')}${(() => {
+      const mx = deathKing.length ? +(deathKing[0].d / deathKing[0].g).toFixed(1) : 0;
+      const w = Object.values(D).filter(x => x.g >= 3 && +(x.d / x.g).toFixed(1) === mx);
+      if (!w.length) return '';
+      return `<div class="hs-pl" style="animation-delay:${(recs.length * .07).toFixed(2)}s"><div class="hs-pl-in">
+        <div class="hs-tape">⚰️</div><span class="hx-kind hs-kind cum">누적</span>
+        <div class="hs-lab">평균 데스왕</div>
+        <div class="hs-val">${mx.toFixed(1)}<span class="u">데스/판</span>${w.length > 1 ? `<small>${w.length}명 공동 1위</small>` : ''}</div>
+        ${w.map(x => `<div class="hs-who">${champIcon(x.m, x.p.champ)}<b>${escapeHtml(x.name)}</b></div><div class="hs-when">${x.g}판 동안 총 ${x.d}데스</div>`).join('')}
+        <div class="hs-quip">“3판 이상 · 판당 데스 기준”</div>
+      </div></div>`;
+    })()}</div>
     <div class="hs-foot">🤫 웃자고 만든 기록이에요. 다음 내전에서 명예 회복하면 돼요!</div>
   </div>`;
 }
