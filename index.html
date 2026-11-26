@@ -1999,6 +1999,8 @@
     .hx-medal { position: absolute; top: -1px; left: 50%; transform: translateX(-50%); width: 46px; height: 30px; border-radius: 0 0 24px 24px;
                 background: linear-gradient(180deg, #ffe08a, #b07a1e); display: grid; place-items: center; box-shadow: 0 4px 12px rgba(0,0,0,.4); }
     .hx-medal span { font-size: 1rem; margin-top: -2px; }
+    .mo-more { display: block; width: 100%; margin-top: 8px; padding: 6px; background: transparent; border: 1px dashed rgba(255,255,255,.15); border-radius: 8px; color: var(--muted); font-family: inherit; font-size: .72rem; cursor: pointer; }
+    .mo-more:hover { color: var(--text-bright); border-color: rgba(255,255,255,.35); }
     .hx-kind { position: absolute; top: 10px; right: 10px; font-size: .6rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; color: #d9c08a; border: 1px solid rgba(217,192,138,.45); background: rgba(0,0,0,.25); }
     .hs-kind { color: #c9a8ac; border-color: rgba(184,64,74,.45); top: 10px; right: 10px; z-index: 2; }
     .hs-kind.hx-kind.cum { color: #fff; background: linear-gradient(90deg, #8a1a24, #c0283a); border-color: transparent; }
@@ -6464,7 +6466,7 @@ function _renderHall(box) {
   const mrow = (m, p, right) => `<div class="hx-mr">${champIcon(m, p.champ)}<div class="hx-mn"><b>${escapeHtml(p.name)}</b><span>${escapeHtml(champInfo(p.champ).name)} · ${hallWhen(m)}</span></div><div class="hx-mv">${right}</div></div>`;
   const moment = (cls, ico, title, sub, items, empty) => `<div class="hx-mo ${cls}"><div class="hx-mo-in">
       <div class="hx-mo-h"><span class="hx-mo-ico">${ico}</span><div><b>${title}</b><small>${sub}</small></div><span class="hx-mo-n">${items.length}</span></div>
-      ${items.length ? items.join('') : `<div class="hx-mo-none">${empty}</div>`}</div></div>`;
+      ${items.length ? moreList(items) : `<div class="hx-mo-none">${empty}</div>`}</div></div>`;
   const lenMedal = (m, label, ico) => `<div class="hx-len"><span class="hx-len-ico">${ico}</span><div><small>${label}</small><b>${fmtLen(m.len)}</b><span>${hallWhen(m)} · ${winnerOf(m) === 'blue' ? '🔵 블루' : '🔴 레드'} 승</span><div class="hx-len-w">🏆 ${m.players.filter(p => p.team === winnerOf(m)).map(p => escapeHtml(p.name)).join(' · ')}</div></div></div>`;
   // 누적 명예: MVP · ACE 횟수 1위 (같은 횟수면 모두)
   const G = {};
@@ -6512,7 +6514,7 @@ function _renderHall(box) {
     <div class="hx-lens">${lenMedal(byLen[0], '최단 경기', '⚡')}${lenMedal(byLen[byLen.length - 1], '최장 경기', '⏳')}</div>
     <div class="hx-mos">
       ${moment('fire', '🔥', '펜타킬 달성자', '전설의 다섯 킬', pentas.slice().reverse().map(x => mrow(x.m, x.p, `${x.p.k}/${x.p.d}/${x.p.a}`)), '아직 펜타킬이 없어요<br>첫 번째 전설은 누구?')}
-      ${moment('shield', '🛡️', '노데스 게임', '0데스로 끝낸 판', nodeath.slice().reverse().sort((a, b) => (b.p.k + b.p.a) - (a.p.k + a.p.a)).slice(0, 6).map(x => mrow(x.m, x.p, `${x.p.k}/0/${x.p.a}`)), '아직 노데스 게임이 없어요')}
+      ${moment('shield', '🛡️', '노데스 게임', '0데스로 끝낸 판', nodeath.slice().reverse().sort((a, b) => (b.p.k + b.p.a) - (a.p.k + a.p.a)).map(x => mrow(x.m, x.p, `${x.p.k}/0/${x.p.a}`)), '아직 노데스 게임이 없어요')}
       ${moment('upset', '😱', '대역전승', '예측 25% 이하 팀의 승리', upsets.slice().reverse().map(u => `<div class="hx-mr"><div class="hx-pct ${u.w}">${u.pct}%</div><div class="hx-mn"><b>${u.w === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} 역전승</b><span>${hallWhen(u.m)} · ${u.m.players.filter(p => p.team === u.w).map(p => escapeHtml(p.name)).join(', ')}</span></div></div>`), '아직 대역전승이 없어요')}
     </div>
     <div class="gx-sub bad">🌑 흑역사 순간</div>
@@ -6603,6 +6605,12 @@ function shameWebs(spiders) {
   return `<div class="hs-webs" aria-hidden="true"><div class="web tl">${cobwebSvg(150)}</div><div class="web tr">${cobwebSvg(120)}</div>${sp}</div>`;
 }
 let _darkMomentsHtml = '';
+// 목록은 3개까지만 보이고 나머지는 '더보기'로 (경기 업적 칸)
+function moreList(items, n = 3) {
+  if (items.length <= n) return items.join('');
+  return items.slice(0, n).join('') + `<div class="mo-more-box" hidden>${items.slice(n).join('')}</div>`
+    + `<button class="mo-more" onclick="const b=this.previousElementSibling;b.hidden=!b.hidden;this.textContent=b.hidden?'▼ 더보기 (+${items.length - n})':'▲ 접기'">▼ 더보기 (+${items.length - n})</button>`;
+}
 // 기록 숫자 뒤 단위(데스·점·/분 등)는 작게
 const hallNum = v => String(v).replace(/^([−\-]?[\d.,:]+)\s*(.*)$/, (_, n, u) => u ? `${n}<span class="u">${u}</span>` : n);
 // ══════════════════ 불명예의 전당 (명예의 전당 아래) ══════════════════
@@ -6642,7 +6650,7 @@ function shameHtml(ms, retro) {
   const massacre = ms.map(m => { const w = winnerOf(m), l = w === 'blue' ? 'red' : 'blue'; return { m, w, l, diff: tk(m, w) - tk(m, l) }; }).sort((a, b) => b.diff - a.diff).slice(0, 3);
   const teamNames = (m, t) => m.players.filter(p => p.team === t).map(p => escapeHtml(p.name)).join(', ');
   const row = (left, title, sub) => `<div class="hs-mr">${left}<div class="hs-mn"><b>${title}</b><span>${sub}</span></div></div>`;
-  const box = (cls, ico, title, sub, items, empty) => `<div class="hs-mo ${cls}"><div class="hs-mo-h"><span>${ico}</span><div><b>${title}</b><small>${sub}</small></div></div>${items.length ? items.join('') : `<div class="hs-none">${empty}</div>`}</div>`;
+  const box = (cls, ico, title, sub, items, empty) => `<div class="hs-mo ${cls}"><div class="hs-mo-h"><span>${ico}</span><div><b>${title}</b><small>${sub}</small></div></div>${items.length ? moreList(items) : `<div class="hs-none">${empty}</div>`}</div>`;
   // ③ 커리어 흑역사: 역대 최장 연패 · 누적 데스
   const st = calcStreaks();
   const longLose = st.map(s => { let best = 0, cur = 0, end = null; s.days.forEach(d => { if (d.res === 'l') { cur++; if (cur > best) { best = cur; end = d.day; } } else if (d.res === 'w') cur = 0; }); return { name: s.name, n: best, end, last: s.last }; })
