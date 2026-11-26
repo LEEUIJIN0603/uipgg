@@ -6288,21 +6288,16 @@ const TITLES = [
   { k: 'eff',    ico: '🏷️', name: '가성비 KING',     desc: '골드 1당 챔피언 피해량 1위', v: r => r.gold ? r.dmg / r.gold : null, f: v => v.toFixed(2) + ' 딜/골드' },
   { k: 'early',  ico: '🌅', name: '초반 캐리형',     desc: '15분 전 킬관여(킬+어시) 판당 1위', v: r => r.xg ? r.early / r.xg : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'vis',    ico: '👁️', name: '천리안',          desc: '분당 시야점수 1위', rift: true, v: r => r.vis / r.mins, f: v => v.toFixed(2) + '/분' },
-  { k: 'blind',  ico: '🙈', name: '맹인 검객',        desc: '판당 시야점수가 가장 낮음', low: true, rift: true, v: r => r.vis / r.g, f: v => v.toFixed(1) + '점/판' },
   { k: 'wardrich', ico: '💎', name: '와드 재벌',      desc: '제어 와드 구매가 판당 가장 많음', rift: true, v: r => r.cw / r.g, f: v => v.toFixed(2) + '개/판' },
   { k: 'nocw',   ico: '🪙', name: '와드 한 개도 아까워', desc: '제어 와드 구매가 판당 가장 적음', low: true, rift: true, v: r => r.cw / r.g, f: v => v.toFixed(2) + '개/판' },
-  { k: 'lost',   ico: '🧭', name: '어디로 가야 하오', desc: '킬관여율이 가장 낮음', low: true, v: r => r.tk ? r.ka / r.tk : null, f: v => '킬관여 ' + pctFmt(v) },
   { k: 'omw',    ico: '🏃', name: '금방 가요~',       desc: "'가는 중' 핑을 가장 많이 찍음 (판당)", v: r => r.xg ? r.omw / r.xg : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'multi',  ico: '🎯', name: '최다 멀티킬',      desc: '더블킬 이상 멀티킬 총 횟수 1위', v: r => r.xg ? r.multiCnt : null, f: v => v + '회' },
   { k: 'bld',    ico: '🏚️', name: '철거반장',         desc: '건물 피해량 판당 1위', v: r => r.xg ? r.bld / r.xg : null, f: v => fmtNum(Math.round(v)) + '/판' },
   { k: 'wp',     ico: '🌱', name: '식목일',           desc: '와드 설치 판당 1위', rift: true, v: r => r.xg ? r.wp / r.xg : null, f: v => v.toFixed(1) + '개/판' },
   { k: 'apm',    ico: '⚡', name: '손은 눈보다 빠르지', desc: '분당 스킬 사용 횟수 1위', v: r => r.xmins ? r.casts / r.xmins : null, f: v => v.toFixed(1) + '회/분' },
   { k: 'pot',    ico: '💊', name: '포션 중독자',      desc: '소모품 구매 판당 1위', v: r => r.xg ? r.cons / r.xg : null, f: v => v.toFixed(1) + '개/판' },
-  { k: 'mage',   ico: '🧙', name: '대마법사',         desc: '챔피언에게 준 마법 피해 판당 1위', v: r => r.xg ? r.mdmg / r.xg : null, f: v => fmtNum(Math.round(v)) + '/판' },
   { k: 'roller', ico: '🎢', name: '롤러코스터',       desc: '판마다 KDA 기복이 가장 큼', v: r => stdev(r.kdas), f: v => '기복 ' + v.toFixed(2) },
   { k: 'river',  ico: '🌊', name: '흐르는 강물처럼',   desc: '판마다 KDA가 가장 꾸준함', low: true, v: r => stdev(r.kdas), f: v => '기복 ' + v.toFixed(2) },
-  { k: 'pool',   ico: '🎭', name: '만물박사',         desc: '가장 많은 챔피언을 플레이', v: r => r.champs.size, f: v => v + '챔피언' },
-  { k: 'attend', ico: '😎', name: '프로참석러',       desc: '가장 많은 판 참여', any: true, v: r => r.g, f: v => v + '판' },
   { k: 'carry',  ico: '💪', name: '내가 캐리한다',    desc: '팀 내 딜 비중 평균 1위', v: r => r.dshare / r.g, f: v => '딜 비중 ' + pctFmt(v) },
   { k: 'bus',    ico: '🚌', name: '프로 탑승러',      desc: '이긴 판에서 팀 딜 비중이 가장 낮음 (버스 탑승)', low: true, v: r => r.w ? r.wshare / r.w : null, f: v => '이긴 판 딜 비중 ' + pctFmt(v) },
   { k: 'die',    ico: '⚰️', name: '우물 밖은 위험해', desc: '판당 데스 1위', v: r => r.d / r.g, f: v => v.toFixed(1) + '데스/판' },
@@ -6506,7 +6501,7 @@ function _renderHall(box) {
     </div></div>`;
   };
   const n0 = recs.length;
-  const cumHtml = careerPlaque('🎮', '내전 참여왕', 'nd', v => `${v}<span class="u">일</span>`, x => `총 ${x.g}판 참가`, n0)
+  const cumHtml = careerPlaque('😎', '프로참석러', 'nd', v => `${v}<span class="u">일</span>`, x => `총 ${x.g}판 참가`, n0)
     + careerPlaque('⚔️', '평균 킬왕', 'kpg', v => `${v.toFixed(1)}<span class="u">킬/판</span>`, x => `${x.g}판 동안 총 ${x.k}킬`, n0 + 1, '3판 이상')
     + careerPlaque('🛠️', '장인왕', 'mainK', v => `${Math.floor(v / 1000)}<span class="u">판</span>`, x => `${escapeHtml(champInfo(x.mainC).name)}로 ${x.mainW}승 ${x.mainN - x.mainW}패`, n0 + 2, '', true)
     + careerPlaque('🌈', '챔프 부자', 'nch', v => `${v}<span class="u">챔프</span>`, x => `${x.g}판 동안`, n0 + 3)
@@ -6642,7 +6637,7 @@ const SHAME_RECORDS = [
 ];
 function shameHtml(ms, retro) {
   // ① 한 판 최악 기록 (경신 이력 포함)
-  const recs = SHAME_RECORDS.map(r => {
+  const recs = SHAME_RECORDS.filter(r => r.k !== 'vis').map(r => {
     const hist = [];
     ms.forEach(m => {
       let worst = null;
@@ -6675,7 +6670,10 @@ function shameHtml(ms, retro) {
   const longLose = st.map(s => { let best = 0, cur = 0, end = null; s.days.forEach(d => { if (d.res === 'l') { cur++; if (cur > best) { best = cur; end = d.day; } } else if (d.res === 'w') cur = 0; }); return { name: s.name, n: best, end, last: s.last }; })
     .filter(x => x.n >= 2).sort((a, b) => b.n - a.n).slice(0, 3);
   const D = {};
-  ms.forEach(m => m.players.forEach(p => { const k = p.puuid || p.name; const x = D[k] || (D[k] = { name: p.name, d: 0, cw: 0, g: 0, p, m }); x.name = p.name; x.d += p.d; x.cw += p.cw || 0; x.g++; x.p = p; x.m = m; }));
+  ms.forEach(m => m.players.forEach(p => { const k = p.puuid || p.name; const x = D[k] || (D[k] = { name: p.name, d: 0, cw: 0, g: 0, vis: 0, gr: 0, gg: 0, p, m }); x.name = p.name; x.d += p.d; x.cw += p.cw || 0; x.g++;
+    if (modeOf(m) === 'rift') { x.vis += p.vis || 0; x.gr++; }
+    if (m.surrender && !p.win) x.gg++;                                                       // 항복한 팀에 있었던 판
+    x.p = p; x.m = m; }));
   const deathKing = Object.values(D).filter(x => x.g >= 3).sort((a, b) => b.d / b.g - a.d / a.g || b.g - a.g).slice(0, 3);   // 3판 이상 · 판당 데스 많은 순 (많이 참가해도 불리하지 않게)
   const wardPoor = Object.values(D).filter(x => x.g >= 3).sort((a, b) => a.cw / a.g - b.cw / b.g || b.g - a.g).slice(0, 3);   // 3판 이상 · 판당 제어와드 적은 순
   const rank = (i) => `<span class="hs-rk">${i + 1}</span>`;
@@ -6685,6 +6683,21 @@ function shameHtml(ms, retro) {
       ${box('mass', '🩸', '최악의 학살', '킬 차이가 가장 컸던 판', massacre.filter(x => x.diff > 0).map(x => row(`<div class="hs-time">−${x.diff}</div>`, `${x.l === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} ${tk(x.m, x.l)} : ${tk(x.m, x.w)} 참패`, `${hallWhen(x.m)} · ${teamNames(x.m, x.l)}`)), '아직 기록이 없어요')}
     </div>
 `;
+  // 누적 불명예 카드: 1위만 (같은 값이면 tb가 큰 사람 · 그래도 같으면 모두)
+  const shameCum = (ico, name, list, low, fmt, sub, cond, i) => {
+    if (!list.length) return '';
+    list.sort((a, b) => (low ? a.v - b.v : b.v - a.v) || b.tb - a.tb);
+    const top = list.filter(e => e.v === list[0].v && e.tb === list[0].tb), rest = list.filter(e => e.v !== list[0].v);
+    const r2 = rest.length ? rest.filter(e => e.v === rest[0].v) : [];
+    const tieN = list.filter(e => e.v === list[0].v).length;
+    return `<div class="hs-pl" style="animation-delay:${(i * .07).toFixed(2)}s"><div class="hs-pl-in">
+      <div class="hs-tape">${ico}</div><span class="hx-kind hs-kind cum">누적</span>
+      <div class="hs-lab">${name}</div>
+      <div class="hs-val">${fmt(top[0].v)}${top.length > 1 ? `<small>${top.length}명 공동 1위</small>` : tieN > 1 ? `<small>같은 기록 ${tieN}명 중 1위</small>` : ''}</div>
+      ${top.map(e => `<div class="hs-who">${champIcon(e.x.m, e.x.p.champ)}<b>${escapeHtml(e.x.name)}</b></div><div class="hs-when">${sub(e.x)}</div>`).join('')}
+      <div class="hs-quip">${cond ? cond + ' · ' : ''}${r2.length ? `2위 ${r2.slice(0, 2).map(e => escapeHtml(e.x.name)).join(', ')}${r2.length > 2 ? ` 외 ${r2.length - 2}명` : ''} <em>${fmt(r2[0].v).replace(/<[^>]+>/g, '')}</em>` : '따라오는 사람 없음'}</div>
+    </div></div>`;
+  };
   return `<div class="hs" id="hxShame">
     <div class="hs-fog"></div>
     ${shameWebs([['14%', 120, 7, 0, 1], ['82%', 190, 9, 2.5, .85], ['48%', 70, 6, 4, .7]])}
@@ -6694,18 +6707,7 @@ function shameHtml(ms, retro) {
       <div class="hs-sub">불명예의 전당 · 깨고 싶어도 아무도 안 깨는 기록들</div>
     </div>
     <div class="hs-sec"><span>✦ CURSED RECORDS ✦</span><b>불명예 기록</b></div>
-    <div class="hs-grid">${recs.map(plaque).join('')}${(() => {
-      const mx = deathKing.length ? +(deathKing[0].d / deathKing[0].g).toFixed(1) : 0;
-      const w = Object.values(D).filter(x => x.g >= 3 && +(x.d / x.g).toFixed(1) === mx);
-      if (!w.length) return '';
-      return `<div class="hs-pl" style="animation-delay:${(recs.length * .07).toFixed(2)}s"><div class="hs-pl-in">
-        <div class="hs-tape">⚰️</div><span class="hx-kind hs-kind cum">누적</span>
-        <div class="hs-lab">평균 데스왕</div>
-        <div class="hs-val">${mx.toFixed(1)}<span class="u">데스/판</span>${w.length > 1 ? `<small>${w.length}명 공동 1위</small>` : ''}</div>
-        ${w.map(x => `<div class="hs-who">${champIcon(x.m, x.p.champ)}<b>${escapeHtml(x.name)}</b></div><div class="hs-when">${x.g}판 동안 총 ${x.d}데스</div>`).join('')}
-        <div class="hs-quip">${(() => { const r2 = Object.values(D).filter(x => x.g >= 3 && +(x.d / x.g).toFixed(1) < mx).sort((a, b) => b.d / b.g - a.d / a.g)[0]; return `3판 이상 · ${r2 ? `2위 ${escapeHtml(r2.name)} <em>${(r2.d / r2.g).toFixed(1)}</em>` : '따라오는 사람 없음'}`; })()}</div>
-      </div></div>`;
-    })()}</div>
+    <div class="hs-grid">${recs.map(plaque).join('')}${shameCum('🙈', '평균 시야 최저', (() => { const L = Object.values(D).filter(x => x.gr >= 3); return L.map(x => ({ x, v: +(x.vis / x.gr).toFixed(1), tb: x.gr })); })(), true, v => `${v.toFixed(1)}<span class="u">점/판</span>`, x => `${x.gr}판 동안 총 ${x.vis}점`, '3판 이상 · 협곡만', recs.length)}${shameCum('🏳️', '항복 최다 참여', Object.values(D).filter(x => x.gg > 0).map(x => ({ x, v: x.gg, tb: x.gg / x.g })), false, v => `${v}<span class="u">번</span>`, x => `${x.g}판 중 ${Math.round(x.gg / x.g * 100)}% 항복`, '', recs.length + 1)}</div>
     <div class="hs-foot">🤫 웃자고 만든 기록이에요. 다음 내전에서 명예 회복하면 돼요!</div>
   </div>`;
 }
