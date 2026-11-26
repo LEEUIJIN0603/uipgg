@@ -2905,7 +2905,7 @@
         <span class="bal-st"></span>
       </label>
       <div class="bal-note" id="balNote-random"></div>
-      <div class="fix-hint" id="randFixHint">라인 칩을 누르면 <b>보통 → 🚫제외 → 📌고정</b> 순으로 바뀌어요. <b>지금까지 40% 넘게 간 라인</b>(5판 이상 한 사람)은 줄이 그어져 자동으로 빠져요. 고정은 1개, 제외는 여러 개 가능해요. 같은 라인을 2명이 고정하면 그 라인은 팀만 랜덤으로 갈려요.</div>
+      <div class="fix-hint" id="randFixHint">라인 칩을 누르면 <b>보통 → 🚫제외 → 📌고정</b> 순으로 바뀌어요. <b>지금까지 40% 이상 간 라인은 제외하고</b> 선정돼요 (협곡 5판 이상 한 사람). 고정은 1개, 제외는 여러 개 가능해요. 같은 라인을 2명이 고정하면 그 라인은 팀만 랜덤으로 갈려요.</div>
       <div class="rand-grid" id="randGrid"></div>
       <button class="btn-main" id="btnRand" onclick="doRandom()">⚔&nbsp; 팀 배정 시작</button>
       <div class="error-msg" id="errRand"></div>
@@ -3505,7 +3505,7 @@ rg.addEventListener('click', e => {
   if (chip) { cycleChip(chip); paintAutoLanes(); }
 });
 rg.addEventListener('input', () => paintAutoLanes());
-// ── 자주 간 라인 자동 제외: 협곡에서 그 라인 비율이 40%를 넘으면 배정하지 않아요 (5판 이상 한 사람만) ──
+// ── 자주 간 라인 자동 제외: 협곡에서 그 라인 비율이 40% 이상이면 배정하지 않아요 (5판 이상 한 사람만) ──
 const AUTO_LANE_MAX = .4, AUTO_LANE_MIN_G = 5;
 function laneShares(name) {
   const k = normName(name); if (!k) return null;
@@ -3515,9 +3515,10 @@ function laneShares(name) {
 }
 function autoExcluded(name) {
   const sh = laneShares(name); if (!sh) return [];
-  return ROLES.filter(r => (sh.pos[r] || 0) / sh.g > AUTO_LANE_MAX).map(r => ({ r, pct: Math.round((sh.pos[r] || 0) / sh.g * 100) }));
+  return ROLES.filter(r => (sh.pos[r] || 0) / sh.g >= AUTO_LANE_MAX).map(r => ({ r, pct: Math.round((sh.pos[r] || 0) / sh.g * 100) }));
 }
 function paintAutoLanes() {
+  return;                                                            // 칩에는 따로 표시하지 않아요 (안내 문구만)
   document.querySelectorAll('#randGrid .rp-row').forEach(row => {
     const ax = autoExcluded(row.querySelector('input[type=text]').value.trim());
     row.querySelectorAll('.role-chip').forEach(c => {
@@ -4825,7 +4826,7 @@ function doRandom() {
       excluded: chips.filter(c => c.dataset.state === '2').map(c => c.dataset.role),
     };
   });
-  // 자주 간 라인(40% 초과)은 자동 제외 · 직접 📌고정한 사람은 그대로 · 조건이 안 맞으면 자동 제외를 풀어요
+  // 자주 간 라인(40% 이상)은 자동 제외 · 직접 📌고정한 사람은 그대로 · 조건이 안 맞으면 자동 제외를 풀어요
   const manual = entries.map(e => e.excluded.slice());
   let autoOff = false;
   entries.forEach(e => { if (!e.fixed && e.name) autoExcluded(e.name).forEach(a => { if (!e.excluded.includes(a.r)) e.excluded.push(a.r); }); });
