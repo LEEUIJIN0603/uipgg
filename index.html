@@ -511,7 +511,10 @@
     .rand-grid.no-role .role-chips { display:none; }
     .role-chip { min-width:62px; background:#152134; border:1px solid var(--border); border-radius:8px; color:var(--muted); font-family:'Bebas Neue',sans-serif; font-size:.92rem; letter-spacing:1px; padding:9px 10px; cursor:pointer; transition:border-color .15s, color .15s, background .15s; }
     .role-chip:hover { border-color:var(--gold); color:var(--text); }
-    .role-chip.auto-ex { text-decoration: line-through; opacity: .45; border-style: dashed; }
+    .role-chip { position: relative; }
+    .role-chip.auto-ex { text-decoration: line-through; color: #5d6678 !important; background: #101826 !important; border-color: #2a3446 !important; }
+    .role-chip .ax-pct { position: absolute; right: 3px; top: 1px; font-family: 'Noto Sans KR', sans-serif; font-size: .5rem; letter-spacing: 0; color: #8a93a6; text-decoration: none; display: inline-block; line-height: 1; }
+    .role-chip.auto-un .ax-pct { color: #6fb3ff; }
     .role-chip.fixed { border-color:var(--gold); background:var(--gold-dim); color:var(--gold2); }
     .role-chip.excluded { border-color:rgba(232,64,64,.55); background:rgba(232,64,64,.1); color:#f08a8a; text-decoration:line-through; }
 
@@ -2905,7 +2908,7 @@
         <span class="bal-st"></span>
       </label>
       <div class="bal-note" id="balNote-random"></div>
-      <div class="fix-hint" id="randFixHint">라인 칩을 누르면 <b>보통 → 🚫제외 → 📌고정</b> 순으로 바뀌어요. <b>지금까지 40% 이상 간 라인은 제외하고</b> 선정돼요 (협곡 5판 이상 한 사람). 고정은 1개, 제외는 여러 개 가능해요. 같은 라인을 2명이 고정하면 그 라인은 팀만 랜덤으로 갈려요.</div>
+      <div class="fix-hint" id="randFixHint">라인 칩을 누르면 <b>보통 → 🚫제외 → 📌고정</b> 순으로 바뀌어요. <b>지금까지 40% 이상 간 라인은 회색 줄</b>로 표시되고 제외돼요 (협곡 5판 이상 한 사람) · 회색 칩을 누르면 이번엔 풀려요. 고정은 1개, 제외는 여러 개 가능해요. 같은 라인을 2명이 고정하면 그 라인은 팀만 랜덤으로 갈려요.</div>
       <div class="rand-grid" id="randGrid"></div>
       <button class="btn-main" id="btnRand" onclick="doRandom()">⚔&nbsp; 팀 배정 시작</button>
       <div class="error-msg" id="errRand"></div>
@@ -3502,7 +3505,9 @@ for (let i = 0; i < 10; i++) {
 }
 rg.addEventListener('click', e => {
   const chip = e.target.closest('.role-chip');
-  if (chip) { cycleChip(chip); paintAutoLanes(); }
+  if (!chip) return;
+  if (chip.classList.contains('auto-ex')) { chip.dataset.unlock = '1'; paintAutoLanes(); return; }   // 자동 제외 라인: 한 번 누르면 풀기
+  cycleChip(chip); paintAutoLanes();
 });
 rg.addEventListener('input', () => paintAutoLanes());
 // ── 자주 간 라인 자동 제외: 협곡에서 그 라인 비율이 40% 이상이면 배정하지 않아요 (5판 이상 한 사람만) ──
@@ -3518,13 +3523,19 @@ function autoExcluded(name) {
   return ROLES.filter(r => (sh.pos[r] || 0) / sh.g >= AUTO_LANE_MAX).map(r => ({ r, pct: Math.round((sh.pos[r] || 0) / sh.g * 100) }));
 }
 function paintAutoLanes() {
-  return;                                                            // 칩에는 따로 표시하지 않아요 (안내 문구만)
   document.querySelectorAll('#randGrid .rp-row').forEach(row => {
-    const ax = autoExcluded(row.querySelector('input[type=text]').value.trim());
+    const nm = row.querySelector('input[type=text]').value.trim();
+    if (row.dataset.nm !== nm) { row.dataset.nm = nm; row.querySelectorAll('.role-chip').forEach(c => { delete c.dataset.unlock; }); }   // 이름이 바뀌면 풀었던 것도 처음으로
+    const ax = autoExcluded(nm);
     row.querySelectorAll('.role-chip').forEach(c => {
       const a = ax.find(x => x.r === c.dataset.role);
-      c.classList.toggle('auto-ex', !!a && c.dataset.state === '0');
-      c.title = a ? `지금까지 ${a.pct}% 간 라인이라 자동 제외 (📌 고정하면 배정 가능)` : '';
+      const st = c.dataset.state;
+      c.querySelectorAll('.ax-pct').forEach(e => e.remove());
+      const on = !!a && st === '0' && c.dataset.unlock !== '1';
+      c.classList.toggle('auto-ex', on);
+      c.classList.toggle('auto-un', !!a && st === '0' && c.dataset.unlock === '1');
+      if (a && st === '0') c.insertAdjacentHTML('beforeend', `<small class="ax-pct">${a.pct}%</small>`);
+      c.title = !a ? '' : on ? `지금까지 ${a.pct}% 간 라인이라 제외돼요 · 누르면 풀기` : `${a.pct}% 간 라인이지만 이번엔 배정 가능`;
     });
   });
 }
@@ -4829,7 +4840,11 @@ function doRandom() {
   // 자주 간 라인(40% 이상)은 자동 제외 · 직접 📌고정한 사람은 그대로 · 조건이 안 맞으면 자동 제외를 풀어요
   const manual = entries.map(e => e.excluded.slice());
   let autoOff = false;
-  entries.forEach(e => { if (!e.fixed && e.name) autoExcluded(e.name).forEach(a => { if (!e.excluded.includes(a.r)) e.excluded.push(a.r); }); });
+  entries.forEach((e, i) => {
+    if (e.fixed || !e.name) return;
+    const unlocked = [...rows[i].querySelectorAll('.role-chip[data-unlock="1"]')].map(c => c.dataset.role);   // 직접 푼 라인은 빼지 않아요
+    autoExcluded(e.name).forEach(a => { if (!unlocked.includes(a.r) && !e.excluded.includes(a.r)) e.excluded.push(a.r); });
+  });
   if (entries.every(e => e.name) && buildRoleAssignment(entries).error && !buildRoleAssignment(entries.map((e, i) => ({ ...e, excluded: manual[i] }))).error) {
     entries.forEach((e, i) => { e.excluded = manual[i]; }); autoOff = true;
   }
