@@ -2011,6 +2011,9 @@
     .hx-pl-who .ch-box { width: 30px; height: 30px; border-radius: 50%; box-shadow: 0 0 0 1.5px #e0b050; }
     .hx-pl-who b { color: #fff; font-size: .92rem; }
     .hx-pl-when { color: #a99a78; font-size: .66rem; margin-top: 4px; }
+    .hx-pl-in { display: flex; flex-direction: column; } .hx-pl-prev { margin-top: auto !important; } .hx-pl-prev b { color: #e8cf8c; margin-left: 2px; }
+    .hs-pl-in { display: flex; flex-direction: column; } .hs-quip { margin-top: auto !important; }
+    .hx-pl-in > :nth-last-child(2), .hs-pl-in > :nth-last-child(2) { margin-bottom: 10px; }
     .hx-pl-prev { margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(224,176,80,.3); font-size: .66rem; color: #a99a78; }
     /* 희귀 업적 */
     .hx-lens { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
@@ -6469,19 +6472,23 @@ function _renderHall(box) {
   Object.values(G).forEach(x => { x.nd = x.days.size; x.kpg = x.g >= 3 ? +(x.k / x.g).toFixed(1) : 0; });
   const topBy = key => { const mx = Math.max(0, ...Object.values(G).map(x => x[key])); return mx ? Object.values(G).filter(x => x[key] === mx).sort((a, b) => a.g - b.g) : []; };
   // 누적 1위 카드 (같은 값이면 모두)
-  const careerPlaque = (ico, name, key, fmt, sub, i, note) => {
+  const careerPlaque = (ico, name, key, fmt, sub, i, cond) => {
     const w = topBy(key); if (!w.length) return '';
+    // 아래 줄: 2위와의 차이 (1위가 혼자면 2위 이름 · 공동이면 그다음 순위)
+    const mx = w[0][key], nx = Object.values(G).filter(x => x[key] > 0 && x[key] < mx).sort((a, b) => b[key] - a[key]);
+    const r2 = nx.length ? nx.filter(x => x[key] === nx[0][key]) : [];
+    const note = (cond ? `${cond} · ` : '') + (r2.length ? `${w.length > 1 ? '다음' : '2위'} ${r2.slice(0, 2).map(x => escapeHtml(x.name)).join(', ')}${r2.length > 2 ? ` 외 ${r2.length - 2}명` : ''} <b>${fmt(nx[0][key]).replace(/<[^>]+>/g, '')}</b>` : '아직 따라오는 사람이 없어요');
     return `<div class="hx-pl cum" style="animation-delay:${(i * .07).toFixed(2)}s"><div class="hx-pl-in">
       <div class="hx-medal"><span>${ico}</span></div><span class="hx-kind cum">누적</span>
       <div class="hx-pl-lab">${name}</div>
       <div class="hx-pl-val">${fmt(w[0][key])}${w.length > 1 ? `<small>${w.length}명 공동 1위</small>` : ''}</div>
       ${w.map(x => `<div class="hx-pl-who">${champIcon(x.m, x.p.champ)}<b>${escapeHtml(x.name)}</b></div><div class="hx-pl-when">${sub(x)}</div>`).join('')}
-      ${note ? `<div class="hx-pl-prev">${note}</div>` : ''}
+      <div class="hx-pl-prev">${note}</div>
     </div></div>`;
   };
   const n0 = recs.length;
   const cumHtml = careerPlaque('🎮', '내전 참여왕', 'nd', v => `${v}<span class="u">일</span>`, x => `총 ${x.g}판 참가`, n0)
-    + careerPlaque('⚔️', '평균 킬왕', 'kpg', v => `${v.toFixed(1)}<span class="u">킬/판</span>`, x => `${x.g}판 동안 총 ${x.k}킬`, n0 + 1, '3판 이상 · 판당 킬 기준')
+    + careerPlaque('⚔️', '평균 킬왕', 'kpg', v => `${v.toFixed(1)}<span class="u">킬/판</span>`, x => `${x.g}판 동안 총 ${x.k}킬`, n0 + 1, '3판 이상')
     + careerPlaque('👑', '누적 MVP', 'mvp', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.mvp / x.g * 100)}%`, n0 + 2)
     + careerPlaque('🛡️', '누적 ACE', 'ace', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.ace / x.g * 100)}%`, n0 + 3);
   box.innerHTML = `<div class="hof-top">${memberBoard('w')}${memberBoard('l')}</div>
@@ -6669,7 +6676,7 @@ function shameHtml(ms, retro) {
         <div class="hs-lab">평균 데스왕</div>
         <div class="hs-val">${mx.toFixed(1)}<span class="u">데스/판</span>${w.length > 1 ? `<small>${w.length}명 공동 1위</small>` : ''}</div>
         ${w.map(x => `<div class="hs-who">${champIcon(x.m, x.p.champ)}<b>${escapeHtml(x.name)}</b></div><div class="hs-when">${x.g}판 동안 총 ${x.d}데스</div>`).join('')}
-        <div class="hs-quip">“3판 이상 · 판당 데스 기준”</div>
+        <div class="hs-quip">${(() => { const r2 = Object.values(D).filter(x => x.g >= 3 && +(x.d / x.g).toFixed(1) < mx).sort((a, b) => b.d / b.g - a.d / a.g)[0]; return `3판 이상 · ${r2 ? `2위 ${escapeHtml(r2.name)} <em>${(r2.d / r2.g).toFixed(1)}</em>` : '따라오는 사람 없음'}`; })()}</div>
       </div></div>`;
     })()}</div>
     <div class="hs-foot">🤫 웃자고 만든 기록이에요. 다음 내전에서 명예 회복하면 돼요!</div>
