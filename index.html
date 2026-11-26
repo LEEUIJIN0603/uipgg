@@ -2001,6 +2001,7 @@
     .hx-medal span { font-size: 1rem; margin-top: -2px; }
     .mo-more { display: block; width: 100%; margin-top: 8px; padding: 6px; background: transparent; border: 1px dashed rgba(255,255,255,.15); border-radius: 8px; color: var(--muted); font-family: inherit; font-size: .72rem; cursor: pointer; }
     .mo-more:hover { color: var(--text-bright); border-color: rgba(255,255,255,.35); }
+    .hx-pl-val small.hx-tb { font-size: .58rem; opacity: .75; font-weight: 500; }
     .hx-kind { position: absolute; top: 10px; right: 10px; font-size: .6rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; color: #d9c08a; border: 1px solid rgba(217,192,138,.45); background: rgba(0,0,0,.25); }
     .hs-kind { color: #c9a8ac; border-color: rgba(184,64,74,.45); top: 10px; right: 10px; z-index: 2; }
     .hs-kind.hx-kind.cum { color: #fff; background: linear-gradient(90deg, #8a1a24, #c0283a); border-color: transparent; }
@@ -6476,6 +6477,7 @@ function _renderHall(box) {
     x.nd = x.days.size; x.kpg = x.g >= 3 ? +(x.k / x.g).toFixed(1) : 0;
     const top = Object.entries(x.ch).sort((a, b) => b[1].n - a[1].n || b[1].w - a[1].w)[0];
     x.mainC = top[0]; x.mainN = top[1].n; x.mainW = top[1].w; x.mainM = top[1].m;          // 장인왕: 한 챔프로 가장 많이 한 판수
+    x.mainK = x.mainN * 1000 + x.mainW;                                                     // 판수가 같으면 승률(=승 수)로 1등
     x.nch = Object.keys(x.ch).length;                                                       // 챔프 부자: 해 본 챔피언 수
   });
   const topBy = key => { const mx = Math.max(0, ...Object.values(G).map(x => x[key])); return mx ? Object.values(G).filter(x => x[key] === mx).sort((a, b) => a.g - b.g) : []; };
@@ -6489,7 +6491,7 @@ function _renderHall(box) {
     return `<div class="hx-pl cum" style="animation-delay:${(i * .07).toFixed(2)}s"><div class="hx-pl-in">
       <div class="hx-medal"><span>${ico}</span></div><span class="hx-kind cum">누적</span>
       <div class="hx-pl-lab">${name}</div>
-      <div class="hx-pl-val">${fmt(w[0][key])}${w.length > 1 ? `<small>${w.length}명 공동 1위</small>` : ''}</div>
+      <div class="hx-pl-val">${fmt(w[0][key])}${w.length > 1 ? `<small>${w.length}명 공동 1위</small>` : ''}${key === 'mainK' ? (() => { const same = Object.values(G).filter(x => x.mainN === w[0].mainN).length; return same > w.length ? `<small class="hx-tb">같은 ${w[0].mainN}판 ${same}명 중 승률 1위</small>` : ''; })() : ''}</div>
       ${w.map(x => `<div class="hx-pl-who">${pic ? champIcon(x.mainM, x.mainC) : champIcon(x.m, x.p.champ)}<b>${escapeHtml(x.name)}</b></div><div class="hx-pl-when">${sub(x)}</div>`).join('')}
       <div class="hx-pl-prev">${note}</div>
     </div></div>`;
@@ -6497,7 +6499,7 @@ function _renderHall(box) {
   const n0 = recs.length;
   const cumHtml = careerPlaque('🎮', '내전 참여왕', 'nd', v => `${v}<span class="u">일</span>`, x => `총 ${x.g}판 참가`, n0)
     + careerPlaque('⚔️', '평균 킬왕', 'kpg', v => `${v.toFixed(1)}<span class="u">킬/판</span>`, x => `${x.g}판 동안 총 ${x.k}킬`, n0 + 1, '3판 이상')
-    + careerPlaque('🛠️', '장인왕', 'mainN', v => `${v}<span class="u">판</span>`, x => `${escapeHtml(champInfo(x.mainC).name)}로 ${x.mainW}승 ${x.mainN - x.mainW}패`, n0 + 2, '', true)
+    + careerPlaque('🛠️', '장인왕', 'mainK', v => `${Math.floor(v / 1000)}<span class="u">판</span>`, x => `${escapeHtml(champInfo(x.mainC).name)}로 ${x.mainW}승 ${x.mainN - x.mainW}패`, n0 + 2, '', true)
     + careerPlaque('🌈', '챔프 부자', 'nch', v => `${v}<span class="u">챔프</span>`, x => `${x.g}판 동안`, n0 + 3)
     + careerPlaque('👑', '누적 MVP', 'mvp', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.mvp / x.g * 100)}%`, n0 + 4)
     + careerPlaque('🛡️', '누적 ACE', 'ace', v => `${v}<span class="u">회</span>`, x => `${x.g}판 중 ${Math.round(x.ace / x.g * 100)}%`, n0 + 5);
