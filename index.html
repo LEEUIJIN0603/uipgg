@@ -3694,11 +3694,11 @@ function shuffle(a) {
 //   올 랜덤 탭 = 소환사 협곡 전적(라인 점수 포함), 증바람 탭 = 칼바람 전적으로 소환사별 전력을 매기고
 //   예측 승률이 50 : 50에 가까운 후보들 중에서 무작위로 골라요 (매번 같은 팀이 나오지 않게)
 const BAL_KEY = 'lol_bal_mode';
-function balMode(tab) { try { return (JSON.parse(localStorage.getItem(BAL_KEY) || '{}')[tab]) || 'rand'; } catch (e) { return 'rand'; } }
-function setBalMode(tab, v) {
-  try { const o = JSON.parse(localStorage.getItem(BAL_KEY) || '{}'); o[tab] = v; localStorage.setItem(BAL_KEY, JSON.stringify(o)); } catch (e) {}
-  paintBal();
-}
+// 전적 기반 밸런스는 어디서 접속하든 항상 켜진 상태로 시작해요 (끄면 이번 접속 동안만 꺼짐)
+const _balState = { random: 'rec', ability: 'rec' };
+try { localStorage.removeItem(BAL_KEY); } catch (e) {}
+function balMode(tab) { return _balState[tab] || 'rec'; }
+function setBalMode(tab, v) { _balState[tab] = v; paintBal(); }
 function balTable(mode) { return ratingTableFrom(matches.filter(m => modeOf(m) === mode), mode); }
 function paintBal() {
   // 증바람 탭 + 전적 기반이면 능력치 입력칸을 잠가요 (전적으로 자동 계산)
