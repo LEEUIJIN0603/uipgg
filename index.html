@@ -2534,6 +2534,22 @@
     .rb-ico { font-size: 1.4rem; flex-shrink: 0; }
     .rb-t { flex: 1; min-width: 0; } .rb-t b { display: block; color: #ffd77a; font-size: .92rem; } .rb-t small { display: block; color: #d8c8a0; font-size: .72rem; margin-top: 2px; }
     .rb-go { flex-shrink: 0; font-size: .78rem; font-weight: 700; color: #1a1206; background: linear-gradient(90deg, #ffe39a, #d9a63c); border-radius: 999px; padding: 5px 12px; }
+    /* 넓은 화면: 내전 룰은 오른쪽 위(탭 옆), 멤버 리스트는 참가자 입력칸과 같은 높이 */
+    .rule-side { display: none; }
+    @media (min-width: 821px) {
+      #view-assign .layout-main > .rule-bar { display: none; }
+      .assign-side { display: flex; flex-direction: column; min-width: 0; }
+      .rule-side { display: flex; align-items: center; gap: 10px; width: 100%; padding: 0 12px; border-radius: 10px; cursor: pointer; text-align: left; font-family: inherit; color: var(--text); box-sizing: border-box; min-height: 56px;
+                   background: linear-gradient(135deg, rgba(240,190,80,.18), rgba(240,190,80,.04) 75%); border: 1px solid rgba(240,190,80,.5); box-shadow: 0 0 18px rgba(240,190,80,.08); transition: background .15s; }
+      .rule-side:hover { background: linear-gradient(135deg, rgba(240,190,80,.26), rgba(240,190,80,.07) 75%); }
+      .rs-ico { font-size: 1.35rem; flex-shrink: 0; }
+      .rs-t { flex: 1; min-width: 0; } .rs-t b { display: block; color: #ffd77a; font-size: .9rem; } .rs-t small { display: block; color: #d8c8a0; font-size: .66rem; margin-top: 3px; white-space: nowrap; }
+      .rs-t i { font-style: normal; font-weight: 800; } .rs-t i.l { color: #8fc7ff; } .rs-t i.w { color: #ffb35c; }
+      .rs-go { flex-shrink: 0; font-size: .72rem; font-weight: 700; color: #1a1206; background: linear-gradient(90deg, #ffe39a, #d9a63c); border-radius: 999px; padding: 4px 10px; }
+      .assign-side .member-panel { position: static; display: flex; flex-direction: column; }
+      .assign-side .member-list { flex: 1 1 auto; max-height: none; min-height: 120px; }
+    }
+    @media (max-width: 820px) { .assign-side { display: contents; } }
     .rule-box { width: min(620px, 100%) !important; }
     .rule-h { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 12px; }
     .rule-common { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; background: var(--panel2); margin-bottom: 12px; font-size: .82rem; }
@@ -2983,7 +2999,13 @@
   </div>
 </div><!-- layout-main -->
 
-<!-- 멤버 리스트 패널 -->
+<!-- 오른쪽: 내전 룰(탭 옆) + 멤버 리스트(참가자 입력칸 옆, 높이 맞춤) -->
+<div class="assign-side">
+<button class="rule-side" id="ruleSide" onclick="openRules()">
+  <span class="rs-ico">📜</span>
+  <span class="rs-t"><b>내전 룰</b><small><i class="l">2연패</i> 혜택 · <i class="w">5연승</i> 페널티</small></span>
+  <span class="rs-go">보기 ›</span>
+</button>
 <div class="member-panel">
   <div class="member-panel-head">
     <span class="member-panel-title">멤버 리스트</span>
@@ -3004,6 +3026,7 @@
   </div>
   <div class="member-restore"><button class="btn-restore" onclick="restoreDefaultMembers()">멤버 리스트 복원</button></div>
 </div>
+</div><!-- assign-side -->
 
 </div><!-- layout -->
 </div><!-- /view-assign -->
@@ -3593,6 +3616,20 @@ function paintRuleBadges() {
     b.title = r.label + (r.rule ? ' · ' + r.rule : '') + ' · 📜 내전 룰에서 전체 보기';
   });
 }
+
+// ── 팀 배정(넓은 화면): 오른쪽 내전 룰 = 탭 높이, 멤버 리스트 = 지금 탭의 입력칸 높이로 맞춰요 ──
+function syncAssignSide() {
+  const side = document.querySelector('.assign-side'); if (!side) return;
+  const rs = document.getElementById('ruleSide'), mp = side.querySelector('.member-panel');
+  const tabs = document.querySelector('#view-assign .tabs'), card = document.querySelector('#view-assign .panel.active > .card');
+  if (window.innerWidth <= 820 || !tabs || !card || !tabs.offsetHeight) { rs.style.height = ''; rs.style.marginBottom = ''; mp.style.height = ''; return; }
+  const tb = tabs.getBoundingClientRect(), cb = card.getBoundingClientRect();
+  rs.style.height = tb.height + 'px';
+  rs.style.marginBottom = Math.max(0, cb.top - tb.bottom) + 'px';
+  mp.style.height = Math.max(380, cb.height) + 'px';
+}
+window.addEventListener('resize', syncAssignSide);
+if (window.ResizeObserver) { const ro = new ResizeObserver(() => syncAssignSide()); document.querySelectorAll('#view-assign .tabs, #view-assign .panel > .card').forEach(el => ro.observe(el)); }
 // ── 자주 간 라인 자동 제외: 협곡에서 그 라인 비율이 40% 이상이면 배정하지 않아요 (5판 이상 한 사람만) ──
 const AUTO_LANE_MAX = .4, AUTO_LANE_MIN_G = 5;
 function laneShares(name) {
