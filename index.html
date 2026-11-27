@@ -6592,7 +6592,7 @@ const TITLES = [
   { k: 'early',  ico: '🌅', name: '초반 캐리형',     desc: '15분 전 킬관여(킬+어시) 판당 1위', v: r => r.xg ? r.early / r.xg : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'vis',    ico: '👁️', name: '천리안',          desc: '분당 시야점수 1위', rift: true, v: r => r.vis / r.mins, f: v => v.toFixed(2) + '/분' },
   { k: 'wardrich', ico: '💎', name: '와드 재벌',      desc: '제어 와드 구매가 판당 가장 많음', rift: true, v: r => r.cw / r.g, f: v => v.toFixed(2) + '개/판' },
-  { k: 'nocw',   ico: '🪙', name: '와드 한 개도 아까워', desc: '제어 와드 구매가 판당 가장 적음', low: true, rift: true, v: r => r.cw / r.g, f: v => v.toFixed(2) + '개/판' },
+  { k: 'nocw',   ico: '🚫', name: '와드 한 개도 아까워', desc: '제어 와드 구매가 판당 가장 적음', low: true, rift: true, v: r => r.cw / r.g, f: v => v.toFixed(2) + '개/판' },
   { k: 'omw',    ico: '🏃', name: '금방 가요~',       desc: "'가는 중' 핑을 가장 많이 찍음 (판당)", v: r => r.xg ? r.omw / r.xg : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'multi',  ico: '🎯', name: '최다 멀티킬',      desc: '더블킬 이상 멀티킬 총 횟수 1위', v: r => r.xg ? r.multiCnt : null, f: v => v + '회' },
   { k: 'bld',    ico: '🏚️', name: '철거반장',         desc: '건물 피해량 판당 1위', v: r => r.xg ? r.bld / r.xg : null, f: v => fmtNum(Math.round(v)) + '/판' },
@@ -6608,8 +6608,8 @@ const TITLES = [
   { k: 'qping',  ico: '❓', name: '물음표 살인마',     desc: "'?' 핑을 가장 많이 찍음 (판당)", v: r => r.x3g ? r.qping / r.x3g : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'nag',    ico: '📢', name: '잔소리꾼',          desc: "'후퇴' · '위험' 핑을 가장 많이 찍음 (판당)", v: r => r.x3g ? r.nag / r.x3g : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'flash',  ico: '✨', name: '점멸 장인',         desc: '점멸을 가장 많이 씀 (판당)', v: r => r.x3g ? r.flash / r.x3g : null, f: v => v.toFixed(1) + '회/판' },
-  { k: 'ccking', ico: '🪢', name: 'CC 장인',           desc: '적을 묶어 둔 시간 1위 (판당)', v: r => r.x3g ? r.cc / r.x3g : null, f: v => Math.round(v) + '초/판' },
-  { k: 'healer', ico: '🩺', name: '팀 힐러',           desc: '아군 회복 + 보호막 양 1위 (판당)', v: r => r.x3g ? r.heal / r.x3g : null, f: v => fmtNum(Math.round(v)) + '/판' },
+  { k: 'ccking', ico: '⛓️', name: 'CC 장인',           desc: '적을 묶어 둔 시간 1위 (판당)', v: r => r.x3g ? r.cc / r.x3g : null, f: v => Math.round(v) + '초/판' },
+  { k: 'healer', ico: '💚', name: '팀 힐러',           desc: '아군 회복 + 보호막 양 1위 (판당)', v: r => r.x3g ? r.heal / r.x3g : null, f: v => fmtNum(Math.round(v)) + '/판' },
   { k: 'rock',   ico: '🗿', name: '바위처럼 단단하게', desc: '분당 피해 감소량 1위', v: r => r.xmins ? r.mit / r.xmins : null, f: v => fmtNum(Math.round(v)) + '/분' }
 ];
 // 칭호 계산 기준 (화면에 같이 표시)
