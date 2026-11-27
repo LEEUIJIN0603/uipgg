@@ -7019,12 +7019,13 @@ function renderDashboard() {
   const champHtml = champs.map(([c, v], i) => `<div class="dl"><span class="dl-n">${i + 1}</span>${champIcon(v.m, c)}<div class="dl-main"><b>${escapeHtml(champInfo(c).name)}</b><small>${v.w}승 ${v.g - v.w}패</small></div><div class="dl-v">${v.g}픽<small>승률 ${Math.round(v.w / v.g * 100)}%</small></div></div>`).join('');
   const allP = ms.flatMap(m => m.players.map(p => ({ p, m })));
   const best = (f, low) => allP.slice().sort((a, b) => low ? f(a) - f(b) : f(b) - f(a))[0];
+  // 명예의 전당 '한 판' 기록과 같은 항목 (최다 킬 · 최다 어시 · 최고 KDA · 최고 시야)
+  const kdaV = p => p.d ? (p.k + p.a) / p.d : (p.k + p.a) ? 1000 + p.k + p.a : 0;
   const recs = [
-    ['🗡 한 판 최다 킬', best(x => x.p.k), x => x.p.k + '킬'],
-    ['💥 한 판 최고 딜량', best(x => x.p.dmg), x => fmtNum(x.p.dmg)],
+    ['⚔️ 한 판 최다 킬', best(x => x.p.k), x => x.p.k + '킬'],
     ['🤝 한 판 최다 어시', best(x => x.p.a), x => x.p.a + '어시'],
-    ['☠ 한 판 최다 데스', best(x => x.p.d), x => x.p.d + '데스'],
-    ...(recMode === 'rift' ? [['👁 한 판 최고 시야', best(x => x.p.vis), x => x.p.vis + '점']] : [])
+    ['🎯 한 판 최고 KDA', best(x => kdaV(x.p)), x => x.p.d ? kdaV(x.p).toFixed(2) : 'Perfect'],
+    ...(recMode === 'rift' ? [['👁️ 한 판 최고 시야', best(x => x.p.vis), x => x.p.vis + '점']] : [])
   ];
   const recHtml = recs.map(([lb, x, f]) => `<div class="dl"><span class="dl-n" style="font-size:.9rem">${lb.split(' ')[0]}</span>${champIcon(x.m, x.p.champ)}<div class="dl-main"><b>${escapeHtml(x.p.name)}</b><small>${lb.slice(lb.indexOf(' ') + 1)} · ${dayKey(x.m).slice(5)}</small></div><div class="dl-v">${f(x)}</div></div>`).join('');
   const longest = ms.reduce((a, m) => m.len > a.len ? m : a), shortest = ms.reduce((a, m) => m.len < a.len ? m : a);
