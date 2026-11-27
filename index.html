@@ -2229,6 +2229,28 @@
       .np-ar:nth-child(odd) { border-left: none; padding-left: 0; }
       .np-foot { flex-direction: column; gap: 2px; }
     }
+    /* 내전신문 (관리자) */
+    .nw-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .nw-t { font-size: 1rem; font-weight: 800; color: var(--text-bright); } .nw-t small { font-size: .7rem; color: var(--muted); font-weight: 500; margin-left: 6px; }
+    .nw-ctl { display: flex; gap: 8px; align-items: center; }
+    .nw-mode { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .nw-mode button { background: transparent; border: none; color: var(--muted); font-family: inherit; font-size: .78rem; padding: 6px 10px; cursor: pointer; }
+    .nw-mode button.on { background: rgba(106,168,255,.15); color: #cfe3ff; font-weight: 700; }
+    #nwDay { background: var(--panel2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 6px 8px; font-family: inherit; font-size: .8rem; }
+    .np-big small { font-size: .9rem; margin-left: 3px; }
+    .np-q { font-family: var(--serif); font-size: .78rem; color: #c8a45a; margin-top: 4px; }
+    .nw .np-cat { color: #e2626a; }
+    .nw-rl { margin: 6px 0 0; padding: 0; list-style: none; font-size: .7rem; color: #b9c3d0; line-height: 1.5; } .nw-rl li { padding: 3px 0; border-top: 1px dotted #3a4658; } .nw-rl b { color: #ffd77a; }
+    .nw-low { display: grid; grid-template-columns: 1.3fr 1fr; gap: 22px; margin-top: 16px; padding-top: 14px; border-top: 2px solid #4a5a70; }
+    .nw-tb { width: 100%; border-collapse: collapse; font-size: .78rem; margin-top: 6px; }
+    .nw-tb th { font-size: .66rem; color: #8a97a8; font-weight: 600; text-align: left; padding: 4px 6px; border-bottom: 1px solid #3a4658; }
+    .nw-tb td { padding: 6px; border-bottom: 1px dotted #3a4658; color: #d9e0ea; white-space: nowrap; }
+    .nw-tb td.blue { color: #8fc7ff; font-weight: 700; } .nw-tb td.red { color: #ff9aa0; font-weight: 700; } .nw-tb td small { color: #8a97a8; font-weight: 400; }
+    .nw-tb .ch-box { width: 20px; height: 20px; border-radius: 4px; vertical-align: middle; display: inline-block; }
+    .nw-wl { margin-top: 8px; } .nw-wl b { display: block; font-size: .74rem; margin-bottom: 4px; color: #b9c3d0; } .nw-wl b.w { color: #ffd77a; } .nw-wl b.l { color: #8fc7ff; }
+    .nw-wl div { display: flex; flex-wrap: wrap; gap: 5px; } .nw-wl span { font-size: .74rem; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid #3a4658; color: #e6ebf2; }
+    .nw-wl span i { font-style: normal; color: #8a97a8; font-size: .66rem; } .nw-wl span.none { color: #8a97a8; }
+    @media (max-width: 760px) { .nw-low { grid-template-columns: 1fr; } .nw-tb { font-size: .72rem; } .nw-tb td { padding: 5px 3px; } }
     .hs { position: relative; overflow: hidden; border-radius: 20px; padding: 34px 26px 26px; scroll-margin-top: 12px;
           background: radial-gradient(120% 60% at 50% 0%, rgba(110,220,140,.12), transparent 60%), radial-gradient(80% 50% at 50% 100%, rgba(140,80,220,.18), transparent 70%), linear-gradient(180deg, #120f1c 0%, #0d0c16 100%);
           border: 1px solid rgba(150,110,220,.4); box-shadow: inset 0 0 80px rgba(120,80,200,.12), 0 20px 60px rgba(0,0,0,.5); }
@@ -2943,6 +2965,7 @@
     <div class="nav-sep" aria-hidden="true"></div>
     <button class="nav-btn" onclick="switchPage('assign',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg></span>팀 배정</button>
     <button class="nav-btn adm-only" onclick="switchPage('stats',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="1"/><rect x="12" y="8" width="3" height="10" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/></svg></span>접속통계</button>
+    <button class="nav-btn adm-only" onclick="switchPage('news',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></span>내전신문</button>
   </nav>
 </aside>
 
@@ -3182,6 +3205,13 @@
 <div class="page-view" id="view-hall">
   <div id="hallBody"></div>
 </div><!-- /view-hall -->
+
+<!-- ▣ 내전신문 (관리자 링크에서만): 마지막 내전 날의 재미있는 일들을 신문 1면처럼 -->
+<div class="page-view" id="view-news">
+  <div class="nw-bar"><span class="nw-t">📰 내전신문 <small>관리자 전용 · 고른 날의 경기로 자동으로 써져요</small></span>
+    <span class="nw-ctl"><span class="nw-mode" id="nwMode"></span><select id="nwDay" onchange="renderNews(this.value)"></select></span></div>
+  <div id="newsBox"></div>
+</div>
 
 <!-- ▣ 접속통계 (관리자 링크에서만) -->
 <div class="page-view" id="view-stats">
@@ -3817,6 +3847,7 @@ function switchPage(id, btn, keepMode) {
   if (typeof logVisit === 'function' && PAGE_NAME[id]) logVisit(PAGE_NAME[id]);
   if (id === 'stats' && typeof initStatsView === 'function') initStatsView();
   if (id === 'tier' && typeof renderTier === 'function') renderTier();
+  if (id === 'news' && typeof renderNews === 'function') renderNews();
 }
 
 function switchTab(id, btn) {
@@ -6924,69 +6955,32 @@ function shameHtml(ms, retro) {
       ${box('mass', '🩸', '최악의 학살', '킬 차이가 가장 컸던 판', massacre.filter(x => x.diff > 0).map(x => row(`<div class="hs-time">−${x.diff}</div>`, `${x.l === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} ${tk(x.m, x.l)} : ${tk(x.m, x.w)} 참패`, `${hallWhen(x.m)} · ${teamNames(x.m, x.l)}`)), '아직 기록이 없어요')}
     </div>
 `;
-  // ── 의P일보: 불명예 기록을 신문 1면처럼 (톱기사 1개 + 단신 기사들) ──
-  const josa = (w, a, b) => { const c = String(w).charCodeAt(String(w).length - 1); return (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28) ? a : b; };
-  const NP_HEAD = {
-    d:   (n, v, x) => [`충격! ${n}, 한 판에 ${v}`, `“${x.champ}${josa(x.champ, '은', '는')} 죄가 없다”`],
-    kda: (n, v, x) => [`${n}, ${x.sub} 기록 … KDA ${v}`, ''],
-    dpm: (n, v)    => [`${n}, 분당 ${v} 딜 … “평화주의자”`, ''],
-    kp:  (n, v)    => [`킬관여율 ${v} ${n}, 그 시간 어디 있었나`, ''],
-    vis: (n, v)    => [`${n}, 판당 시야 ${v} … “눈 감고 롤”`, ''],
-    gg:  (n, v)    => [`${n}, 항복 ${v} … “/ff 장인”`, ''],
-  };
-  const items = recs.map(({ r, hist }) => {
-    const cur = hist[hist.length - 1], prev = hist[hist.length - 2];
-    const ci = champInfo(cur.p.champ).name;
-    return { k: r.k, cat: r.name, cum: false, val: hallNum(r.f(cur.v)), plain: r.f(cur.v), sub: r.sub ? r.sub(cur.p) : '', names: [cur.p.name], champ: ci, champKey: cur.p.champ, m: cur.m, p: cur.p,
-      when: `${ci} · ${hallWhen(cur.m)}`, foot: prev ? `종전 ${escapeHtml(prev.p.name)} ${r.f(prev.v)} · ${hist.length - 1}번째 갱신` : `“${r.quip}”`, prev, n: hist.length - 1 };
-  });
-  const cumItem = (k, cat, list, low, unit, fmtV, sub, cond) => {
-    if (!list.length) return null;
+  // 누적 불명예 카드: 1위만 (같은 값이면 tb가 큰 사람 · 그래도 같으면 모두)
+  const shameCum = (ico, name, list, low, fmt, sub, cond, i) => {
+    if (!list.length) return '';
     list.sort((a, b) => (low ? a.v - b.v : b.v - a.v) || b.tb - a.tb);
     const top = list.filter(e => e.v === list[0].v && e.tb === list[0].tb), rest = list.filter(e => e.v !== list[0].v);
     const r2 = rest.length ? rest.filter(e => e.v === rest[0].v) : [];
-    return { k, cat, cum: true, val: `${fmtV(top[0].v)}<span class="u">${unit}</span>`, plain: fmtV(top[0].v) + unit, names: top.map(e => e.x.name), m: top[0].x.m, p: top[0].x.p, champKey: top[0].x.p.champ,
-      when: top.map(e => sub(e.x)).join(' / '),
-      foot: (cond ? cond + ' · ' : '') + (r2.length ? `2위 ${r2.slice(0, 2).map(e => escapeHtml(e.x.name)).join(', ')}${r2.length > 2 ? ` 외 ${r2.length - 2}명` : ''} ${fmtV(r2[0].v)}${unit}` : '따라오는 사람 없음') };
+    const tieN = list.filter(e => e.v === list[0].v).length;
+    return `<div class="hs-pl" style="animation-delay:${(i * .07).toFixed(2)}s"><div class="hs-pl-in">
+      <div class="hs-tape">${ico}</div><span class="hx-kind hs-kind cum">누적</span>
+      <div class="hs-lab">${name}</div>
+      <div class="hs-val">${fmt(top[0].v)}${top.length > 1 ? `<small>${top.length}명 공동 1위</small>` : tieN > 1 ? `<small>같은 기록 ${tieN}명 중 1위</small>` : ''}</div>
+      ${top.map(e => `<div class="hs-who">${champIcon(e.x.m, e.x.p.champ)}<b>${escapeHtml(e.x.name)}</b></div><div class="hs-when">${sub(e.x)}</div>`).join('')}
+      <div class="hs-quip">${cond ? cond + ' · ' : ''}${r2.length ? `2위 ${r2.slice(0, 2).map(e => escapeHtml(e.x.name)).join(', ')}${r2.length > 2 ? ` 외 ${r2.length - 2}명` : ''} <em>${fmt(r2[0].v).replace(/<[^>]+>/g, '')}</em>` : '따라오는 사람 없음'}</div>
+    </div></div>`;
   };
-  const visI = cumItem('vis', '평균 시야 최저', Object.values(D).filter(x => x.gr >= 3).map(x => ({ x, v: +(x.vis / x.gr).toFixed(1), tb: x.gr })), true, '점/판', v => v.toFixed(1), x => `${x.gr}판 동안 총 ${x.vis}점`, '3판 이상 · 협곡만');
-  const ggI = cumItem('gg', '항복 최다 참여', Object.values(D).filter(x => x.gg > 0).map(x => ({ x, v: x.gg, tb: x.gg / x.g })), false, '번', v => String(v), x => `${x.g}판 중 ${Math.round(x.gg / x.g * 100)}% 항복`, '');
-  [visI, ggI].forEach(x => x && items.push(x));
-  if (!items.length) return `<div class="np" id="hxShame"><div class="np-mast"><h3>의P <i>일보</i></h3></div><div class="np-empty">아직 실릴 기사가 없어요 📰</div></div>`;
-  const lead = items.find(x => x.k === 'd') || items[0], rest = items.filter(x => x !== lead);
-  const headOf = x => { const nm = x.names.map(escapeHtml).join('·'); const [h, q] = NP_HEAD[x.k](nm, x.plain, { champ: escapeHtml(x.champ || ''), sub: x.sub }); return { h, q }; };
-  const L = headOf(lead);
-  const body = lead.k === 'd' && !lead.cum
-    ? `${hallWhen(lead.m).replace(' · ', ' 내전 ')}, ${escapeHtml(lead.champ)}${josa(lead.champ, '을', '를')} 고른 ${escapeHtml(lead.names[0])} 씨가 한 판 동안 무려 ${lead.p.d}번 쓰러졌다. ${lead.prev ? `종전 기록(${escapeHtml(lead.prev.p.name)} ${lead.prev.p.d}데스)을 갈아치운 것으로, 이 기록은 지금까지 ${lead.n}번째 갱신이다.` : '의P 내전 역사상 첫 기록이다.'} 현장에 있던 팀원은 “부활 대기 시간이 플레이 시간보다 길었다”고 전했다.`
-    : `${escapeHtml(lead.when)}. ${escapeHtml(lead.names.join(', '))} 씨가 ${lead.cat} 부문에서 ${lead.plain} 기록을 세웠다. ${lead.foot}.`;
-  const days = new Set(ms.map(m => dayKey(m))).size;
-  const last = ms.reduce((a, m) => (m.date || 0) > (a.date || 0) ? m : a, ms[0]);
-  const ld = new Date(last.date || Date.now());
-  const dateTxt = `${ld.getFullYear()}년 ${ld.getMonth() + 1}월 ${ld.getDate()}일 ${'일월화수목금토'[ld.getDay()]}요일`;
-  const col = (x, i) => { const H = headOf(x); return `<article class="np-ar" style="animation-delay:${(i * .06).toFixed(2)}s">
-      <div class="np-cat ${x.cum ? 'cum' : ''}">${x.cum ? '누적 · 연재' : '한 판 · 사건'} <i>|</i> ${x.cat}</div>
-      <h4>${H.h}</h4>
-      <div class="np-num">${x.val}${x.sub ? `<small>${x.sub}</small>` : ''}</div>
-      <div class="np-who">${champIcon(x.m, x.champKey)}<span><b>${x.names.map(escapeHtml).join(', ')}</b><small>${escapeHtml(x.when)}</small></span></div>
-      <div class="np-pv">${x.foot}</div></article>`; };
-  return `<div class="np" id="hxShame">
-    <div class="np-mast">
-      <div class="np-top"><span>제 ${days}호 · ${dateTxt}</span><span>${MODE_NAME[recMode]}판</span><span>가격: 자존심 1개</span></div>
-      <h3>의P <i>일보</i></h3>
-      <div class="np-sl">불명예의 전당 · 깨고 싶어도 아무도 안 깨는 기록들</div>
+  return `<div class="hs" id="hxShame">
+    <div class="hs-fog"></div>
+    ${shameWebs([['14%', 120, 7, 0, 1], ['82%', 190, 9, 2.5, .85], ['48%', 70, 6, 4, .7]])}
+    <div class="hs-hero">
+      <div class="hs-skull">💀</div>
+      <div class="hs-title">HALL OF SHAME</div>
+      <div class="hs-sub">불명예의 전당 · 깨고 싶어도 아무도 안 깨는 기록들</div>
     </div>
-    <div class="np-lead">
-      <div class="np-lt">
-        <span class="np-kick">단독 · ${lead.cum ? '누적' : '한 판'} ${lead.cat}</span>
-        <h4>${L.h}${L.q ? ` …<br><em>${L.q}</em>` : ''}</h4>
-        <p>${body}</p>
-      </div>
-      <figure class="np-photo">${lead.champKey ? `<img src="${splashOf(lead.champKey)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<div class="np-dots"></div>
-        <div class="np-big">${lead.plain}</div>
-        <figcaption>▲ 사건 당일 ${escapeHtml(lead.champ || '')}${lead.champ ? '(으)로 ' : ''}돌진하는 ${escapeHtml(lead.names[0])} 씨 (자료사진)</figcaption></figure>
-    </div>
-    <div class="np-cols">${rest.map(col).join('')}</div>
-    <div class="np-foot"><span>※ 본 기사는 웃자고 쓴 기사이며, 다음 내전에서 정정 보도될 수 있습니다</span><span>의P일보 협곡 사회부</span></div>
+    <div class="hs-sec"><span>✦ CURSED RECORDS ✦</span><b>불명예 기록</b></div>
+    <div class="hs-grid">${recs.map(plaque).join('')}${shameCum('🙈', '평균 시야 최저', (() => { const L = Object.values(D).filter(x => x.gr >= 3); return L.map(x => ({ x, v: +(x.vis / x.gr).toFixed(1), tb: x.gr })); })(), true, v => `${v.toFixed(1)}<span class="u">점/판</span>`, x => `${x.gr}판 동안 총 ${x.vis}점`, '3판 이상 · 협곡만', recs.length)}${shameCum('🏳️', '항복 최다 참여', Object.values(D).filter(x => x.gg > 0).map(x => ({ x, v: x.gg, tb: x.gg / x.g })), false, v => `${v}<span class="u">번</span>`, x => `${x.g}판 중 ${Math.round(x.gg / x.g * 100)}% 항복`, '', recs.length + 1)}</div>
+    <div class="hs-foot">🤫 웃자고 만든 기록이에요. 다음 내전에서 명예 회복하면 돼요!</div>
   </div>`;
 }
 
@@ -7488,6 +7482,111 @@ function dayDigest(day) {
     if (pw <= 0.35) out.upsets.push({ m, w, pct: Math.round(pw * 100) });
   });
   return out;
+}
+// ══════════════════ 📰 내전신문 (관리자 전용): 고른 날(기본 마지막 내전)의 재미있는 일들을 기사로 ══════════════════
+let _newsMode = 'rift';
+const josaOf = (w, a, b) => { const t = String(w || ''), c = t.charCodeAt(t.length - 1); return (c >= 0xAC00 && c <= 0xD7A3) ? ((c - 0xAC00) % 28 ? a : b) : b; };
+function setNewsMode(m) { _newsMode = m; renderNews(); }
+function renderNews(pickDay) {
+  const box = document.getElementById('newsBox'); if (!box) return;
+  const keep = recMode; recMode = _newsMode;
+  try {
+    const all = modeMatches().sort((a, b) => (a.date || 0) - (b.date || 0));
+    const days = [...new Set(all.map(dayKey))].sort();
+    const sel = document.getElementById('nwDay');
+    document.getElementById('nwMode').innerHTML = ['rift', 'aram'].map(m => `<button class="${m === _newsMode ? 'on' : ''}" onclick="setNewsMode('${m}')">${m === 'rift' ? '🌲 협곡' : '❄️ 칼바람'}</button>`).join('');
+    if (!days.length) { sel.innerHTML = ''; box.innerHTML = `<div class="np"><div class="np-empty">${recLoading() ? '불러오는 중…' : '아직 실릴 경기가 없어요 📰'}</div></div>`; return; }
+    const day = days.includes(pickDay) ? pickDay : (days.includes(sel.value) && pickDay !== undefined ? sel.value : days[days.length - 1]);
+    sel.innerHTML = days.slice().reverse().map(d => `<option value="${d}" ${d === day ? 'selected' : ''}>${dateOf(d)}${d.length > 10 ? ' ' + d.slice(11) : ''}</option>`).join('');
+    box.innerHTML = newsHtml(day, days.indexOf(day) + 1);
+  } finally { recMode = keep; }
+}
+function newsHtml(day, issueNo) {
+  const g = dayDigest(day), ms = g.dayMs.slice().sort((a, b) => (a.date || 0) - (b.date || 0));
+  const E = escapeHtml, cn = c => champInfo(c).name;
+  const tk = (m, t) => m.players.filter(p => p.team === t).reduce((x, p) => x + p.k, 0);
+  const all = []; ms.forEach(m => m.players.forEach(p => all.push({ m, p })));
+  const A = [];                                    // 기사 후보: { sc, cat, h, q, num, unit, who, champ, m, body, pv }
+  const add = a => A.push(a);
+  // ① 멀티킬
+  all.filter(x => (x.p.penta || 0) > 0 || (x.p.multi || 0) >= 4).forEach(({ m, p }) => {
+    const pen = (p.penta || 0) > 0 || p.multi >= 5;
+    add({ sc: pen ? 100 : 80, cat: pen ? '호외 · 펜타킬' : '속보 · 쿼드라킬', h: `${E(p.name)}, ${E(cn(p.champ))}${josaOf(cn(p.champ), '으로', '로')} ${pen ? '펜타킬' : '쿼드라킬'} 작렬`, q: pen ? '“다섯 명이 동시에 사라졌다”' : '“한 명만 더 있었어도…”',
+      num: pen ? 'PENTA' : 'QUADRA', unit: '', who: p.name, champ: p.champ, m, body: `${gameNo(m)}번째 판, ${E(p.name)} 씨가 ${p.k}/${p.d}/${p.a}로 ${pen ? '전설의 펜타킬' : '쿼드라킬'}을 기록했다.`, pv: `${gameNo(m)}번째 판 · ${p.k}/${p.d}/${p.a}` });
+  });
+  // ② 역대 기록 경신
+  if (g.records.length) { const R = g.records.map(t => t.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')), names = [...new Set(g.records.map(t => (t.split(' · ').pop() || '').replace(/\s*\(.*\)$/, '')))];
+    add({ sc: 70, cat: '역대 기록 경신', h: `명예의 전당 ${g.records.length}개 기록 새로 썼다`, q: names.length <= 3 ? `“${names.map(E).join(', ')}”` : '', num: g.records.length, unit: '개 경신', who: names.length === 1 ? names[0] : '',
+      body: R.join('<br>'), pv: names.map(E).join(', '), list: R }); }
+  // ③ 대이변
+  g.upsets.forEach(u => add({ sc: 65 + (35 - u.pct), cat: '대이변', h: `예측 ${u.pct}%의 반란 … ${u.w === 'blue' ? '블루' : '레드'}팀 역전승`, q: '“승부 예측은 참고만 하세요”', num: u.pct, unit: '%', m: u.m,
+    who: u.m.players.filter(p => p.team === u.w).map(p => p.name).join(', '), body: `${gameNo(u.m)}번째 판, 이길 확률 ${u.pct}%로 예측됐던 ${u.w === 'blue' ? '블루' : '레드'}팀이 ${tk(u.m, u.w)} : ${tk(u.m, u.w === 'blue' ? 'red' : 'blue')}로 승리했다.`, pv: `${gameNo(u.m)}번째 판 · ${fmtLen(u.m.len)}` }));
+  // ④ 오늘의 MVP
+  if (g.mvp) { const v = g.mvp; add({ sc: 55, cat: '오늘의 MVP', h: `${E(v.p.name)}, ${v.g}전 ${v.w}승 … 오늘의 주인공`, q: v.mvp ? `“MVP만 ${v.mvp}번”` : '', num: `${v.w}승`, unit: `/${v.g}판`, who: v.p.name, champ: v.p.champ, m: v.m,
+    body: `이날 ${v.g}판에 나서 ${v.w}번 이겼고, 합계 ${v.k}/${v.d}/${v.a}를 기록했다.${v.mvp ? ` 경기 MVP도 ${v.mvp}번 차지했다.` : ''}`, pv: `KDA ${((v.k + v.a) / Math.max(1, v.d)).toFixed(2)}` }); }
+  // ⑤ 연패 탈출 · 연승 마감 · 연승 질주 · 연패 늪
+  g.broke.forEach(b => add({ sc: 50 + b.n, cat: '연패 탈출', h: `${E(b.name)}, 지긋지긋한 ${b.n}연패 끊었다`, q: '“드디어 이겼다”', num: b.n, unit: '연패 끝', who: b.name, body: `${b.n}연패에 빠져 있던 ${E(b.name)} 씨가 이날 승리하며 연패 사슬을 끊었다.`, pv: '연패 탈출' }));
+  g.ended.forEach(b => add({ sc: 40 + b.n, cat: '연승 마감', h: `${E(b.name)}의 ${b.n}연승, 여기서 멈췄다`, q: '', num: b.n, unit: '연승 끝', who: b.name, body: `${b.n}연승을 달리던 ${E(b.name)} 씨의 질주가 이날 막을 내렸다.`, pv: '연승 마감' }));
+  g.hot.filter(s => s.n >= 3).forEach(s => add({ sc: 38 + s.n * 2, cat: '연승 행진', h: `${E(s.name)}, ${s.n}연승 질주 … 막을 자 누구`, q: s.n >= 5 ? '“다음 판 최하위 인원으로 팀”' : '', num: s.n, unit: '연승', who: s.name, body: `${E(s.name)} 씨가 ${s.n}연승을 이어가고 있다.`, pv: '내전 룰 · 5연승부터 페널티' }));
+  g.cold.filter(s => s.n >= 3).forEach(s => add({ sc: 34 + s.n * 2, cat: '연패 수렁', h: `${E(s.name)}, ${s.n}연패 … 다음 내전엔 혜택 받는다`, q: '', num: s.n, unit: '연패', who: s.name, body: `${E(s.name)} 씨가 ${s.n}연패에 빠졌다. 다음 내전에서 연패 혜택을 받는다.`, pv: '내전 룰 · 2연패부터 혜택' }));
+  // ⑥ 전승 · 전패
+  g.won.filter(r => r.l === 0 && r.w >= 3).forEach(r => add({ sc: 45, cat: '무패 행진', h: `${E(r.name)}, ${r.w}전 전승 … 오늘은 지지 않았다`, q: '', num: `${r.w}전 ${r.w}승`, unit: '', who: r.name, body: `${E(r.name)} 씨가 이날 나선 ${r.w}판을 모두 이겼다.`, pv: '그날 전승' }));
+  g.lost.filter(r => r.w === 0 && r.l >= 3).forEach(r => add({ sc: 30, cat: '눈물의 날', h: `${E(r.name)}, ${r.l}전 전패 … “오늘은 아니었다”`, q: '', num: `${r.l}전 ${r.l}패`, unit: '', who: r.name, body: `${E(r.name)} 씨가 이날 ${r.l}판을 모두 졌다.`, pv: '그날 전패' }));
+  // ⑦ 그날의 한 판 기록들
+  const top = (f, low) => all.slice().sort((a, b) => low ? f(a) - f(b) : f(b) - f(a))[0];
+  const kk = top(x => x.p.k); if (kk && kk.p.k >= 10) add({ sc: 28 + kk.p.k / 2, cat: '오늘의 학살자', h: `${E(kk.p.name)}, ${E(cn(kk.p.champ))}${josaOf(cn(kk.p.champ), '으로', '로')} ${kk.p.k}킬`, q: '“킬은 내가 다 먹는다”', num: kk.p.k, unit: '킬', who: kk.p.name, champ: kk.p.champ, m: kk.m, body: `${gameNo(kk.m)}번째 판, ${kk.p.k}/${kk.p.d}/${kk.p.a}.`, pv: `${gameNo(kk.m)}번째 판` });
+  const dd = top(x => x.p.d); if (dd && dd.p.d >= 9) add({ sc: 26 + dd.p.d / 2, cat: '부활 대기실', h: `${E(dd.p.name)}, 한 판에 ${dd.p.d}번 쓰러져`, q: `“${E(cn(dd.p.champ))}${josaOf(cn(dd.p.champ), '은', '는')} 죄가 없다”`, num: dd.p.d, unit: '데스', who: dd.p.name, champ: dd.p.champ, m: dd.m, body: `${gameNo(dd.m)}번째 판, ${dd.p.k}/${dd.p.d}/${dd.p.a}.`, pv: `${gameNo(dd.m)}번째 판` });
+  const vv = recMode === 'rift' ? top(x => x.p.vis / Math.max(1, x.m.len / 60)) : null; if (vv && vv.p.vis >= 40) add({ sc: 20, cat: '시야 장인', h: `${E(vv.p.name)}, 시야점수 ${vv.p.vis} … 협곡의 등대`, q: '', num: vv.p.vis, unit: '점', who: vv.p.name, champ: vv.p.champ, m: vv.m, body: `${gameNo(vv.m)}번째 판, ${E(cn(vv.p.champ))}로 시야점수 ${vv.p.vis}점.`, pv: `${gameNo(vv.m)}번째 판` });
+  const byLen = ms.slice().sort((a, b) => a.len - b.len);
+  if (ms.length > 1) { const s = byLen[0], l = byLen[byLen.length - 1];
+    add({ sc: 22, cat: '오늘의 속전속결', h: `${gameNo(s)}번째 판, ${Math.floor(s.len / 60)}분 만에 끝났다`, q: s.surrender ? '“/ff”' : '', num: Math.floor(s.len / 60), unit: '분', m: s, body: `${winnerOf(s) === 'blue' ? '블루' : '레드'}팀 승리 · ${tk(s, 'blue')} : ${tk(s, 'red')}`, pv: fmtLen(s.len) });
+    if (l.len >= 1800) add({ sc: 21, cat: '오늘의 혈전', h: `${gameNo(l)}번째 판, ${Math.floor(l.len / 60)}분 대혈전`, q: '', num: Math.floor(l.len / 60), unit: '분', m: l, body: `${winnerOf(l) === 'blue' ? '블루' : '레드'}팀 승리 · ${tk(l, 'blue')} : ${tk(l, 'red')}`, pv: fmtLen(l.len) }); }
+  const mas = ms.map(m => { const w = winnerOf(m), l = w === 'blue' ? 'red' : 'blue'; return { m, w, l, d: tk(m, w) - tk(m, l) }; }).sort((a, b) => b.d - a.d)[0];
+  if (mas && mas.d >= 15) add({ sc: 24, cat: '일방적 경기', h: `${gameNo(mas.m)}번째 판, ${tk(mas.m, mas.w)} : ${tk(mas.m, mas.l)} 대참사`, q: '', num: `−${mas.d}`, unit: '킬 차', m: mas.m, body: `${mas.l === 'blue' ? '블루' : '레드'}팀이 킬 차이 ${mas.d}로 무너졌다.`, pv: fmtLen(mas.m.len) });
+  // ⑧ 칭호 주인 변동
+  g.titles.slice(0, 3).forEach(t => add({ sc: 32, cat: '칭호 변동', h: `‘${E(t.t.name)}’ 칭호, ${E(t.to)}에게`, q: t.from ? `${E(t.from)} → ${E(t.to)}` : '새 주인 등장', num: t.t.ico || '🏷️', unit: '', who: t.to, body: E(t.text || ''), pv: '대시보드 칭호' }));
+
+  A.sort((a, b) => b.sc - a.sc);
+  // 같은 종류 기사가 몰리지 않게: 종류별 1개씩 먼저, 남으면 점수 순으로 채워요
+  const lead = A[0], seen = new Set([lead && lead.cat]), rest = [];
+  A.slice(1).forEach(a => { if (!seen.has(a.cat) && rest.length < 6) { seen.add(a.cat); rest.push(a); } });
+  A.slice(1).forEach(a => { if (!rest.includes(a) && rest.length < 6) rest.push(a); });
+  rest.sort((a, b) => b.sc - a.sc);
+  const d0 = new Date(ms[0].date), WD = '일월화수목금토';
+  const dateTxt = `${d0.getFullYear()}년 ${d0.getMonth() + 1}월 ${d0.getDate()}일 ${WD[d0.getDay()]}요일${day.length > 10 ? ' · ' + day.slice(11) : ''}`;
+  const leadChamp = lead && (lead.champ || (lead.m && (lead.m.players.find(p => p.name === lead.who) || {}).champ));
+  const leadHtml = lead ? `<div class="np-lead">
+      <div class="np-lt"><span class="np-kick">${lead.cat}</span>
+        <h4>${lead.h}${lead.q ? ` …<br><em>${lead.q}</em>` : ''}</h4><p>${lead.body}</p></div>
+      <figure class="np-photo">${leadChamp ? `<img src="${splashOf(leadChamp)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<div class="np-dots"></div>
+        <div class="np-big">${lead.num}${lead.unit ? `<small>${lead.unit}</small>` : ''}</div>
+        <figcaption>▲ ${lead.who ? E(lead.who) + ' 씨' : '현장'}${leadChamp ? ` · ${E(cn(leadChamp))}` : ''} (자료사진)</figcaption></figure></div>` : '';
+  const col = (a, i) => { const pl = a.m && a.who ? a.m.players.find(p => p.name === a.who) : null; const ch = a.champ || (pl && pl.champ);
+    return `<article class="np-ar" style="animation-delay:${(i * .06).toFixed(2)}s"><div class="np-cat">${a.cat}</div><h4>${a.h}</h4>
+      <div class="np-num">${a.num}${a.unit ? `<span class="u">${a.unit}</span>` : ''}</div>
+      ${a.q ? `<div class="np-q">${a.q}</div>` : ''}
+      ${a.list ? `<ul class="nw-rl">${a.list.map(x => `<li>${x}</li>`).join('')}</ul>` : `<div class="np-who">${ch && a.m ? champIcon(a.m, ch) : ''}<span><b>${a.who ? E(a.who) : ''}</b><small>${a.pv}</small></span></div>`}</article>`; };
+  // 경기 결과표 + 그날 승패
+  const board = ms.map(m => { const w = winnerOf(m), bd = matchBadges(m), mi = Object.keys(bd).find(i => bd[i] === 'mvp'), mv = mi != null ? m.players[mi] : null;
+    return `<tr><td>${gameNo(m)}판</td><td class="${w}">${w === 'blue' ? '🔵 블루' : '🔴 레드'} 승${m.surrender ? ' <small>항복</small>' : ''}</td><td>${tk(m, 'blue')} : ${tk(m, 'red')}</td><td>${fmtLen(m.len).replace(/ \d+초/, '')}</td><td>${mv ? `${champIcon(m, mv.champ)} ${E(mv.name)}` : ''}</td></tr>`; }).join('');
+  const nameList = L => L.length ? L.map(r => `<span>${E(r.name)} <i>${r.w}승 ${r.l}패</i></span>`).join('') : '<span class="none">없음</span>';
+  return `<div class="np nw" id="newsPaper">
+    <div class="np-mast">
+      <div class="np-top"><span>제 ${issueNo}호 · ${dateTxt}</span><span>${MODE_NAME[recMode]}판 · ${ms.length}판</span><span>가격: 자존심 1개</span></div>
+      <h3>내전 <i>신문</i></h3>
+      <div class="np-sl">의P 내전 그날의 소식 · ${dateOf(day)} 내전 특집</div>
+    </div>
+    ${leadHtml || '<div class="np-empty">이날은 특별한 사건이 없었어요</div>'}
+    ${rest.length ? `<div class="np-cols">${rest.map(col).join('')}</div>` : ''}
+    <div class="nw-low">
+      <div class="nw-box"><div class="np-cat">경기 결과</div><table class="nw-tb"><thead><tr><th></th><th>결과</th><th>킬</th><th>시간</th><th>MVP</th></tr></thead><tbody>${board}</tbody></table></div>
+      <div class="nw-box"><div class="np-cat">오늘의 승자 · 패자</div>
+        <div class="nw-wl"><b class="w">😎 웃은 사람</b><div>${nameList(g.won)}</div></div>
+        ${g.drew.length ? `<div class="nw-wl"><b>🤝 본전</b><div>${nameList(g.drew)}</div></div>` : ''}
+        <div class="nw-wl"><b class="l">😭 운 사람</b><div>${nameList(g.lost)}</div></div></div>
+    </div>
+    <div class="np-foot"><span>※ 본 기사는 경기 기록으로 자동 작성되었으며, 웃자고 쓴 기사입니다</span><span>의P 내전신문 협곡 사회부</span></div>
+  </div>`;
 }
 // 사이트 주소 (관리자 표시 없이 · 전적 화면으로 바로)
 const siteRecordUrl = () => location.origin + location.pathname + '#record' + (recMode === 'aram' ? '-aram' : '');
