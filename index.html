@@ -7041,9 +7041,9 @@ function renderDashboard() {
     <div class="kpi" data-ico="👥"><div class="kpi-l">참여 인원</div><div class="kpi-v">${people}<small>명</small></div><div class="kpi-s">한 번이라도 뛴 소환사</div></div>
     <div class="kpi" data-ico="⏱"><div class="kpi-l">총 플레이 시간</div><div class="kpi-v">${hm(totalSec)}</div><div class="kpi-s">평균 ${Math.round(totalSec / ms.length / 60)}분 / 판</div></div>
     <div class="kpi" data-ico="☠"><div class="kpi-l">총 킬</div><div class="kpi-v">${fmtNum(totalKills)}<small>킬</small></div><div class="kpi-s">판당 ${Math.round(totalKills / ms.length)}킬</div></div>
-    ${(() => { const R = dayPredictions(); if (!R.length) return '';
+    ${(() => { const R = Object.values(retroPredictions()).filter(x => x.side); if (!R.length) return '';
         const ok = R.filter(x => x.ok).length;
-        return `<div class="kpi" data-ico="🔮" title="내전 날마다 그날의 최종 승리 팀을 맞혔는지 (그날 시작 전 기록으로 예측 · 무승부인 날은 제외)"><div class="kpi-l">승부 예측 적중률</div><div class="kpi-v">${Math.round(ok / R.length * 100)}<small>%</small></div><div class="kpi-s">내전 ${R.length}일 중 ${ok}일 적중</div></div>`; })()}
+        return `<div class="kpi" data-ico="🔮" title="판마다 승리 팀을 맞혔는지 (그날 내전 시작 전 기록으로 예측 · 50.0 : 50.0 예측 불가 판은 제외)"><div class="kpi-l">승부 예측 적중률</div><div class="kpi-v">${Math.round(ok / R.length * 100)}<small>%</small></div><div class="kpi-s">${R.length}판 중 ${ok}판 적중</div></div>`; })()}
     <div class="kpi" data-ico="📅"><div class="kpi-l">최근 내전</div><div class="kpi-v">${dateOf(lastDay).slice(5).replace('.', '/')}${lastDay.length > 10 ? `<small class="kpi-set">${lastDay.slice(11)}</small>` : ''}</div><div class="kpi-s">${lastMs.length}판 진행</div></div>
   </div></div>`;
 
