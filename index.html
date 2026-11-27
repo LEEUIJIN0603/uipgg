@@ -2527,6 +2527,27 @@
     @keyframes cupShine { from { background-position: 100% 0; } to { background-position: -120% 0; } }
     .cup-s { color: var(--muted); font-size: .82rem; }
     @media (max-width: 760px) { .cup-cs { font-size: 2.4rem; letter-spacing: 6px; padding-left: 6px; } }
+    /* 내전 룰 */
+    .rule-bar { display: flex; justify-content: flex-end; margin: -6px 0 8px; }
+    .rule-btn { font-family: inherit; font-size: .8rem; font-weight: 700; color: #f0c96a; background: rgba(200,155,60,.1); border: 1px solid rgba(200,155,60,.5); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+    .rule-btn:hover { background: rgba(200,155,60,.2); }
+    .rule-box { width: min(620px, 100%) !important; }
+    .rule-h { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 12px; }
+    .rule-common { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; background: var(--panel2); margin-bottom: 12px; font-size: .82rem; }
+    .rule-common b { color: #f0c96a; margin-right: 4px; } .rule-common span { padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,.05); } .rule-common em { font-style: normal; color: #fff; font-weight: 700; }
+    .rule-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .rule-col { border-radius: 12px; padding: 10px; border: 1px solid; }
+    .rule-col.lose { border-color: rgba(110,160,255,.4); background: rgba(70,110,200,.08); } .rule-col.win { border-color: rgba(240,180,60,.45); background: rgba(240,180,60,.06); align-self: start; }
+    .rule-ch { font-weight: 800; font-size: .86rem; margin-bottom: 8px; } .lose .rule-ch { color: #8fc7ff; } .win .rule-ch { color: #ffc56b; }
+    .rule-st { display: flex; gap: 10px; align-items: center; padding: 7px 8px; border-radius: 8px; background: rgba(0,0,0,.2); margin-top: 5px; font-size: .78rem; }
+    .rule-st b { flex-shrink: 0; min-width: 44px; font-size: .78rem; } .lose .rule-st b { color: #8fc7ff; } .win .rule-st b { color: #ffc56b; }
+    .rule-st.top { background: rgba(0,0,0,.4); font-weight: 700; } .lose .rule-st.top { box-shadow: inset 0 0 0 1px rgba(200,60,70,.5); } .win .rule-st.top { box-shadow: inset 0 0 0 1px rgba(240,190,80,.6); }
+    .rule-foot { margin-top: 12px; font-size: .68rem; color: var(--muted); }
+    .rule-bd { flex-basis: 100%; font-size: .68rem; font-weight: 700; margin: -4px 0 0 2px; }
+    .rule-bd.lose { color: #8fc7ff; } .rule-bd.win { color: #ffc56b; }
+    .ability-wrap .rule-bd { grid-column: 1 / -1; }
+    .rule-hint { color: #f0c96a; }
+    @media (max-width: 760px) { .rule-cols { grid-template-columns: 1fr; } .rule-bar { margin: 0 0 8px; } }
     /* ══ 챔프 티어 ══ */
     .ct-badge { font-size: .66rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; letter-spacing: 0; }
     .ct-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
@@ -2882,6 +2903,7 @@
 <div class="page-view" id="view-assign">
 <div class="layout">
 <div class="layout-main">
+  <div class="rule-bar"><button class="rule-btn" onclick="openRules()">📜 내전 룰</button></div>
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('random',this)">
       <span class="t-main">🎲 올 랜덤</span>
@@ -3115,6 +3137,24 @@
 </main>
 </div><!-- app -->
 
+<div class="hist-pop" id="rulePop" onclick="if (event.target === this) closeRules()">
+    <div class="hp-box rule-box"><button class="hp-close" onclick="closeRules()">✕</button>
+      <div class="rule-h">📜 우리 내전 룰</div>
+      <div class="rule-common"><b>공통</b><span>이겨도 져도 <em>협곡 3판 + 증바람 1판</em></span><span>팀 배정 후 <em>한 라인 변경 가능</em></span></div>
+      <div class="rule-cols">
+        <div class="rule-col lose"><div class="rule-ch">🧊 연패 혜택</div>
+          <div class="rule-st"><b>2연패</b><span>제외 포지션 1개 선택</span></div>
+          <div class="rule-st"><b>3연패</b><span>원하는 포지션 3개 선택</span></div>
+          <div class="rule-st"><b>4연패</b><span>랜덤 팀 3개 중 원하는 팀으로</span></div>
+          <div class="rule-st"><b>5연패</b><span>본인 포함 순위 최상위 인원으로 팀</span></div>
+          <div class="rule-st top"><b>6연패</b><span>💀 불명예회원 등극</span></div></div>
+        <div class="rule-col win"><div class="rule-ch">🔥 연승 페널티</div>
+          <div class="rule-st"><b>5연승</b><span>본인 포함 순위 최하위 인원으로 팀</span></div>
+          <div class="rule-st top"><b>6연승</b><span>🏆 명예회원 등극</span></div></div>
+      </div>
+      <div class="rule-foot">연승·연패는 내전 날짜 기준 (소환사 협곡) · 참가자 이름을 넣으면 해당 룰이 옆에 표시돼요</div>
+    </div>
+</div>
 <div class="hist-pop" id="champPop" onclick="if (event.target === this) closeChampPop()">
     <div class="hp-box cp-box"><button class="hp-close" onclick="closeChampPop()">✕</button><div id="cpBody"></div></div>
 </div>
@@ -3510,6 +3550,36 @@ rg.addEventListener('click', e => {
   cycleChip(chip); paintAutoLanes();
 });
 rg.addEventListener('input', () => paintAutoLanes());
+// ── 내전 룰: 참가자 이름 옆에 지금 연승/연패에 맞는 룰 표시 (협곡 · 날짜 기준) ──
+function openRules() { document.getElementById('rulePop').classList.add('open'); layerOpen('rules', () => closeRules(true)); }
+function closeRules(fromBack) { document.getElementById('rulePop').classList.remove('open'); if (!fromBack) layerClose('rules'); }
+let _ruleCache = { key: '', map: {} };
+function streakRuleOf(name) {
+  const k = normName(name); if (!k || typeof matches === 'undefined') return null;
+  const key = matches.length + '|' + (matches[matches.length - 1] || {}).id;
+  if (_ruleCache.key !== key) {
+    const map = {};
+    try { withMatches(matches.filter(m => modeOf(m) === 'rift'), calcStreaks).forEach(st => { if (st.kind !== 'none') map[normName(st.name)] = { kind: st.kind, n: st.n }; }); } catch (e) {}
+    _ruleCache = { key, map };
+  }
+  const st = _ruleCache.map[k]; if (!st) return null;
+  if (st.kind === 'lose') {
+    const t = st.n >= 6 ? '💀 불명예회원 · 최상위 인원으로 팀' : st.n === 5 ? '최상위 인원으로 팀' : st.n === 4 ? '랜덤 팀 3개 중 선택' : st.n === 3 ? '원하는 포지션 3개' : st.n === 2 ? '제외 포지션 1개' : '';
+    return t ? { cls: 'lose', txt: `🧊 ${st.n}연패 · ${t}` } : null;
+  }
+  if (st.kind === 'win' && st.n >= 5) return { cls: 'win', txt: `🔥 ${st.n}연승 · ${st.n >= 6 ? '🏆 명예회원 · ' : ''}최하위 인원으로 팀` };
+  return null;
+}
+function paintRuleBadges() {
+  document.querySelectorAll('#randGrid .rp-row, #abilityGrid .ability-wrap').forEach(row => {
+    const inp = row.querySelector('input[type=text]'); if (!inp) return;
+    let b = row.querySelector('.rule-bd');
+    const r = streakRuleOf(inp.value.trim());
+    if (!r) { if (b) b.remove(); return; }
+    if (!b) { b = document.createElement('span'); row.appendChild(b); }
+    b.className = 'rule-bd ' + r.cls; b.textContent = r.txt; b.title = '내전 룰 · 📜 내전 룰 버튼에서 전체 보기';
+  });
+}
 // ── 자주 간 라인 자동 제외: 협곡에서 그 라인 비율이 40% 이상이면 배정하지 않아요 (5판 이상 한 사람만) ──
 const AUTO_LANE_MAX = .4, AUTO_LANE_MIN_G = 5;
 function laneShares(name) {
@@ -4477,7 +4547,7 @@ function renderResultCards() {
   row.innerHTML = '';
   row.appendChild(makeBoard(t1, t2, showScore));
   const hint = document.getElementById('modalHint');
-  if (hint) hint.textContent = '이름을 끌어 다른 이름 위에 놓으면 서로 자리가 바뀌어요 (' + (t1[0] && t1[0].role ? '라인은 그대로 · ' : '') + '바뀐 이름엔 🔄)';
+  if (hint) hint.innerHTML = (t1[0] && t1[0].role ? '<b class="rule-hint">✋ 팀 배정 후 한 라인 변경 가능</b> · ' : '') + '이름을 끌어 다른 이름 위에 놓으면 서로 자리가 바뀌어요 (' + (t1[0] && t1[0].role ? '라인은 그대로 · ' : '') + '바뀐 이름엔 🔄)';
   if (typeof renderPrediction === 'function') renderPrediction();
   if (_lastResult.measure) {                                // 승률 측정: 결과에서 바꾼 자리를 입력칸에도 반영
     const ins = t => [...document.querySelectorAll(`#msGrid input[data-team="${t}"]`)];
@@ -5382,6 +5452,7 @@ const MULTI = { 2: '더블킬', 3: '트리플킬', 4: '쿼드라킬', 5: '펜타
 function renderRecord() {
   if (typeof renderMembers === 'function') renderMembers();
   if (typeof paintAutoLanes === 'function') paintAutoLanes();
+  if (typeof paintRuleBadges === 'function') paintRuleBadges();
   loadAugments();
   renderShareInfo();
   renderStreaks();
@@ -7894,8 +7965,8 @@ renderRecord();
 loadDD();
 loadSharedMatches();
 paintBal();
-document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#randGrid, #abilityGrid')) paintBal(); });
-document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.member-panel, .btn-tab-reset')) setTimeout(paintBal, 60); });
+document.addEventListener('input', e => { if (e.target.closest && e.target.closest('#randGrid, #abilityGrid')) { paintBal(); paintRuleBadges(); } });
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.member-panel, .btn-tab-reset')) setTimeout(() => { paintBal(); paintRuleBadges(); }, 60); });
 // 주소 끝 #record 처럼 붙어 있으면 그 메뉴로 바로 열기 (디스코드 '자세히 보기' 버튼)
 (function openFromHash() {
   const h = (location.hash || '').replace('#', '');
