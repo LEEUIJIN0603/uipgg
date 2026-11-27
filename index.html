@@ -2546,13 +2546,13 @@
     .rule-st b { flex-shrink: 0; min-width: 44px; font-size: .78rem; } .lose .rule-st b { color: #8fc7ff; } .win .rule-st b { color: #ffc56b; }
     .rule-st.top { background: rgba(0,0,0,.4); font-weight: 700; } .lose .rule-st.top { box-shadow: inset 0 0 0 1px rgba(200,60,70,.5); } .win .rule-st.top { box-shadow: inset 0 0 0 1px rgba(240,190,80,.6); }
     .rule-foot { margin-top: 12px; font-size: .68rem; color: var(--muted); }
-    /* 연승·연패 룰: 줄 높이는 그대로, 닉네임 칸 아래쪽 안에 작게 겹쳐 표시 */
-    .rp-row, .ability-wrap { position: relative; }
-    input.has-rule { padding-top: 4px !important; padding-bottom: 18px !important; }
-    .rule-bd { position: absolute; z-index: 2; pointer-events: none; font-size: .62rem; font-weight: 700; line-height: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 6px; box-sizing: border-box; }
-    .rule-bd.lose { color: #8fc7ff; } .rule-bd.win { color: #ffc56b; }
-    input.has-rule.rule-lose { border-color: rgba(120,180,255,.45); }
-    input.has-rule.rule-win { border-color: rgba(255,190,90,.5); }
+    /* 연승·연패: 참가자 번호 칸(너비 고정) 안, 닉네임 쪽에 붙여서 "🧊 2연패" 한 줄만 */
+    #randGrid .rp-row .rp-no { display: flex; align-items: center; justify-content: space-between; gap: 4px; flex: 0 0 128px; width: 128px; min-width: 0; white-space: nowrap; }
+    .ability-meta .stk { margin-left: auto; flex-shrink: 0; }
+    .ability-meta:has(.stk) .ability-hint { display: none; }
+    .stk { display: inline-flex; align-items: center; gap: 2px; font-size: .7rem; font-weight: 800; line-height: 1; white-space: nowrap; cursor: help; }
+    .stk.lose { color: #8fc7ff; } .stk.win { color: #ffb35c; }
+    @media (max-width: 760px) { #randGrid .rp-row .rp-no { flex-basis: 112px; width: 112px; } .stk { font-size: .64rem; } }
     .rule-hint { color: #f0c96a; }
     @media (max-width: 760px) { .rule-cols { grid-template-columns: 1fr; } .rule-bar { padding: 10px 12px; gap: 10px; } .rb-t small { font-size: .66rem; } .rb-go { padding: 4px 9px; font-size: .7rem; } }
     /* ══ 챔프 티어 ══ */
@@ -3574,35 +3574,25 @@ function streakRuleOf(name) {
     _ruleCache = { key, map };
   }
   const st = _ruleCache.map[k]; if (!st) return null;
-  if (st.kind === 'lose') {
-    const t = st.n >= 6 ? '💀 불명예회원 · 최상위 인원으로 팀' : st.n === 5 ? '최상위 인원으로 팀' : st.n === 4 ? '랜덤 팀 3개 중 선택' : st.n === 3 ? '원하는 포지션 2개' : st.n === 2 ? '제외 포지션 1개' : '';
-    return t ? { cls: 'lose', txt: `🧊 ${st.n}연패 · ${t}` } : null;
+  if (st.kind === 'lose' && st.n >= 2) {
+    const t = st.n >= 6 ? '💀 불명예회원 · 최상위 인원으로 팀' : st.n === 5 ? '최상위 인원으로 팀' : st.n === 4 ? '랜덤 팀 3개 중 선택' : st.n === 3 ? '원하는 포지션 2개' : '제외 포지션 1개';
+    return { cls: 'lose', n: st.n, ico: '🧊', label: st.n + '연패', rule: t };
   }
-  if (st.kind === 'win' && st.n >= 5) return { cls: 'win', txt: `🔥 ${st.n}연승 · ${st.n >= 6 ? '🏆 명예회원 · ' : ''}최하위 인원으로 팀` };
+  if (st.kind === 'win' && st.n >= 3) return { cls: 'win', n: st.n, ico: '🔥', label: st.n + '연승', rule: st.n >= 6 ? '🏆 명예회원 · 최하위 인원으로 팀' : st.n === 5 ? '최하위 인원으로 팀' : '' };
   return null;
 }
 function paintRuleBadges() {
+  // 참가자 번호 칸 오른쪽(닉네임 쪽)에 "🧊 2연패" / "🔥 3연승" 한 줄만 — 룰 설명은 마우스를 올리면
   document.querySelectorAll('#randGrid .rp-row, #abilityGrid .ability-wrap').forEach(row => {
-    const inp = row.querySelector('input[type=text]'); if (!inp) return;
-    let b = row.querySelector('.rule-bd');
+    const inp = row.querySelector('input[type=text]'), holder = row.querySelector('.rp-no, .ability-meta'); if (!inp || !holder) return;
+    let b = holder.querySelector('.stk');
     const r = streakRuleOf(inp.value.trim());
-    if (!r) { if (b) b.remove(); inp.classList.remove('has-rule', 'rule-lose', 'rule-win'); return; }
-    if (!b) { b = document.createElement('span'); row.appendChild(b); }
-    b.className = 'rule-bd ' + r.cls; b.textContent = r.txt;
-    inp.classList.add('has-rule'); inp.classList.toggle('rule-lose', r.cls === 'lose'); inp.classList.toggle('rule-win', r.cls === 'win');
-    inp.title = r.txt + ' · 📜 내전 룰에서 전체 보기';
-    placeRuleBadge(row, inp, b);
+    if (!r) { if (b) b.remove(); return; }
+    if (!b) { b = document.createElement('span'); holder.appendChild(b); }
+    b.className = 'stk ' + r.cls; b.textContent = r.ico + ' ' + r.label;
+    b.title = r.label + (r.rule ? ' · ' + r.rule : '') + ' · 📜 내전 룰에서 전체 보기';
   });
 }
-function placeRuleBadge(row, inp, b) {
-  // 닉네임 칸 안쪽 아래에 겹쳐서 (줄 높이를 늘리지 않게)
-  const rr = row.getBoundingClientRect(), ir = inp.getBoundingClientRect();
-  if (!ir.width) return;
-  b.style.left = (ir.left - rr.left - row.clientLeft) + 'px';
-  b.style.width = ir.width + 'px';
-  b.style.top = (ir.bottom - rr.top - row.clientTop - 14) + 'px';
-}
-window.addEventListener('resize', () => document.querySelectorAll('.rule-bd').forEach(b => { const row = b.parentElement, inp = row && row.querySelector('input[type=text]'); if (inp) placeRuleBadge(row, inp, b); }));
 // ── 자주 간 라인 자동 제외: 협곡에서 그 라인 비율이 40% 이상이면 배정하지 않아요 (5판 이상 한 사람만) ──
 const AUTO_LANE_MAX = .4, AUTO_LANE_MIN_G = 5;
 function laneShares(name) {
