@@ -2229,6 +2229,27 @@
       .np-ar:nth-child(odd) { border-left: none; padding-left: 0; }
       .np-foot { flex-direction: column; gap: 2px; }
     }
+    /* 📰 대시보드 1면 카드 + 신문 팝업 */
+    .news-card { display: flex; align-items: center; gap: 14px; width: 100%; padding: 12px 14px; border-radius: 12px; cursor: pointer; text-align: left; font-family: inherit; color: var(--text);
+      background: radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 4px 4px, linear-gradient(100deg, #182232, #111925); border: 1px solid #3a4658; box-shadow: inset 0 0 0 1px rgba(255,255,255,.02); transition: border-color .15s, transform .15s; }
+    .news-card:hover { border-color: rgba(226,98,106,.6); transform: translateY(-1px); }
+    .nc-ico { font-size: 1.7rem; flex-shrink: 0; }
+    .nc-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .nc-t small { font-size: .68rem; color: #8a97a8; letter-spacing: .5px; } .nc-t i { font-style: normal; align-self: flex-start; font-size: .64rem; font-weight: 800; color: #ff9aa0; border: 1px solid rgba(226,98,106,.55); background: rgba(226,98,106,.12); border-radius: 3px; padding: 1px 7px; letter-spacing: 1px; }
+    .nc-t b { font-family: 'Noto Serif KR', serif; font-size: 1.08rem; font-weight: 900; color: #eef2f7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nc-img { flex-shrink: 0; width: 120px; height: 58px; border-radius: 6px; overflow: hidden; background: #0b1018; border: 1px solid #3a4658; }
+    .nc-img img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; filter: grayscale(.6) brightness(.85); }
+    .nc-go { flex-shrink: 0; font-size: .76rem; font-weight: 700; color: #1a1206; background: linear-gradient(90deg, #ffe39a, #d9a63c); border-radius: 999px; padding: 6px 12px; }
+    .news-pop { display: none; position: fixed; inset: 0; z-index: 1600; background: rgba(2,5,10,.78); align-items: flex-start; justify-content: center; padding: 28px 16px; overflow: hidden; }
+    .news-pop.open { display: flex; animation: fadeUp .25s ease; }
+    .news-pop-box { position: relative; width: min(1080px, 100%); max-height: calc(100vh - 56px); overflow-y: auto; border-radius: 20px; }
+    .news-pop-box .np { margin: 0; }
+    .news-x { position: sticky; top: 10px; float: right; margin: 10px 10px -46px 0; z-index: 3; width: 36px; height: 36px; border-radius: 50%; border: 1px solid #3a4658; background: rgba(14,20,29,.9); color: #d9e0ea; font-size: 1rem; cursor: pointer; }
+    .news-x:hover { border-color: #e2626a; color: #fff; }
+    .news-pop.deliver .news-pop-box { animation: newsThrow 1.1s cubic-bezier(.2,.8,.25,1) both; }
+    @keyframes newsThrow { 0% { transform: translate(-40vw, 70vh) rotate(-540deg) scale(.08); opacity: 0; } 55% { opacity: 1; } 78% { transform: translate(0, 0) rotate(6deg) scale(1.02); } 100% { transform: none; } }
+    @media (max-width: 760px) { .news-card { gap: 10px; padding: 10px 12px; } .nc-img { display: none; } .nc-t b { font-size: .95rem; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; } .nc-go { padding: 5px 10px; font-size: .7rem; }
+      .news-pop { padding: 10px 6px; } .news-pop-box { max-height: calc(100vh - 20px); } }
     /* 내전신문 (관리자) */
     .nw-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
     .nw-t { font-size: 1rem; font-weight: 800; color: var(--text-bright); } .nw-t small { font-size: .7rem; color: var(--muted); font-weight: 500; margin-left: 6px; }
@@ -2251,7 +2272,7 @@
     .nw-fact td b { color: #ffd77a; }
     .nw-story .nw-by { text-align: right; font-size: .72rem; color: #8a97a8; text-indent: 0; margin-top: 4px; }
     .nw .np-lead { align-items: start; } .nw .np-photo { min-height: 260px; }
-    @media (max-width: 760px) { .nw-side { position: static; order: -1; } }
+    @media (max-width: 760px) { .nw-side { position: static; } .nw .np-photo { min-height: 180px; } .news-pop .np-top { padding-right: 40px; } }
     .nw-cb { font-size: .72rem; line-height: 1.6; color: #b9c3d0; margin: 6px 0 0; }
 
     .nw-rl { margin: 6px 0 0; padding: 0; list-style: none; font-size: .7rem; color: #b9c3d0; line-height: 1.5; } .nw-rl li { padding: 3px 0; border-top: 1px dotted #3a4658; } .nw-rl b { color: #ffd77a; }
@@ -3278,6 +3299,10 @@
 </div>
 <div class="hist-pop" id="champPop" onclick="if (event.target === this) closeChampPop()">
     <div class="hp-box cp-box"><button class="hp-close" onclick="closeChampPop()">✕</button><div id="cpBody"></div></div>
+</div>
+<!-- 📰 내전신문 팝업 (지금은 관리자만) -->
+<div class="news-pop" id="newsPop" onclick="if (event.target === this) closeNews()">
+  <div class="news-pop-box"><button class="news-x" onclick="closeNews()" aria-label="닫기">✕</button><div id="newsPopBody"></div></div>
 </div>
 <div class="hist-pop" id="histPop" onclick="if (event.target === this) closeStreakHist()">
     <div class="hp-box">
@@ -7273,8 +7298,9 @@ function renderDashboard() {
   const augTop = Object.entries(AU).sort((a, b) => b[1].g - a[1].g || b[1].w - a[1].w).slice(0, 10);
   const row5 = augTop.length ? `<div class="db-sec"><div class="db-box"><div class="db-h"><b>✨ 인기 증강</b><span>많이 고른 순 · 고른 사람 기준 승률</span></div>
     <div class="aug-grid">${augTop.map(([a, v], i) => `<div class="dl"><span class="dl-n">${i + 1}</span>${augIcon(a, 'big')}<div class="dl-main"><b>${escapeHtml(augInfo(a).name)}</b><small>${v.w}승 ${v.g - v.w}패</small></div><div class="dl-v">${v.g}회<small>승률 ${Math.round(v.w / v.g * 100)}%</small></div></div>`).join('')}</div></div></div>` : '';
-  box.innerHTML = kpi + row2 + row3 + row4 + row5;
+  box.innerHTML = (IS_ADMIN ? newsCardHtml() : '') + kpi + row2 + row3 + row4 + row5;
   initCarousel();
+  if (IS_ADMIN) setTimeout(maybeDeliverNews, 700);
 }
 
 // ── 칭호 캐러셀 ──
@@ -7693,6 +7719,53 @@ function newsHtml(day, issueNo) {
     </div>
     <div class="np-foot"><span>※ 본 기사는 경기 기록으로 자동 작성되었으며, 웃자고 쓴 기사입니다</span><span>의P 내전신문 협곡 사회부</span></div>
   </div>`;
+}
+
+// ── 📰 마지막 내전 신문: 대시보드 1면 카드 + 새 호가 나오면 한 번 배달 팝업 (다음 내전 전까지 그대로, 새 내전이면 자동으로 다음 호) ──
+const NEWS_SEEN_KEY = 'uipNewsSeen';
+function latestNews() {
+  const days = [...new Set(modeMatches().map(dayKey))].sort();
+  return days.length ? { day: days[days.length - 1], no: days.length, key: recMode + '|' + days[days.length - 1] } : null;
+}
+let _newsCardCache = { k: '', html: '' };
+function newsCardHtml() {
+  const L = latestNews(); if (!L) return '';
+  const ck = L.key + '|' + matches.length;
+  if (_newsCardCache.k !== ck) {
+    let kick = '', head = '', img = '';
+    try { const d = document.createElement('div'); d.innerHTML = newsHtml(L.day, L.no);
+      kick = (d.querySelector('.np-kick') || {}).textContent || ''; const h = d.querySelector('.np-lt h4'); head = h ? h.innerHTML.split('<br>')[0].replace(/\s*…\s*$/, '') : '';
+      const im = d.querySelector('.np-photo img'); img = im ? im.getAttribute('src') : ''; } catch (e) {}
+    _newsCardCache = { k: ck, html: `<div class="db-sec"><button class="news-card" onclick="openNews()">
+      <span class="nc-ico">📰</span>
+      <span class="nc-t"><small>내전신문 제 ${L.no}호 · ${dateOf(L.day)}${L.day.length > 10 ? ' ' + L.day.slice(11) : ''} 내전</small>${kick ? `<i>${kick}</i>` : ''}<b>${head || '그날의 소식'}</b></span>
+      ${img ? `<span class="nc-img"><img src="${img}" alt="" loading="lazy" onerror="this.remove()"></span>` : ''}
+      <span class="nc-go">신문 펼치기 ›</span></button></div>` };
+  }
+  return _newsCardCache.html;
+}
+function openNews(deliver) {
+  const L = latestNews(); if (!L) return;
+  document.getElementById('newsPopBody').innerHTML = newsHtml(L.day, L.no);
+  const pop = document.getElementById('newsPop');
+  pop.classList.remove('deliver'); void pop.offsetWidth; pop.classList.toggle('deliver', !!deliver);
+  pop.classList.add('open'); pop.querySelector('.news-pop-box').scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  try { localStorage.setItem(NEWS_SEEN_KEY, L.key); } catch (e) {}
+  layerOpen('news', () => closeNews(true));
+}
+function closeNews(fromBack) {
+  document.getElementById('newsPop').classList.remove('open', 'deliver'); document.body.style.overflow = '';
+  if (!fromBack) layerClose('news');
+}
+let _newsDelivered = false;
+function maybeDeliverNews() {
+  if (!IS_ADMIN || _newsDelivered || recLoading()) return;
+  if (!document.getElementById('view-dash').classList.contains('active') || document.getElementById('newsPop').classList.contains('open')) return;
+  const L = latestNews(); if (!L) return;
+  let seen = ''; try { seen = localStorage.getItem(NEWS_SEEN_KEY) || ''; } catch (e) {}
+  if (seen === L.key) return;
+  _newsDelivered = true; openNews(true);
 }
 // 사이트 주소 (관리자 표시 없이 · 전적 화면으로 바로)
 const siteRecordUrl = () => location.origin + location.pathname + '#record' + (recMode === 'aram' ? '-aram' : '');
