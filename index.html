@@ -2240,6 +2240,20 @@
     .np-big small { font-size: .9rem; margin-left: 3px; }
     .np-q { font-family: var(--serif); font-size: .78rem; color: #c8a45a; margin-top: 4px; }
     .nw .np-cat { color: #e2626a; }
+    .nw-deck { font-size: .8rem; color: #c8a45a; font-weight: 700; margin: 4px 0 10px; padding-left: 10px; border-left: 3px solid #c8a45a; line-height: 1.6; }
+    .nw-story { font-family: var(--serif); font-size: .84rem; line-height: 1.85; color: #cfd7e2; text-align: justify; word-break: keep-all; }
+    .nw-story p { margin: 0 0 9px; text-indent: .6em; } .nw-story b { color: #ffd77a; }
+    .nw-story p:first-child { text-indent: 0; } .nw-story .nw-dl { color: #e2626a; font-family: 'Noto Sans KR', sans-serif; font-size: .78rem; }
+    .nw-side { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 70px; } .nw .nw-side .np-photo { position: relative; top: 0; }
+    .nw-fact { border: 1px solid #3a4658; border-radius: 8px; padding: 10px 12px; background: rgba(255,255,255,.02); }
+    .nw-fact .np-cat { margin-bottom: 6px; } .nw-fact table { width: 100%; border-collapse: collapse; font-size: .76rem; }
+    .nw-fact th { text-align: left; color: #8a97a8; font-weight: 600; padding: 4px 0; width: 84px; vertical-align: top; } .nw-fact td { color: #e6ebf2; padding: 4px 0; border-bottom: 1px dotted #3a4658; } .nw-fact tr:last-child td { border-bottom: none; }
+    .nw-fact td b { color: #ffd77a; }
+    .nw-story .nw-by { text-align: right; font-size: .72rem; color: #8a97a8; text-indent: 0; margin-top: 4px; }
+    .nw .np-lead { align-items: start; } .nw .np-photo { min-height: 260px; }
+    @media (max-width: 760px) { .nw-side { position: static; order: -1; } }
+    .nw-cb { font-size: .72rem; line-height: 1.6; color: #b9c3d0; margin: 6px 0 0; }
+
     .nw-rl { margin: 6px 0 0; padding: 0; list-style: none; font-size: .7rem; color: #b9c3d0; line-height: 1.5; } .nw-rl li { padding: 3px 0; border-top: 1px dotted #3a4658; } .nw-rl b { color: #ffd77a; }
     .nw-low { display: grid; grid-template-columns: 1.3fr 1fr; gap: 22px; margin-top: 16px; padding-top: 14px; border-top: 2px solid #4a5a70; }
     .nw-tb { width: 100%; border-collapse: collapse; font-size: .78rem; margin-top: 6px; }
@@ -7546,25 +7560,117 @@ function newsHtml(day, issueNo) {
   // ⑧ 칭호 주인 변동
   g.titles.slice(0, 3).forEach(t => add({ sc: 32, cat: '칭호 변동', h: `‘${E(t.t.name)}’ 칭호, ${E(t.to)}에게`, q: t.from ? `${E(t.from)} → ${E(t.to)}` : '새 주인 등장', num: t.t.ico || '🏷️', unit: '', who: t.to, body: E(t.text || ''), pv: '대시보드 칭호' }));
 
+  // ── 톱기사 본문: 그날 기록으로 재미있게 길게 써요 (문장 고르는 건 날짜로 고정 → 다시 열어도 같은 기사) ──
+  const seed = [...day].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+  const pick = (arr, salt = 0) => arr[(seed + salt * 7919) % arr.length];
+  const tn = t => t === 'blue' ? '블루팀' : '레드팀';
+  const eul = w => josaOf(w, '을', '를'), eun = w => josaOf(w, '은', '는'), iga = w => josaOf(w, '이', '가'), ro = w => josaOf(w, '으로', '로'), gwa = w => josaOf(w, '과', '와');
+  const personDay = name => { const k = normName(name); let g = 0, w = 0, K = 0, D = 0, Aa = 0, mvp = 0; const ch = {};
+    ms.forEach(m => { const bd = matchBadges(m); m.players.forEach((p, i) => { if (normName(p.name) !== k) return; g++; if (p.win) w++; K += p.k; D += p.d; Aa += p.a; if (bd[i] === 'mvp') mvp++; const c = cn(p.champ); ch[c] = (ch[c] || 0) + 1; }); });
+    return { g, w, l: g - w, K, D, A: Aa, mvp, champs: Object.keys(ch) }; };
+  const inGame = (p, m) => { const mates = m.players.filter(x => x.team === p.team), foes = m.players.filter(x => x.team !== p.team);
+    const dmgRank = mates.slice().sort((a, b) => b.dmg - a.dmg).findIndex(x => x === p) + 1, tkk = mates.reduce((t, x) => t + x.k, 0);
+    return { mates, foes, dmgRank, kp: tkk ? Math.round((p.k + p.a) / tkk * 100) : 0, my: tkk, their: foes.reduce((t, x) => t + x.k, 0), min: Math.floor(m.len / 60) }; };
+  const dayLine = name => { const d = personDay(name); if (!d.g) return '';
+    return `이날 ${E(name)} 씨는 ${d.g}판에 나서 ${d.w}승 ${d.l}패, 합계 ${d.K}/${d.D}/${d.A}를 기록했다.${d.champs.length ? ` 고른 챔피언은 ${d.champs.slice(0, 3).map(E).join(', ')}.` : ''}${d.mvp ? ` 경기 MVP는 ${d.mvp}번 차지했다.` : ''}`; };
+  const streakLine = name => { const k = normName(name), h = g.hot.find(s => normName(s.name) === k), c = g.cold.find(s => normName(s.name) === k);
+    if (h) return h.n >= 5 ? `현재 ${h.n}연승. 내전 룰에 따라 다음 내전에서는 <b>최하위 인원으로 팀</b>을 꾸려야 한다. ${pick(['과연 이 페널티를 뚫고 연승을 이어갈 수 있을지 관심이 쏠린다.', '연승의 대가는 혹독하다.', '“이제 좀 쉬어도 된다”는 목소리가 나온다.'], 3)}` : `현재 ${h.n}연승을 달리고 있다. ${pick(['5연승부터는 페널티가 기다린다.', '이대로라면 페널티 구간도 머지않았다.'], 4)}`;
+    if (c) return `한편 그는 현재 ${c.n}연패 중이라, 다음 내전에서는 연패 혜택을 받는다.`;
+    return ''; };
+  const quoteWin = ['“솔직히 이길 줄 알았다”', '“팀원들이 잘 따라와 줬다”', '“오늘 손이 좀 풀린 것 같다”', '“이게 바로 실력이다”'];
+  const quoteMate = ['같은 팀 관계자는 “옆에서 보는데 소름이 돋았다”고 전했다.', '같은 팀의 한 소환사는 “나는 그냥 따라다녔을 뿐”이라며 웃었다.', '팀원들은 경기가 끝난 뒤 한동안 말을 잇지 못했다.'];
+  const quoteFoe = ['상대 팀의 한 소환사는 익명을 요구하며 “리플레이는 다시 보고 싶지 않다”고 말했다.', '상대 팀 관계자는 “밴을 했어야 했다”며 아쉬움을 감추지 못했다.', '패배한 팀에서는 “다음 판에 두고 보자”는 말이 나왔다.'];
+  const findP = (name, m) => m && m.players.find(p => normName(p.name) === normName(name));
+  function storyOf(a) {
+    const P = [];
+    const p = a.who && a.m ? findP(a.who, a.m) : null, m = a.m;
+    if (a.cat.includes('펜타킬') || a.cat.includes('쿼드라킬')) {
+      const f = inGame(p, m), pen = a.cat.includes('펜타');
+      P.push(`${dateOf(day).slice(5).replace('.', '월 ')}일 의P 내전 ${gameNo(m)}번째 판, 협곡이 ${pick(['술렁였다', '얼어붙었다', '조용해졌다'], 1)}. ${E(cn(p.champ))}${eul(cn(p.champ))} 고른 ${E(p.name)} 씨가 ${pen ? '상대 다섯 명을 차례로 쓰러뜨리며 <b>펜타킬</b>' : '상대 네 명을 연달아 잡아내며 <b>쿼드라킬</b>'}을 터뜨린 것이다.`);
+      P.push(`이 판에서 ${E(p.name)} 씨의 최종 기록은 ${p.k}킬 ${p.d}데스 ${p.a}어시스트. 팀 킬의 ${f.kp}%에 관여했고, 팀 내 딜량은 ${f.dmgRank}위였다. ${tn(p.team)}은 ${f.my} : ${f.their}${p.win ? `로 ${f.min}분 만에 승리를 가져갔다.` : `로 졌다. 쿼드라킬도 패배를 막지는 못했다.`}`);
+      P.push(pen ? pick(quoteMate, 2) : `한 명만 더 있었다면 펜타킬이었다. ${pick(['마지막 한 명은 끝내 도망쳤다.', '마지막 한 명은 우물로 귀환했다는 후문이다.', '현장에서는 “아깝다”는 탄식이 쏟아졌다.'], 2)}`);
+      P.push(pick(quoteFoe, 5));
+      const dl = dayLine(p.name); if (dl) P.push(dl);
+      const sl = streakLine(p.name); if (sl) P.push(sl);
+    } else if (a.cat === '역대 기록 경신') {
+      P.push(`의P 내전 명예의 전당이 하루 만에 ${g.records.length}줄이나 바뀌었다. ${pick(['기록 담당자는 이날 밤 잠을 이루지 못했다.', '명예의 전당 관리인은 “분필이 모자랄 지경”이라고 털어놨다.', '오래 버티던 기록들이 한꺼번에 무너졌다.'], 1)}`);
+      P.push(`새로 쓰인 기록은 다음과 같다. ${a.list.map(x => x.replace(/ · /, ' — ')).join(', ')}.`);
+      const nm = [...new Set(g.records.map(t => (t.split(' · ').pop() || '').replace(/\s*\(.*\)$/, '')))];
+      if (nm.length) { const top = nm.map(n => ({ n, c: g.records.filter(t => t.includes(n)).length })).sort((x, y) => y.c - x.c)[0];
+        P.push(`가장 바빴던 사람은 ${E(top.n)} 씨. 혼자 ${top.c}개의 기록을 갈아치웠다. ${pick(quoteWin, 2)}고 ${E(top.n)} 씨는 소감을 밝혔다(고 전해진다).`); const dl = dayLine(top.n); if (dl) P.push(dl); }
+      P.push('바뀐 기록은 명예의 전당에서 바로 확인할 수 있다. 다음 내전에서 이 기록을 다시 깰 주인공이 누가 될지 벌써부터 관심이 쏠린다.');
+    } else if (a.cat === '대이변') {
+      const w = winnerOf(m), l = w === 'blue' ? 'red' : 'blue', pw = a.num;
+      const W = m.players.filter(x => x.team === w), Lp = m.players.filter(x => x.team === l), sc = matchScores(m), best = W.slice().sort((x, y) => sc[m.players.indexOf(y)] - sc[m.players.indexOf(x)])[0];
+      P.push(`${gameNo(m)}번째 판, 의P 승부 예측이 체면을 구겼다. 경기 전 이길 확률 <b>${pw}%</b>로 점쳐졌던 ${tn(w)}이 ${tk(m, w)} : ${tk(m, l)}로 승리를 거둔 것이다.`);
+      P.push(`${tn(w)}에는 ${W.map(x => E(x.name)).join(', ')} 씨가, ${tn(l)}에는 ${Lp.map(x => E(x.name)).join(', ')} 씨가 나섰다. 숫자로는 ${tn(l)}의 우세가 뚜렷했지만, 협곡은 숫자대로 흘러가지 않았다.`);
+      if (best) P.push(`역전의 일등공신은 ${E(cn(best.champ))}${eul(cn(best.champ))} 고른 ${E(best.name)} 씨. ${best.k}/${best.d}/${best.a}로 팀을 이끌었다. ${pick(quoteWin, 4)}`);
+      P.push(`경기는 ${fmtLen(m.len)} 만에 끝났다. ${pick(quoteFoe, 1)}`);
+      P.push('승부 예측 담당자는 “예측은 예측일 뿐, 참고만 해 달라”는 짧은 입장을 냈다.');
+    } else if (a.cat === '오늘의 MVP') {
+      const v = g.mvp, d = personDay(v.p.name);
+      P.push(`이날 내전의 주인공은 단연 ${E(v.p.name)} 씨였다. ${v.g}판에 나서 ${v.w}번 이기며 가장 많이 웃었다.`);
+      P.push(`합계 기록은 ${v.k}/${v.d}/${v.a}, KDA로는 ${((v.k + v.a) / Math.max(1, v.d)).toFixed(2)}. ${d.champs.length ? `${d.champs.slice(0, 3).map(E).join(', ')}${eul(d.champs[Math.min(2, d.champs.length - 1)])} 번갈아 잡으며` : ''} ${v.mvp ? `경기 MVP도 ${v.mvp}번 가져갔다.` : '꾸준히 제 몫을 해냈다.'}`);
+      P.push(pick(quoteMate, 3));
+      const sl = streakLine(v.p.name); if (sl) P.push(sl);
+      P.push(`${pick(quoteWin, 6)}. 경기가 끝난 뒤 ${E(v.p.name)} 씨가 남긴 말이다(라고 기자는 상상한다).`);
+    } else if (a.cat === '연패 탈출' || a.cat === '연승 마감' || a.cat === '연승 행진' || a.cat === '연패 수렁' || a.cat === '무패 행진' || a.cat === '눈물의 날') {
+      const nm = a.who, d = personDay(nm);
+      const open = { '연패 탈출': `길고 긴 터널이 끝났다. ${E(nm)} 씨가 ${a.num}연패의 사슬을 끊어냈다.`, '연승 마감': `질주가 멈췄다. ${a.num}연승을 달리던 ${E(nm)} 씨가 이날 패배를 맛봤다.`,
+        '연승 행진': `${E(nm)} 씨의 질주가 멈추지 않는다. 벌써 ${a.num}연승째다.`, '연패 수렁': `${E(nm)} 씨에게 잔인한 하루였다. 연패가 ${a.num}까지 늘었다.`,
+        '무패 행진': `이날 ${E(nm)} 씨는 지는 법을 잊었다. ${d.g}판 전승.`, '눈물의 날': `${E(nm)} 씨에게는 잊고 싶은 하루였다. ${d.g}판 전패.` }[a.cat];
+      P.push(open); P.push(dayLine(nm));
+      P.push(a.cat.includes('패') && !a.cat.includes('탈출') ? pick(['동료들은 “다음엔 꼭 이긴다”며 어깨를 두드렸다.', '그는 말없이 리플레이 파일을 내려받았다는 후문이다.', '“팀운이 없었을 뿐”이라는 위로가 이어졌다.'], 2) : pick(quoteMate, 4));
+      const sl = streakLine(nm); if (sl) P.push(sl);
+    } else {
+      P.push(a.body);
+      if (a.who) { const dl = dayLine(a.who); if (dl) P.push(dl); const sl = streakLine(a.who); if (sl) P.push(sl); }
+      P.push(pick(quoteFoe, 6));
+    }
+    // 그날 전체 분위기 + 마무리 (모든 톱기사 공통)
+    const bw = ms.filter(x => winnerOf(x) === 'blue').length, totK = ms.reduce((t, x) => t + x.players.reduce((u, y) => u + y.k, 0), 0);
+    const lens = ms.map(x => x.len), avg = Math.round(lens.reduce((t, x) => t + x, 0) / lens.length / 60);
+    P.push(`이날 내전은 모두 ${ms.length}판이 열렸다. ${bw === ms.length - bw ? `블루와 레드가 ${bw}승씩 나눠 가졌고` : `${bw > ms.length - bw ? '블루' : '레드'}팀이 ${Math.max(bw, ms.length - bw)}승 ${Math.min(bw, ms.length - bw)}패로 앞섰고`}, 협곡에는 총 ${totK}번의 킬 알림이 울렸다. 한 판 평균 시간은 ${avg}분.`);
+    const others = A.filter(x => x !== a && x.cat !== a.cat).slice(0, 2);
+    if (others.length) P.push(`한편 같은 날 ${others.map(x => `‘${x.h.replace(/<[^>]+>/g, '')}’`).join(', ')} 소식도 전해졌다. 자세한 내용은 아래 기사에서 이어진다.`);
+    P.push(pick(['다음 내전에서는 또 어떤 이야기가 쓰일지, 본지는 계속해서 협곡을 지켜볼 예정이다.', '의P 내전의 다음 페이지는 다음 내전에서 이어진다.', '기자는 다음 내전에도 리플레이 파일을 들고 현장을 찾을 예정이다.'], 9));
+    return P.filter(Boolean);
+  }
   A.sort((a, b) => b.sc - a.sc);
   // 같은 종류 기사가 몰리지 않게: 종류별 1개씩 먼저, 남으면 점수 순으로 채워요
   const lead = A[0], seen = new Set([lead && lead.cat]), rest = [];
   A.slice(1).forEach(a => { if (!seen.has(a.cat) && rest.length < 6) { seen.add(a.cat); rest.push(a); } });
   A.slice(1).forEach(a => { if (!rest.includes(a) && rest.length < 6) rest.push(a); });
   rest.sort((a, b) => b.sc - a.sc);
+  const factBox = a => {
+    const p = a.who && a.m ? findP(a.who, a.m) : null, rows = [];
+    if (p) { const f = inGame(p, a.m);
+      rows.push(['소환사', `<b>${E(p.name)}</b>`], ['챔피언', E(cn(p.champ))], ['기록', `${p.k} / ${p.d} / ${p.a} · 킬관여 ${f.kp}%`], ['딜량', `${fmtNum(p.dmg)} (팀 ${f.dmgRank}위)`],
+        ['경기', `${gameNo(a.m)}번째 판 · ${fmtLen(a.m.len)}`], ['결과', `${tn(p.team)} ${p.win ? '<b>승리</b>' : '패배'} · ${f.my} : ${f.their}`]); }
+    else if (a.m) { const w = winnerOf(a.m); rows.push(['경기', `${gameNo(a.m)}번째 판 · ${fmtLen(a.m.len)}`], ['결과', `${tn(w)} <b>승리</b> · ${tk(a.m, w)} : ${tk(a.m, w === 'blue' ? 'red' : 'blue')}`]); }
+    else if (a.who) { const d = personDay(a.who); rows.push(['소환사', `<b>${E(a.who)}</b>`], ['이날 성적', `${d.g}판 ${d.w}승 ${d.l}패`], ['합계', `${d.K} / ${d.D} / ${d.A}`], ['챔피언', d.champs.slice(0, 3).map(E).join(', ')]); }
+    const bw = ms.filter(x => winnerOf(x) === 'blue').length;
+    rows.push(['이날 내전', `${ms.length}판 · 블루 ${bw}승 / 레드 ${ms.length - bw}승`]);
+    if (g.mvp) rows.push(['오늘의 MVP', `${E(g.mvp.p.name)} (${g.mvp.w}승 ${g.mvp.g - g.mvp.w}패)`]);
+    return `<div class="nw-fact"><div class="np-cat">사건 개요</div><table>${rows.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('')}</table></div>`;
+  };
   const d0 = new Date(ms[0].date), WD = '일월화수목금토';
   const dateTxt = `${d0.getFullYear()}년 ${d0.getMonth() + 1}월 ${d0.getDate()}일 ${WD[d0.getDay()]}요일${day.length > 10 ? ' · ' + day.slice(11) : ''}`;
   const leadChamp = lead && (lead.champ || (lead.m && (lead.m.players.find(p => p.name === lead.who) || {}).champ));
   const leadHtml = lead ? `<div class="np-lead">
       <div class="np-lt"><span class="np-kick">${lead.cat}</span>
-        <h4>${lead.h}${lead.q ? ` …<br><em>${lead.q}</em>` : ''}</h4><p>${lead.body}</p></div>
-      <figure class="np-photo">${leadChamp ? `<img src="${splashOf(leadChamp)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<div class="np-dots"></div>
+        <h4>${lead.h}${lead.q ? ` …<br><em>${lead.q}</em>` : ''}</h4>
+        <div class="nw-deck">${lead.body}</div>
+        <div class="nw-story">${storyOf(lead).map((t, i) => `<p>${i ? '' : `<b class="nw-dl">[의P 협곡=내전신문]</b> `}${t}</p>`).join('')}<p class="nw-by">— 의P 내전신문 협곡 사회부 기자</p></div></div>
+      <div class="nw-side"><figure class="np-photo">${leadChamp ? `<img src="${splashOf(leadChamp)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<div class="np-dots"></div>
         <div class="np-big">${lead.num}${lead.unit ? `<small>${lead.unit}</small>` : ''}</div>
-        <figcaption>▲ ${lead.who ? E(lead.who) + ' 씨' : '현장'}${leadChamp ? ` · ${E(cn(leadChamp))}` : ''} (자료사진)</figcaption></figure></div>` : '';
+        <figcaption>▲ ${lead.who ? E(lead.who) + ' 씨' : '현장'}${leadChamp ? ` · ${E(cn(leadChamp))}` : ''} (자료사진)</figcaption></figure>
+        ${factBox(lead)}</div></div>` : '';
   const col = (a, i) => { const pl = a.m && a.who ? a.m.players.find(p => p.name === a.who) : null; const ch = a.champ || (pl && pl.champ);
     return `<article class="np-ar" style="animation-delay:${(i * .06).toFixed(2)}s"><div class="np-cat">${a.cat}</div><h4>${a.h}</h4>
       <div class="np-num">${a.num}${a.unit ? `<span class="u">${a.unit}</span>` : ''}</div>
       ${a.q ? `<div class="np-q">${a.q}</div>` : ''}
+      ${a.list ? '' : `<p class="nw-cb">${a.body}</p>`}
       ${a.list ? `<ul class="nw-rl">${a.list.map(x => `<li>${x}</li>`).join('')}</ul>` : `<div class="np-who">${ch && a.m ? champIcon(a.m, ch) : ''}<span><b>${a.who ? E(a.who) : ''}</b><small>${a.pv}</small></span></div>`}</article>`; };
   // 경기 결과표 + 그날 승패
   const board = ms.map(m => { const w = winnerOf(m), bd = matchBadges(m), mi = Object.keys(bd).find(i => bd[i] === 'mvp'), mv = mi != null ? m.players[mi] : null;
