@@ -5008,6 +5008,7 @@ async function parseRofl(file) {
   if (!Array.isArray(stats) || !stats.length) throw new Error('선수 기록이 비어 있어요');
 
   const N = v => Number(v) || 0;
+  const NK = (o, ...ks) => { for (const k of ks) if (o[k] != null) return N(o[k]); return 0; };
   const order = ['TOP','JGL','MID','BOT','SPT'];
   const players = stats.map(p => ({
     name: p.RIOT_ID_GAME_NAME || p.NAME || '?', tag: p.RIOT_ID_TAG_LINE || '', puuid: p.PUUID || '',
@@ -5027,8 +5028,13 @@ async function parseRofl(file) {
     dbl: N(p.DOUBLE_KILLS), tri: N(p.TRIPLE_KILLS), quad: N(p.QUADRA_KILLS), bld: N(p.TOTAL_DAMAGE_DEALT_TO_BUILDINGS),
     wp: N(p.WARD_PLACED), casts: N(p.SPELL1_CAST) + N(p.SPELL2_CAST) + N(p.SPELL3_CAST) + N(p.SPELL4_CAST),
     cons: N(p.CONSUMABLES_PURCHASED), mdmg: N(p.MAGIC_DAMAGE_DEALT_TO_CHAMPIONS), mit: N(p.TOTAL_DAMAGE_SELF_MITIGATED),
+    // 칭호용 추가 기록 2 (x3: 이 기록이 들어 있는 경기 표시) · 물음표 핑 · 후퇴/위험 핑 · 점멸 사용 · CC 시간 · 아군 회복+보호막
+    //   (리플레이 버전마다 이름이 조금 달라서 비슷한 이름도 같이 찾아요)
+    x3: 1, qping: NK(p, 'ENEMY_MISSING_PINGS', 'ENEMY_MISSING_PING'), nag: NK(p, 'GET_BACK_PINGS') + NK(p, 'RETREAT_PINGS') + NK(p, 'DANGER_PINGS'),
+    flash: (N(p.SUMMONER_SPELL_1) === 4 ? NK(p, 'SUMMON_SPELL1_CAST', 'SUMMONER_SPELL1_CAST', 'SPELL_SUMMONER1_CAST') : 0) + (N(p.SUMMONER_SPELL_2) === 4 ? NK(p, 'SUMMON_SPELL2_CAST', 'SUMMONER_SPELL2_CAST', 'SPELL_SUMMONER2_CAST') : 0),
+    cc: NK(p, 'TIME_CCING_OTHERS', 'TIME_CC_OTHERS'), heal: NK(p, 'TOTAL_HEAL_ON_TEAMMATES', 'TOTAL_HEALS_ON_TEAMMATES') + NK(p, 'TOTAL_DAMAGE_SHIELDED_ON_TEAMMATES'),
     // 증바람(증강 칼바람) 증강: 고른 순서대로 최대 6개
-    aug: [1, 2, 3, 4, 5, 6].map(k => N(p['PLAYER_AUGMENT_' + k])).filter(Boolean), xv: 2
+    aug: [1, 2, 3, 4, 5, 6].map(k => N(p['PLAYER_AUGMENT_' + k])).filter(Boolean), xv: 3
   })).sort((x, y) => (x.team === y.team ? 0 : x.team === 'blue' ? -1 : 1) || order.indexOf(x.pos) - order.indexOf(y.pos));
 
   const idm = file.name.match(/([A-Z]{2,4}\d?)-(\d{6,})/);
@@ -5094,7 +5100,7 @@ async function handleRecFiles(fileList) {
           if (m.dayOnly && ex && (!ex.dayOnly || ex.date !== m.date || (ex.seq || 0) !== m.seq || (ex.set || 1) !== (m.set || 1))) {
             ex.date = m.date; ex.dayOnly = true; ex.seq = m.seq; ex.set = m.set; fixed++; changed = true;
           }
-          if (ex && ((ex.players[0] && ex.players[0].xv) || 0) < 2) {   // 예전에 올린 경기: 칭호·증강 기록 채우기
+          if (ex && ((ex.players[0] && ex.players[0].xv) || 0) < 3) {   // 예전에 올린 경기: 칭호·증강 기록 채우기 (리플레이를 다시 올리면)
             const byKey = {}; m.players.forEach(p => { byKey[p.puuid || p.name] = p; });
             ex.players = ex.players.map(p => ({ ...p, ...(byKey[p.puuid || p.name] || {}), team: p.team, win: p.win, pos: p.pos }));
             refreshed++; changed = true;
@@ -6346,7 +6352,6 @@ const TITLES = [
   { k: 'duoWorst', ico: '💣', name: '최악의 듀오', desc: '같은 팀일 때 승률이 가장 낮은 2인', duo: 'worst' },
   { k: 'cs',     ico: '🚜', name: 'CS KING',        desc: '분당 CS 1위', rift: true, v: r => r.cs / r.mins, f: v => v.toFixed(1) + ' CS/분' },
   { k: 'ej',     ico: '🌲', name: '카나비 정신',     desc: '상대 정글 몬스터를 가장 많이 뺏어 먹음 (판당)', rift: true, v: r => r.xg ? r.ej / r.xg : null, f: v => v.toFixed(1) + '마리/판' },
-  { k: 'gold',   ico: '💰', name: 'GOLD KING',      desc: '분당 골드 1위', v: r => r.gold / r.mins, f: v => fmtNum(Math.round(v)) + ' 골드/분' },
   { k: 'eff',    ico: '🏷️', name: '가성비 KING',     desc: '골드 1당 챔피언 피해량 1위', v: r => r.gold ? r.dmg / r.gold : null, f: v => v.toFixed(2) + ' 딜/골드' },
   { k: 'early',  ico: '🌅', name: '초반 캐리형',     desc: '15분 전 킬관여(킬+어시) 판당 1위', v: r => r.xg ? r.early / r.xg : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'vis',    ico: '👁️', name: '천리안',          desc: '분당 시야점수 1위', rift: true, v: r => r.vis / r.mins, f: v => v.toFixed(2) + '/분' },
@@ -6355,15 +6360,20 @@ const TITLES = [
   { k: 'omw',    ico: '🏃', name: '금방 가요~',       desc: "'가는 중' 핑을 가장 많이 찍음 (판당)", v: r => r.xg ? r.omw / r.xg : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'multi',  ico: '🎯', name: '최다 멀티킬',      desc: '더블킬 이상 멀티킬 총 횟수 1위', v: r => r.xg ? r.multiCnt : null, f: v => v + '회' },
   { k: 'bld',    ico: '🏚️', name: '철거반장',         desc: '건물 피해량 판당 1위', v: r => r.xg ? r.bld / r.xg : null, f: v => fmtNum(Math.round(v)) + '/판' },
-  { k: 'wp',     ico: '🌱', name: '식목일',           desc: '와드 설치 판당 1위', rift: true, v: r => r.xg ? r.wp / r.xg : null, f: v => v.toFixed(1) + '개/판' },
   { k: 'apm',    ico: '⚡', name: '손은 눈보다 빠르지', desc: '분당 스킬 사용 횟수 1위', v: r => r.xmins ? r.casts / r.xmins : null, f: v => v.toFixed(1) + '회/분' },
   { k: 'pot',    ico: '💊', name: '포션 중독자',      desc: '소모품 구매 판당 1위', v: r => r.xg ? r.cons / r.xg : null, f: v => v.toFixed(1) + '개/판' },
   { k: 'roller', ico: '🎢', name: '롤러코스터',       desc: '판마다 KDA 기복이 가장 큼', v: r => stdev(r.kdas), f: v => '기복 ' + v.toFixed(2) },
   { k: 'river',  ico: '🌊', name: '흐르는 강물처럼',   desc: '판마다 KDA가 가장 꾸준함', low: true, v: r => stdev(r.kdas), f: v => '기복 ' + v.toFixed(2) },
   { k: 'carry',  ico: '💪', name: '내가 캐리한다',    desc: '팀 내 딜 비중 평균 1위', v: r => r.dshare / r.g, f: v => '딜 비중 ' + pctFmt(v) },
-  { k: 'bus',    ico: '🚌', name: '프로 탑승러',      desc: '이긴 판에서 팀 딜 비중이 가장 낮음 (버스 탑승)', low: true, v: r => r.w ? r.wshare / r.w : null, f: v => '이긴 판 딜 비중 ' + pctFmt(v) },
-  { k: 'die',    ico: '⚰️', name: '우물 밖은 위험해', desc: '판당 데스 1위', v: r => r.d / r.g, f: v => v.toFixed(1) + '데스/판' },
-  { k: 'tank',   ico: '🛡️', name: '필사즉생 필생즉사', desc: '분당 받은 피해량 1위', v: r => r.taken / r.mins, f: v => fmtNum(Math.round(v)) + '/분' },
+  { k: 'ksteal', ico: '🧹', name: '막타 도둑',        desc: '킬관여 중 킬 비중이 가장 높음 (어시보다 킬)', v: r => r.ka >= 10 ? r.k / r.ka : null, f: v => '킬 비중 ' + pctFmt(v) },
+  { k: 'angel',  ico: '😇', name: '남 좋은 일만',      desc: '킬관여 중 어시 비중이 가장 높음 (킬은 양보)', v: r => r.ka >= 10 ? r.a / r.ka : null, f: v => '어시 비중 ' + pctFmt(v) },
+  { k: 'lucky',  ico: '🎲', name: '럭키 가이',        desc: '질 거라고 예측된 팀으로 이긴 횟수 1위', rift: true, v: r => r.lucky, f: v => v + '번' },
+  { k: 'zombie', ico: '🧟', name: '좀비 캐리',        desc: '판당 6데스 이상인 사람 중 승률 1위 (죽어도 이김)', v: r => r.d / r.g >= 6 ? r.w / r.g : null, f: v => '승률 ' + pctFmt(v) },
+  { k: 'qping',  ico: '❓', name: '물음표 살인마',     desc: "'?' 핑을 가장 많이 찍음 (판당)", v: r => r.x3g ? r.qping / r.x3g : null, f: v => v.toFixed(1) + '회/판' },
+  { k: 'nag',    ico: '📢', name: '잔소리꾼',          desc: "'후퇴' · '위험' 핑을 가장 많이 찍음 (판당)", v: r => r.x3g ? r.nag / r.x3g : null, f: v => v.toFixed(1) + '회/판' },
+  { k: 'flash',  ico: '✨', name: '점멸 장인',         desc: '점멸을 가장 많이 씀 (판당)', v: r => r.x3g ? r.flash / r.x3g : null, f: v => v.toFixed(1) + '회/판' },
+  { k: 'ccking', ico: '🪢', name: 'CC 장인',           desc: '적을 묶어 둔 시간 1위 (판당)', v: r => r.x3g ? r.cc / r.x3g : null, f: v => Math.round(v) + '초/판' },
+  { k: 'healer', ico: '🩺', name: '팀 힐러',           desc: '아군 회복 + 보호막 양 1위 (판당)', v: r => r.x3g ? r.heal / r.x3g : null, f: v => fmtNum(Math.round(v)) + '/판' },
   { k: 'rock',   ico: '🗿', name: '바위처럼 단단하게', desc: '분당 피해 감소량 1위', v: r => r.xmins ? r.mit / r.xmins : null, f: v => fmtNum(Math.round(v)) + '/분' }
 ];
 // 칭호 계산 기준 (화면에 같이 표시)
@@ -6371,11 +6381,13 @@ const TITLE_BASIS = {
   blind: '판당 평균', nocw: '판당 평균', wardrich: '판당 평균', ej: '판당 평균', early: '판당 평균', omw: '판당 평균', bld: '판당 평균', wp: '판당 평균', pot: '판당 평균', mage: '판당 평균', die: '판당 평균',
   cs: '분당 평균', gold: '분당 평균', vis: '분당 평균', apm: '분당 평균', tank: '분당 평균', rock: '분당 평균',
   eff: '골드 대비', carry: '평균 비중', bus: '평균 비중', lost: '평균 비율', duoBest: '함께한 판 승률', duoWorst: '함께한 판 승률',
+  ksteal: '킬관여 비율', angel: '킬관여 비율', lucky: '누적 합계', zombie: '판당 6데스 이상', qping: '판당 평균', nag: '판당 평균', flash: '판당 평균', ccking: '판당 평균', healer: '판당 평균',
   multi: '누적 합계', pool: '누적 합계', attend: '누적 합계', roller: '판별 기복', river: '판별 기복'
 };
 const titleBasis = t => TITLE_BASIS[t.k] || '';
 function titleStats() {
   const P = {};
+  let retro = {}; try { retro = retroPredictions(); } catch (e) {}
   modeMatches().sort((a, b) => (a.date || 0) - (b.date || 0)).forEach(m => {
     const tk = { blue: 0, red: 0 }, td = { blue: 0, red: 0 };
     m.players.forEach(p => { tk[p.team] += p.k; td[p.team] += p.dmg; });
@@ -6384,7 +6396,8 @@ function titleStats() {
       const key = p.puuid || p.name;
       const r = P[key] || (P[key] = { key, g: 0, w: 0, k: 0, d: 0, a: 0, dmg: 0, gold: 0, cs: 0, vis: 0, cw: 0, taken: 0, mins: 0, ka: 0, tk: 0,
         dshare: 0, wshare: 0, kdas: [], res: [], champs: new Set(), champCnt: {},
-        xg: 0, xmins: 0, ej: 0, early: 0, omw: 0, multiCnt: 0, bld: 0, wp: 0, casts: 0, cons: 0, mdmg: 0, mit: 0 });
+        xg: 0, xmins: 0, ej: 0, early: 0, omw: 0, multiCnt: 0, bld: 0, wp: 0, casts: 0, cons: 0, mdmg: 0, mit: 0,
+        x3g: 0, x3mins: 0, qping: 0, nag: 0, flash: 0, cc: 0, heal: 0, lucky: 0 });
       r.name = p.name; r.tag = p.tag; r.lastM = m;
       r.g++; if (p.win) r.w++;
       r.k += p.k; r.d += p.d; r.a += p.a; r.dmg += p.dmg; r.gold += p.gold; r.cs += p.cs; r.vis += p.vis; r.cw += p.cw || 0; r.taken += p.taken || 0; r.mins += mins;
@@ -6398,6 +6411,8 @@ function titleStats() {
         r.ej += p.ej; r.early += p.early; r.omw += p.omw; r.multiCnt += p.dbl + p.tri + p.quad + p.penta;
         r.bld += p.bld; r.wp += p.wp; r.casts += p.casts; r.cons += p.cons; r.mdmg += p.mdmg; r.mit += p.mit;
       }
+      if (p.x3) { r.x3g++; r.x3mins += mins; r.qping += p.qping || 0; r.nag += p.nag || 0; r.flash += p.flash || 0; r.cc += p.cc || 0; r.heal += p.heal || 0; }
+      const rp = retro[m.id]; if (p.win && rp && rp.side && rp.side !== p.team) r.lucky++;   // 질 거라고 예측된 팀으로 이김
     });
   });
   const rows = Object.values(P);
