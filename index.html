@@ -2186,6 +2186,49 @@
     @media (max-width: 1100px) { .gx .hx-mos { grid-template-columns: minmax(0, 1fr); } }
     .gx .hs-mos { margin-bottom: 10px; }
     @media (max-width: 640px) { .gx { padding: 22px 14px 14px; border-radius: 16px; } .gx-hero b { font-size: 1.3rem; } }
+    /* ══ 불명예의 전당: 의P일보 (신문 1면) ══ */
+    .np { position: relative; max-width: 1000px; margin: 0 auto 30px; padding: 24px 28px 20px; border-radius: 6px; color: #1a1a1a; scroll-margin-top: 12px;
+          background: #efe8d8 radial-gradient(rgba(0,0,0,.05) 1px, transparent 1px) 0 0 / 4px 4px; box-shadow: 0 18px 40px rgba(0,0,0,.55); transform: rotate(-.3deg); font-family: 'Noto Sans KR', sans-serif; }
+    .np, .np * { --serif: 'Noto Serif KR', 'Nanum Myeongjo', 'Batang', serif; }
+    .np-mast { text-align: center; border-bottom: 4px double #1a1a1a; padding-bottom: 8px; }
+    .np-top { display: flex; justify-content: space-between; gap: 8px; font-size: .7rem; color: #444; border-bottom: 1px solid #1a1a1a; padding-bottom: 5px; margin-bottom: 6px; }
+    .np-mast h3 { margin: 0; font-family: var(--serif); font-weight: 900; font-size: 3.4rem; letter-spacing: 8px; line-height: 1.08; color: #1a1a1a; }
+    .np-mast h3 i { font-style: normal; color: #c4161c; }
+    .np-sl { font-size: .74rem; letter-spacing: 4px; color: #444; }
+    .np-lead { display: grid; grid-template-columns: 1.25fr 1fr; gap: 22px; padding: 16px 0; border-bottom: 2px solid #1a1a1a; }
+    .np-kick { display: inline-block; background: #c4161c; color: #fff; font-weight: 900; font-size: .8rem; padding: 2px 10px; letter-spacing: 2px; }
+    .np-lt h4 { font-family: var(--serif); font-weight: 900; font-size: 2.1rem; line-height: 1.22; margin: 8px 0; letter-spacing: -1px; color: #1a1a1a; word-break: keep-all; }
+    .np-lt h4 em { font-style: normal; color: #c4161c; }
+    .np-lt p { font-family: var(--serif); font-size: .82rem; line-height: 1.8; margin: 0; color: #2a2a2a; text-align: justify; word-break: keep-all; }
+    .np-photo { position: relative; margin: 0; min-height: 200px; background: #222; overflow: hidden; }
+    .np-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; filter: grayscale(1) contrast(1.15) brightness(.9); }
+    .np-dots { position: absolute; inset: 0; background: radial-gradient(rgba(0,0,0,.35) 1.1px, transparent 1.3px) 0 0 / 4px 4px; mix-blend-mode: multiply; }
+    .np-big { position: absolute; top: 10px; right: 10px; background: #efe8d8; color: #c4161c; font-family: var(--serif); font-weight: 900; font-size: 2.2rem; padding: 0 10px; line-height: 1.2; transform: rotate(4deg); border: 3px solid #c4161c; }
+    .np-photo figcaption { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,.72); font-size: .68rem; padding: 4px 8px; color: #ddd; }
+    .np-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top: 14px; }
+    .np-ar { padding: 0 14px 4px; border-left: 1px solid #1a1a1a; animation: tcDeal .6s cubic-bezier(.2,.9,.3,1.2) both; min-width: 0; }
+    .np-ar:first-child { border-left: none; padding-left: 0; } .np-ar:last-child { padding-right: 0; }
+    .np-cat { font-size: .64rem; font-weight: 900; letter-spacing: 1.5px; color: #c4161c; border-bottom: 1px solid #1a1a1a; padding-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .np-cat.cum { color: #1a1a1a; } .np-cat i { font-style: normal; opacity: .5; }
+    .np-ar h4 { font-family: var(--serif); font-weight: 900; font-size: 1.02rem; line-height: 1.35; margin: 6px 0; color: #1a1a1a; word-break: keep-all; }
+    .np-num { font-family: var(--serif); font-weight: 900; font-size: 1.9rem; color: #c4161c; line-height: 1.05; }
+    .np-num .u { font-size: .8rem; color: #1a1a1a; margin-left: 2px; } .np-num small { display: block; font-size: .7rem; color: #555; font-family: 'Noto Sans KR', sans-serif; font-weight: 700; }
+    .np-who { display: flex; align-items: center; gap: 7px; margin-top: 8px; }
+    .np-who .ch-box { width: 30px; height: 30px; border-radius: 4px; filter: grayscale(1) contrast(1.1); flex-shrink: 0; }
+    .np-who span { min-width: 0; } .np-who b { display: block; font-size: .82rem; color: #1a1a1a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .np-who small { display: block; font-size: .66rem; color: #555; }
+    .np-pv { font-size: .64rem; color: #666; margin-top: 7px; border-top: 1px dotted #888; padding-top: 4px; }
+    .np-foot { display: flex; justify-content: space-between; gap: 10px; font-size: .66rem; color: #555; border-top: 4px double #1a1a1a; margin-top: 16px; padding-top: 6px; }
+    .np-empty { padding: 30px; text-align: center; color: #555; }
+    @media (max-width: 760px) {
+      .np { padding: 16px 14px 14px; transform: none; }
+      .np-top { font-size: .6rem; } .np-top span:nth-child(2) { display: none; }
+      .np-mast h3 { font-size: 2.3rem; letter-spacing: 5px; } .np-sl { font-size: .62rem; letter-spacing: 2px; }
+      .np-lead { grid-template-columns: 1fr; gap: 12px; } .np-photo { min-height: 170px; order: -1; } .np-lt h4 { font-size: 1.45rem; }
+      .np-cols { grid-template-columns: 1fr 1fr; row-gap: 14px; }
+      .np-ar, .np-ar:first-child, .np-ar:last-child { padding: 0 10px; border-left: 1px solid #1a1a1a; }
+      .np-ar:nth-child(odd) { border-left: none; padding-left: 0; }
+      .np-foot { flex-direction: column; gap: 2px; }
+    }
     .hs { position: relative; overflow: hidden; border-radius: 20px; padding: 34px 26px 26px; scroll-margin-top: 12px;
           background: radial-gradient(120% 60% at 50% 0%, rgba(110,220,140,.12), transparent 60%), radial-gradient(80% 50% at 50% 100%, rgba(140,80,220,.18), transparent 70%), linear-gradient(180deg, #120f1c 0%, #0d0c16 100%);
           border: 1px solid rgba(150,110,220,.4); box-shadow: inset 0 0 80px rgba(120,80,200,.12), 0 20px 60px rgba(0,0,0,.5); }
@@ -6881,32 +6924,69 @@ function shameHtml(ms, retro) {
       ${box('mass', '🩸', '최악의 학살', '킬 차이가 가장 컸던 판', massacre.filter(x => x.diff > 0).map(x => row(`<div class="hs-time">−${x.diff}</div>`, `${x.l === 'blue' ? '🔵 블루팀' : '🔴 레드팀'} ${tk(x.m, x.l)} : ${tk(x.m, x.w)} 참패`, `${hallWhen(x.m)} · ${teamNames(x.m, x.l)}`)), '아직 기록이 없어요')}
     </div>
 `;
-  // 누적 불명예 카드: 1위만 (같은 값이면 tb가 큰 사람 · 그래도 같으면 모두)
-  const shameCum = (ico, name, list, low, fmt, sub, cond, i) => {
-    if (!list.length) return '';
+  // ── 의P일보: 불명예 기록을 신문 1면처럼 (톱기사 1개 + 단신 기사들) ──
+  const josa = (w, a, b) => { const c = String(w).charCodeAt(String(w).length - 1); return (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28) ? a : b; };
+  const NP_HEAD = {
+    d:   (n, v, x) => [`충격! ${n}, 한 판에 ${v}`, `“${x.champ}${josa(x.champ, '은', '는')} 죄가 없다”`],
+    kda: (n, v, x) => [`${n}, ${x.sub} 기록 … KDA ${v}`, ''],
+    dpm: (n, v)    => [`${n}, 분당 ${v} 딜 … “평화주의자”`, ''],
+    kp:  (n, v)    => [`킬관여율 ${v} ${n}, 그 시간 어디 있었나`, ''],
+    vis: (n, v)    => [`${n}, 판당 시야 ${v} … “눈 감고 롤”`, ''],
+    gg:  (n, v)    => [`${n}, 항복 ${v} … “/ff 장인”`, ''],
+  };
+  const items = recs.map(({ r, hist }) => {
+    const cur = hist[hist.length - 1], prev = hist[hist.length - 2];
+    const ci = champInfo(cur.p.champ).name;
+    return { k: r.k, cat: r.name, cum: false, val: hallNum(r.f(cur.v)), plain: r.f(cur.v), sub: r.sub ? r.sub(cur.p) : '', names: [cur.p.name], champ: ci, champKey: cur.p.champ, m: cur.m, p: cur.p,
+      when: `${ci} · ${hallWhen(cur.m)}`, foot: prev ? `종전 ${escapeHtml(prev.p.name)} ${r.f(prev.v)} · ${hist.length - 1}번째 갱신` : `“${r.quip}”`, prev, n: hist.length - 1 };
+  });
+  const cumItem = (k, cat, list, low, unit, fmtV, sub, cond) => {
+    if (!list.length) return null;
     list.sort((a, b) => (low ? a.v - b.v : b.v - a.v) || b.tb - a.tb);
     const top = list.filter(e => e.v === list[0].v && e.tb === list[0].tb), rest = list.filter(e => e.v !== list[0].v);
     const r2 = rest.length ? rest.filter(e => e.v === rest[0].v) : [];
-    const tieN = list.filter(e => e.v === list[0].v).length;
-    return `<div class="hs-pl" style="animation-delay:${(i * .07).toFixed(2)}s"><div class="hs-pl-in">
-      <div class="hs-tape">${ico}</div><span class="hx-kind hs-kind cum">누적</span>
-      <div class="hs-lab">${name}</div>
-      <div class="hs-val">${fmt(top[0].v)}${top.length > 1 ? `<small>${top.length}명 공동 1위</small>` : tieN > 1 ? `<small>같은 기록 ${tieN}명 중 1위</small>` : ''}</div>
-      ${top.map(e => `<div class="hs-who">${champIcon(e.x.m, e.x.p.champ)}<b>${escapeHtml(e.x.name)}</b></div><div class="hs-when">${sub(e.x)}</div>`).join('')}
-      <div class="hs-quip">${cond ? cond + ' · ' : ''}${r2.length ? `2위 ${r2.slice(0, 2).map(e => escapeHtml(e.x.name)).join(', ')}${r2.length > 2 ? ` 외 ${r2.length - 2}명` : ''} <em>${fmt(r2[0].v).replace(/<[^>]+>/g, '')}</em>` : '따라오는 사람 없음'}</div>
-    </div></div>`;
+    return { k, cat, cum: true, val: `${fmtV(top[0].v)}<span class="u">${unit}</span>`, plain: fmtV(top[0].v) + unit, names: top.map(e => e.x.name), m: top[0].x.m, p: top[0].x.p, champKey: top[0].x.p.champ,
+      when: top.map(e => sub(e.x)).join(' / '),
+      foot: (cond ? cond + ' · ' : '') + (r2.length ? `2위 ${r2.slice(0, 2).map(e => escapeHtml(e.x.name)).join(', ')}${r2.length > 2 ? ` 외 ${r2.length - 2}명` : ''} ${fmtV(r2[0].v)}${unit}` : '따라오는 사람 없음') };
   };
-  return `<div class="hs" id="hxShame">
-    <div class="hs-fog"></div>
-    ${shameWebs([['14%', 120, 7, 0, 1], ['82%', 190, 9, 2.5, .85], ['48%', 70, 6, 4, .7]])}
-    <div class="hs-hero">
-      <div class="hs-skull">💀</div>
-      <div class="hs-title">HALL OF SHAME</div>
-      <div class="hs-sub">불명예의 전당 · 깨고 싶어도 아무도 안 깨는 기록들</div>
+  const visI = cumItem('vis', '평균 시야 최저', Object.values(D).filter(x => x.gr >= 3).map(x => ({ x, v: +(x.vis / x.gr).toFixed(1), tb: x.gr })), true, '점/판', v => v.toFixed(1), x => `${x.gr}판 동안 총 ${x.vis}점`, '3판 이상 · 협곡만');
+  const ggI = cumItem('gg', '항복 최다 참여', Object.values(D).filter(x => x.gg > 0).map(x => ({ x, v: x.gg, tb: x.gg / x.g })), false, '번', v => String(v), x => `${x.g}판 중 ${Math.round(x.gg / x.g * 100)}% 항복`, '');
+  [visI, ggI].forEach(x => x && items.push(x));
+  if (!items.length) return `<div class="np" id="hxShame"><div class="np-mast"><h3>의P <i>일보</i></h3></div><div class="np-empty">아직 실릴 기사가 없어요 📰</div></div>`;
+  const lead = items.find(x => x.k === 'd') || items[0], rest = items.filter(x => x !== lead);
+  const headOf = x => { const nm = x.names.map(escapeHtml).join('·'); const [h, q] = NP_HEAD[x.k](nm, x.plain, { champ: escapeHtml(x.champ || ''), sub: x.sub }); return { h, q }; };
+  const L = headOf(lead);
+  const body = lead.k === 'd' && !lead.cum
+    ? `${hallWhen(lead.m).replace(' · ', ' 내전 ')}, ${escapeHtml(lead.champ)}${josa(lead.champ, '을', '를')} 고른 ${escapeHtml(lead.names[0])} 씨가 한 판 동안 무려 ${lead.p.d}번 쓰러졌다. ${lead.prev ? `종전 기록(${escapeHtml(lead.prev.p.name)} ${lead.prev.p.d}데스)을 갈아치운 것으로, 이 기록은 지금까지 ${lead.n}번째 갱신이다.` : '의P 내전 역사상 첫 기록이다.'} 현장에 있던 팀원은 “부활 대기 시간이 플레이 시간보다 길었다”고 전했다.`
+    : `${escapeHtml(lead.when)}. ${escapeHtml(lead.names.join(', '))} 씨가 ${lead.cat} 부문에서 ${lead.plain} 기록을 세웠다. ${lead.foot}.`;
+  const days = new Set(ms.map(m => dayKey(m))).size;
+  const last = ms.reduce((a, m) => (m.date || 0) > (a.date || 0) ? m : a, ms[0]);
+  const ld = new Date(last.date || Date.now());
+  const dateTxt = `${ld.getFullYear()}년 ${ld.getMonth() + 1}월 ${ld.getDate()}일 ${'일월화수목금토'[ld.getDay()]}요일`;
+  const col = (x, i) => { const H = headOf(x); return `<article class="np-ar" style="animation-delay:${(i * .06).toFixed(2)}s">
+      <div class="np-cat ${x.cum ? 'cum' : ''}">${x.cum ? '누적 · 연재' : '한 판 · 사건'} <i>|</i> ${x.cat}</div>
+      <h4>${H.h}</h4>
+      <div class="np-num">${x.val}${x.sub ? `<small>${x.sub}</small>` : ''}</div>
+      <div class="np-who">${champIcon(x.m, x.champKey)}<span><b>${x.names.map(escapeHtml).join(', ')}</b><small>${escapeHtml(x.when)}</small></span></div>
+      <div class="np-pv">${x.foot}</div></article>`; };
+  return `<div class="np" id="hxShame">
+    <div class="np-mast">
+      <div class="np-top"><span>제 ${days}호 · ${dateTxt}</span><span>${MODE_NAME[recMode]}판</span><span>가격: 자존심 1개</span></div>
+      <h3>의P <i>일보</i></h3>
+      <div class="np-sl">불명예의 전당 · 깨고 싶어도 아무도 안 깨는 기록들</div>
     </div>
-    <div class="hs-sec"><span>✦ CURSED RECORDS ✦</span><b>불명예 기록</b></div>
-    <div class="hs-grid">${recs.map(plaque).join('')}${shameCum('🙈', '평균 시야 최저', (() => { const L = Object.values(D).filter(x => x.gr >= 3); return L.map(x => ({ x, v: +(x.vis / x.gr).toFixed(1), tb: x.gr })); })(), true, v => `${v.toFixed(1)}<span class="u">점/판</span>`, x => `${x.gr}판 동안 총 ${x.vis}점`, '3판 이상 · 협곡만', recs.length)}${shameCum('🏳️', '항복 최다 참여', Object.values(D).filter(x => x.gg > 0).map(x => ({ x, v: x.gg, tb: x.gg / x.g })), false, v => `${v}<span class="u">번</span>`, x => `${x.g}판 중 ${Math.round(x.gg / x.g * 100)}% 항복`, '', recs.length + 1)}</div>
-    <div class="hs-foot">🤫 웃자고 만든 기록이에요. 다음 내전에서 명예 회복하면 돼요!</div>
+    <div class="np-lead">
+      <div class="np-lt">
+        <span class="np-kick">단독 · ${lead.cum ? '누적' : '한 판'} ${lead.cat}</span>
+        <h4>${L.h}${L.q ? ` …<br><em>${L.q}</em>` : ''}</h4>
+        <p>${body}</p>
+      </div>
+      <figure class="np-photo">${lead.champKey ? `<img src="${splashOf(lead.champKey)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<div class="np-dots"></div>
+        <div class="np-big">${lead.plain}</div>
+        <figcaption>▲ 사건 당일 ${escapeHtml(lead.champ || '')}${lead.champ ? '(으)로 ' : ''}돌진하는 ${escapeHtml(lead.names[0])} 씨 (자료사진)</figcaption></figure>
+    </div>
+    <div class="np-cols">${rest.map(col).join('')}</div>
+    <div class="np-foot"><span>※ 본 기사는 웃자고 쓴 기사이며, 다음 내전에서 정정 보도될 수 있습니다</span><span>의P일보 협곡 사회부</span></div>
   </div>`;
 }
 
