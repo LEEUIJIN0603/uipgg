@@ -2250,7 +2250,13 @@
     @keyframes newsThrow { 0% { transform: translate(-40vw, 70vh) rotate(-540deg) scale(.08); opacity: 0; } 55% { opacity: 1; } 78% { transform: translate(0, 0) rotate(6deg) scale(1.02); } 100% { transform: none; } }
     @media (max-width: 760px) { .news-card { gap: 10px; padding: 10px 12px; } .nc-img { display: none; } .nc-t b { font-size: .95rem; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; } .nc-go { padding: 5px 10px; font-size: .7rem; }
       .news-pop { padding: 10px 6px; } .news-pop-box { max-height: calc(100vh - 20px); } }
-    /* 내전신문 (관리자) */
+    /* 협곡일보 (관리자: 지난 호 전체) */
+    .nw-arch { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 12px; margin-bottom: 4px; scrollbar-width: thin; }
+    .nw-arch button { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel2); color: var(--muted); font-family: inherit; cursor: pointer; }
+    .nw-arch button b { font-size: .76rem; color: var(--text); } .nw-arch button span { font-size: .7rem; } .nw-arch button small { font-size: .62rem; opacity: .8; }
+    .nw-arch button.on { border-color: rgba(226,98,106,.7); background: rgba(226,98,106,.12); } .nw-arch button.on b { color: #ff9aa0; }
+    .nw-arch button:hover { border-color: #5a6a80; }
+
     .nw-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
     .nw-t { font-size: 1rem; font-weight: 800; color: var(--text-bright); } .nw-t small { font-size: .7rem; color: var(--muted); font-weight: 500; margin-left: 6px; }
     .nw-ctl { display: flex; gap: 8px; align-items: center; }
@@ -3000,7 +3006,7 @@
     <div class="nav-sep" aria-hidden="true"></div>
     <button class="nav-btn" onclick="switchPage('assign',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg></span>팀 배정</button>
     <button class="nav-btn adm-only" onclick="switchPage('stats',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="1"/><rect x="12" y="8" width="3" height="10" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/></svg></span>접속통계</button>
-    <button class="nav-btn adm-only" onclick="switchPage('news',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></span>내전신문</button>
+    <button class="nav-btn adm-only" onclick="switchPage('news',this)"><span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></span>협곡일보</button>
   </nav>
 </aside>
 
@@ -3241,10 +3247,11 @@
   <div id="hallBody"></div>
 </div><!-- /view-hall -->
 
-<!-- ▣ 내전신문 (관리자 링크에서만): 마지막 내전 날의 재미있는 일들을 신문 1면처럼 -->
+<!-- ▣ 협곡일보 (관리자 링크에서만 메뉴): 지난 호까지 전부 · 대시보드에는 최신 호 카드 -->
 <div class="page-view" id="view-news">
-  <div class="nw-bar"><span class="nw-t">📰 내전신문 <small>관리자 전용 · 고른 날의 경기로 자동으로 써져요</small></span>
+  <div class="nw-bar"><span class="nw-t">📰 협곡일보 <small>관리자 전용 · 지난 호 전체 보기 · 대시보드에는 최신 호만 나와요</small></span>
     <span class="nw-ctl"><span class="nw-mode" id="nwMode"></span><select id="nwDay" onchange="renderNews(this.value)"></select></span></div>
+  <div class="nw-arch" id="nwArch"></div>
   <div id="newsBox"></div>
 </div>
 
@@ -3300,7 +3307,7 @@
 <div class="hist-pop" id="champPop" onclick="if (event.target === this) closeChampPop()">
     <div class="hp-box cp-box"><button class="hp-close" onclick="closeChampPop()">✕</button><div id="cpBody"></div></div>
 </div>
-<!-- 📰 내전신문 팝업 (지금은 관리자만) -->
+<!-- 📰 협곡일보 팝업 (대시보드 1면 카드 · 새 호 배달) -->
 <div class="news-pop" id="newsPop" onclick="if (event.target === this) closeNews()">
   <div class="news-pop-box"><button class="news-x" onclick="closeNews()" aria-label="닫기">✕</button><div id="newsPopBody"></div></div>
 </div>
@@ -6586,12 +6593,10 @@ const pctFmt = v => Math.round(v * 100) + '%';
 const TITLES = [
   { k: 'duoBest',  ico: '🤝', name: '최고의 듀오', desc: '같은 팀일 때 승률이 가장 높은 2인', duo: 'best' },
   { k: 'duoWorst', ico: '💣', name: '최악의 듀오', desc: '같은 팀일 때 승률이 가장 낮은 2인', duo: 'worst' },
-  { k: 'cs',     ico: '🚜', name: 'CS KING',        desc: '분당 CS 1위', rift: true, v: r => r.cs / r.mins, f: v => v.toFixed(1) + ' CS/분' },
   { k: 'ej',     ico: '🌲', name: '카나비 정신',     desc: '상대 정글 몬스터를 가장 많이 뺏어 먹음 (판당)', rift: true, v: r => r.xg ? r.ej / r.xg : null, f: v => v.toFixed(1) + '마리/판' },
   { k: 'eff',    ico: '🏷️', name: '가성비 KING',     desc: '골드 1당 챔피언 피해량 1위', v: r => r.gold ? r.dmg / r.gold : null, f: v => v.toFixed(2) + ' 딜/골드' },
   { k: 'early',  ico: '🌅', name: '초반 캐리형',     desc: '15분 전 킬관여(킬+어시) 판당 1위', v: r => r.xg ? r.early / r.xg : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'vis',    ico: '👁️', name: '천리안',          desc: '분당 시야점수 1위', rift: true, v: r => r.vis / r.mins, f: v => v.toFixed(2) + '/분' },
-  { k: 'wardrich', ico: '💎', name: '와드 재벌',      desc: '제어 와드 구매가 판당 가장 많음', rift: true, v: r => r.cw / r.g, f: v => v.toFixed(2) + '개/판' },
   { k: 'nocw',   ico: '🚫', name: '와드 한 개도 아까워', desc: '제어 와드 구매가 판당 가장 적음', low: true, rift: true, v: r => r.cw / r.g, f: v => v.toFixed(2) + '개/판' },
   { k: 'omw',    ico: '🏃', name: '금방 가요~',       desc: "'가는 중' 핑을 가장 많이 찍음 (판당)", v: r => r.xg ? r.omw / r.xg : null, f: v => v.toFixed(1) + '회/판' },
   { k: 'multi',  ico: '🎯', name: '최다 멀티킬',      desc: '더블킬 이상 멀티킬 총 횟수 1위', v: r => r.xg ? r.multiCnt : null, f: v => v + '회' },
@@ -6604,13 +6609,8 @@ const TITLES = [
   { k: 'ksteal', ico: '🧹', name: '막타 도둑',        desc: '킬관여 중 킬 비중이 가장 높음 (어시보다 킬)', v: r => r.ka >= 10 ? r.k / r.ka : null, f: v => '킬 비중 ' + pctFmt(v) },
   { k: 'angel',  ico: '😇', name: '남 좋은 일만',      desc: '킬관여 중 어시 비중이 가장 높음 (킬은 양보)', v: r => r.ka >= 10 ? r.a / r.ka : null, f: v => '어시 비중 ' + pctFmt(v) },
   { k: 'lucky',  ico: '🎲', name: '럭키 가이',        desc: '질 거라고 예측된 팀으로 이긴 횟수 1위', rift: true, v: r => r.lucky, f: v => v + '번' },
-  { k: 'zombie', ico: '🧟', name: '좀비 캐리',        desc: '판당 6데스 이상인 사람 중 승률 1위 (죽어도 이김)', v: r => r.d / r.g >= 6 ? r.w / r.g : null, f: v => '승률 ' + pctFmt(v) },
   { k: 'qping',  ico: '❓', name: '물음표 살인마',     desc: "'?' 핑을 가장 많이 찍음 (판당)", v: r => r.x3g ? r.qping / r.x3g : null, f: v => v.toFixed(1) + '회/판' },
-  { k: 'nag',    ico: '📢', name: '잔소리꾼',          desc: "'후퇴' · '위험' 핑을 가장 많이 찍음 (판당)", v: r => r.x3g ? r.nag / r.x3g : null, f: v => v.toFixed(1) + '회/판' },
-  { k: 'flash',  ico: '✨', name: '점멸 장인',         desc: '점멸을 가장 많이 씀 (판당)', v: r => r.x3g ? r.flash / r.x3g : null, f: v => v.toFixed(1) + '회/판' },
-  { k: 'ccking', ico: '⛓️', name: 'CC 장인',           desc: '적을 묶어 둔 시간 1위 (판당)', v: r => r.x3g ? r.cc / r.x3g : null, f: v => Math.round(v) + '초/판' },
   { k: 'healer', ico: '💚', name: '팀 힐러',           desc: '아군 회복 + 보호막 양 1위 (판당)', v: r => r.x3g ? r.heal / r.x3g : null, f: v => fmtNum(Math.round(v)) + '/판' },
-  { k: 'rock',   ico: '🗿', name: '바위처럼 단단하게', desc: '분당 피해 감소량 1위', v: r => r.xmins ? r.mit / r.xmins : null, f: v => fmtNum(Math.round(v)) + '/분' }
 ];
 // 칭호 계산 기준 (화면에 같이 표시)
 const TITLE_BASIS = {
@@ -7298,9 +7298,9 @@ function renderDashboard() {
   const augTop = Object.entries(AU).sort((a, b) => b[1].g - a[1].g || b[1].w - a[1].w).slice(0, 10);
   const row5 = augTop.length ? `<div class="db-sec"><div class="db-box"><div class="db-h"><b>✨ 인기 증강</b><span>많이 고른 순 · 고른 사람 기준 승률</span></div>
     <div class="aug-grid">${augTop.map(([a, v], i) => `<div class="dl"><span class="dl-n">${i + 1}</span>${augIcon(a, 'big')}<div class="dl-main"><b>${escapeHtml(augInfo(a).name)}</b><small>${v.w}승 ${v.g - v.w}패</small></div><div class="dl-v">${v.g}회<small>승률 ${Math.round(v.w / v.g * 100)}%</small></div></div>`).join('')}</div></div></div>` : '';
-  box.innerHTML = (IS_ADMIN ? newsCardHtml() : '') + kpi + row2 + row3 + row4 + row5;
+  box.innerHTML = newsCardHtml() + kpi + row2 + row3 + row4 + row5;
   initCarousel();
-  if (IS_ADMIN) setTimeout(maybeDeliverNews, 700);
+  setTimeout(maybeDeliverNews, 700);
 }
 
 // ── 칭호 캐러셀 ──
@@ -7523,7 +7523,7 @@ function dayDigest(day) {
   });
   return out;
 }
-// ══════════════════ 📰 내전신문 (관리자 전용): 고른 날(기본 마지막 내전)의 재미있는 일들을 기사로 ══════════════════
+// ══════════════════ 📰 협곡일보 (메뉴는 관리자 전용 · 대시보드 카드는 모두): 고른 날(기본 마지막 내전)의 재미있는 일들을 기사로 ══════════════════
 let _newsMode = 'rift';
 const josaOf = (w, a, b) => { const t = String(w || ''), c = t.charCodeAt(t.length - 1); return (c >= 0xAC00 && c <= 0xD7A3) ? ((c - 0xAC00) % 28 ? a : b) : b; };
 function setNewsMode(m) { _newsMode = m; renderNews(); }
@@ -7537,7 +7537,10 @@ function renderNews(pickDay) {
     document.getElementById('nwMode').innerHTML = ['rift', 'aram'].map(m => `<button class="${m === _newsMode ? 'on' : ''}" onclick="setNewsMode('${m}')">${m === 'rift' ? '🌲 협곡' : '❄️ 칼바람'}</button>`).join('');
     if (!days.length) { sel.innerHTML = ''; box.innerHTML = `<div class="np"><div class="np-empty">${recLoading() ? '불러오는 중…' : '아직 실릴 경기가 없어요 📰'}</div></div>`; return; }
     const day = days.includes(pickDay) ? pickDay : (days.includes(sel.value) && pickDay !== undefined ? sel.value : days[days.length - 1]);
-    sel.innerHTML = days.slice().reverse().map(d => `<option value="${d}" ${d === day ? 'selected' : ''}>${dateOf(d)}${d.length > 10 ? ' ' + d.slice(11) : ''}</option>`).join('');
+    sel.innerHTML = days.slice().reverse().map(d => `<option value="${d}" ${d === day ? 'selected' : ''}>제 ${days.indexOf(d) + 1}호 · ${dateOf(d)}${d.length > 10 ? ' ' + d.slice(11) : ''}</option>`).join('');
+    // 지난 호 전체 목록 (최신 호부터) — 누르면 그 호로
+    document.getElementById('nwArch').innerHTML = days.slice().reverse().map(d => { const i = days.indexOf(d) + 1, n = all.filter(m => dayKey(m) === d).length;
+      return `<button class="${d === day ? 'on' : ''}" onclick="renderNews('${d}')"><b>제 ${i}호</b><span>${dateOf(d).slice(5)}${d.length > 10 ? ' ' + d.slice(11) : ''}</span><small>${n}판${i === days.length ? ' · 최신' : ''}</small></button>`; }).join('');
     box.innerHTML = newsHtml(day, days.indexOf(day) + 1);
   } finally { recMode = keep; }
 }
@@ -7681,7 +7684,7 @@ function newsHtml(day, issueNo) {
       <div class="np-lt"><span class="np-kick">${lead.cat}</span>
         <h4>${lead.h}${lead.q ? ` …<br><em>${lead.q}</em>` : ''}</h4>
         <div class="nw-deck">${lead.body}</div>
-        <div class="nw-story">${storyOf(lead).map((t, i) => `<p>${i ? '' : `<b class="nw-dl">[의P 협곡=내전신문]</b> `}${t}</p>`).join('')}<p class="nw-by">— 의P 내전신문 협곡 사회부 기자</p></div></div>
+        <div class="nw-story">${storyOf(lead).map((t, i) => `<p>${i ? '' : `<b class="nw-dl">[의P 협곡=협곡일보]</b> `}${t}</p>`).join('')}<p class="nw-by">— 협곡일보 사회부 기자</p></div></div>
       <div class="nw-side"><figure class="np-photo">${leadChamp ? `<img src="${splashOf(leadChamp)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<div class="np-dots"></div>
         <div class="np-big">${lead.num}${lead.unit ? `<small>${lead.unit}</small>` : ''}</div>
         <figcaption>▲ ${lead.who ? E(lead.who) + ' 씨' : '현장'}${leadChamp ? ` · ${E(cn(leadChamp))}` : ''} (자료사진)</figcaption></figure>
@@ -7699,7 +7702,7 @@ function newsHtml(day, issueNo) {
   return `<div class="np nw" id="newsPaper">
     <div class="np-mast">
       <div class="np-top"><span>제 ${issueNo}호 · ${dateTxt}</span><span>${MODE_NAME[recMode]}판 · ${ms.length}판</span><span>가격: 자존심 1개</span></div>
-      <h3>내전 <i>신문</i></h3>
+      <h3>협곡 <i>일보</i></h3>
       <div class="np-sl">의P 내전 그날의 소식 · ${dateOf(day)} 내전 특집</div>
     </div>
     ${leadHtml || '<div class="np-empty">이날은 특별한 사건이 없었어요</div>'}
@@ -7711,7 +7714,7 @@ function newsHtml(day, issueNo) {
         ${g.drew.length ? `<div class="nw-wl"><b>🤝 본전</b><div>${nameList(g.drew)}</div></div>` : ''}
         <div class="nw-wl"><b class="l">😭 운 사람</b><div>${nameList(g.lost)}</div></div></div>
     </div>
-    <div class="np-foot"><span>※ 본 기사는 경기 기록으로 자동 작성되었으며, 웃자고 쓴 기사입니다</span><span>의P 내전신문 협곡 사회부</span></div>
+    <div class="np-foot"><span>※ 본 기사는 경기 기록으로 자동 작성되었으며, 웃자고 쓴 기사입니다</span><span>협곡일보 사회부 · 의P.GG</span></div>
   </div>`;
 }
 
@@ -7732,7 +7735,7 @@ function newsCardHtml() {
       const im = d.querySelector('.np-photo img'); img = im ? im.getAttribute('src') : ''; } catch (e) {}
     _newsCardCache = { k: ck, html: `<div class="db-sec"><button class="news-card" onclick="openNews()">
       <span class="nc-ico">📰</span>
-      <span class="nc-t"><small>내전신문 제 ${L.no}호 · ${dateOf(L.day)}${L.day.length > 10 ? ' ' + L.day.slice(11) : ''} 내전</small>${kick ? `<i>${kick}</i>` : ''}<b>${head || '그날의 소식'}</b></span>
+      <span class="nc-t"><small>협곡일보 제 ${L.no}호 · ${dateOf(L.day)}${L.day.length > 10 ? ' ' + L.day.slice(11) : ''} 내전</small>${kick ? `<i>${kick}</i>` : ''}<b>${head || '그날의 소식'}</b></span>
       ${img ? `<span class="nc-img"><img src="${img}" alt="" loading="lazy" onerror="this.remove()"></span>` : ''}
       <span class="nc-go">신문 펼치기 ›</span></button></div>` };
   }
@@ -7754,7 +7757,7 @@ function closeNews(fromBack) {
 }
 let _newsDelivered = false;
 function maybeDeliverNews() {
-  if (!IS_ADMIN || _newsDelivered || recLoading()) return;
+  if (_newsDelivered || recLoading() || navigator.webdriver) return;            // 자동 테스트 브라우저에서는 배달 안 함
   if (!document.getElementById('view-dash').classList.contains('active') || document.getElementById('newsPop').classList.contains('open')) return;
   const L = latestNews(); if (!L) return;
   let seen = ''; try { seen = localStorage.getItem(NEWS_SEEN_KEY) || ''; } catch (e) {}
