@@ -2546,9 +2546,13 @@
     .rule-st b { flex-shrink: 0; min-width: 44px; font-size: .78rem; } .lose .rule-st b { color: #8fc7ff; } .win .rule-st b { color: #ffc56b; }
     .rule-st.top { background: rgba(0,0,0,.4); font-weight: 700; } .lose .rule-st.top { box-shadow: inset 0 0 0 1px rgba(200,60,70,.5); } .win .rule-st.top { box-shadow: inset 0 0 0 1px rgba(240,190,80,.6); }
     .rule-foot { margin-top: 12px; font-size: .68rem; color: var(--muted); }
-    .rule-bd { flex-basis: 100%; font-size: .68rem; font-weight: 700; margin: -4px 0 0 2px; }
+    /* 연승·연패 룰: 줄 높이는 그대로, 닉네임 칸 아래쪽 안에 작게 겹쳐 표시 */
+    .rp-row, .ability-wrap { position: relative; }
+    input.has-rule { padding-top: 4px !important; padding-bottom: 18px !important; }
+    .rule-bd { position: absolute; z-index: 2; pointer-events: none; font-size: .62rem; font-weight: 700; line-height: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 6px; box-sizing: border-box; }
     .rule-bd.lose { color: #8fc7ff; } .rule-bd.win { color: #ffc56b; }
-    .ability-wrap .rule-bd { grid-column: 1 / -1; }
+    input.has-rule.rule-lose { border-color: rgba(120,180,255,.45); }
+    input.has-rule.rule-win { border-color: rgba(255,190,90,.5); }
     .rule-hint { color: #f0c96a; }
     @media (max-width: 760px) { .rule-cols { grid-template-columns: 1fr; } .rule-bar { padding: 10px 12px; gap: 10px; } .rb-t small { font-size: .66rem; } .rb-go { padding: 4px 9px; font-size: .7rem; } }
     /* ══ 챔프 티어 ══ */
@@ -3582,11 +3586,23 @@ function paintRuleBadges() {
     const inp = row.querySelector('input[type=text]'); if (!inp) return;
     let b = row.querySelector('.rule-bd');
     const r = streakRuleOf(inp.value.trim());
-    if (!r) { if (b) b.remove(); return; }
+    if (!r) { if (b) b.remove(); inp.classList.remove('has-rule', 'rule-lose', 'rule-win'); return; }
     if (!b) { b = document.createElement('span'); row.appendChild(b); }
-    b.className = 'rule-bd ' + r.cls; b.textContent = r.txt; b.title = '내전 룰 · 📜 내전 룰 버튼에서 전체 보기';
+    b.className = 'rule-bd ' + r.cls; b.textContent = r.txt;
+    inp.classList.add('has-rule'); inp.classList.toggle('rule-lose', r.cls === 'lose'); inp.classList.toggle('rule-win', r.cls === 'win');
+    inp.title = r.txt + ' · 📜 내전 룰에서 전체 보기';
+    placeRuleBadge(row, inp, b);
   });
 }
+function placeRuleBadge(row, inp, b) {
+  // 닉네임 칸 안쪽 아래에 겹쳐서 (줄 높이를 늘리지 않게)
+  const rr = row.getBoundingClientRect(), ir = inp.getBoundingClientRect();
+  if (!ir.width) return;
+  b.style.left = (ir.left - rr.left - row.clientLeft) + 'px';
+  b.style.width = ir.width + 'px';
+  b.style.top = (ir.bottom - rr.top - row.clientTop - 14) + 'px';
+}
+window.addEventListener('resize', () => document.querySelectorAll('.rule-bd').forEach(b => { const row = b.parentElement, inp = row && row.querySelector('input[type=text]'); if (inp) placeRuleBadge(row, inp, b); }));
 // ── 자주 간 라인 자동 제외: 협곡에서 그 라인 비율이 40% 이상이면 배정하지 않아요 (5판 이상 한 사람만) ──
 const AUTO_LANE_MAX = .4, AUTO_LANE_MIN_G = 5;
 function laneShares(name) {
@@ -3727,6 +3743,7 @@ function switchPage(id, btn, keepMode) {
   document.querySelectorAll('.main, .layout-main').forEach(el => { if (el.scrollTop) el.scrollTop = 0; });
   setTimeout(renderMembers, 50);
   setTimeout(carLayout, 30);
+  if (id === 'assign') setTimeout(() => typeof paintRuleBadges === 'function' && paintRuleBadges(), 80);
   if (typeof logVisit === 'function' && PAGE_NAME[id]) logVisit(PAGE_NAME[id]);
   if (id === 'stats' && typeof initStatsView === 'function') initStatsView();
   if (id === 'tier' && typeof renderTier === 'function') renderTier();
@@ -3738,6 +3755,7 @@ function switchTab(id, btn) {
   btn.classList.add('active');
   document.getElementById('panel-' + id).classList.add('active');
   setTimeout(renderMembers, 50);
+  setTimeout(() => typeof paintRuleBadges === 'function' && paintRuleBadges(), 80);
 }
 
 // 옵션 토글: 같은 그룹 내 선택 처리
