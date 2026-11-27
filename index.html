@@ -7556,7 +7556,7 @@ function newsHtml(day, issueNo) {
   });
   // ② 역대 기록 경신
   if (g.records.length) { const R = g.records.map(t => t.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')), names = [...new Set(g.records.map(t => (t.split(' · ').pop() || '').replace(/\s*\(.*\)$/, '')))];
-    add({ sc: 70, cat: '역대 기록 경신', h: `명예의 전당 ${g.records.length}개 기록 새로 썼다`, q: names.length <= 3 ? `“${names.map(E).join(', ')}”` : '', num: g.records.length, unit: '개 경신', who: names.length === 1 ? names[0] : '',
+    add({ sc: 70, cat: '역대 기록 경신', h: `명예의 전당 ${g.records.length}개 기록 새로 썼다`, q: names.length <= 3 ? `“${names.map(E).join(', ')}”` : '', num: g.records.length, unit: '개 경신', who: names[0] || '',
       body: R.join('<br>'), pv: names.map(E).join(', '), list: R }); }
   // ③ 대이변
   g.upsets.forEach(u => add({ sc: 65 + (35 - u.pct), cat: '대이변', h: `예측 ${u.pct}%의 반란 … ${u.w === 'blue' ? '블루' : '레드'}팀 역전승`, q: '“승부 예측은 참고만 하세요”', num: u.pct, unit: '%', m: u.m,
@@ -7615,31 +7615,26 @@ function newsHtml(day, issueNo) {
       P.push(`${dateOf(day).slice(5).replace('.', '월 ')}일 의P 내전 ${gameNo(m)}번째 판, 협곡이 ${pick(['술렁였다', '얼어붙었다', '조용해졌다'], 1)}. ${E(cn(p.champ))}${eul(cn(p.champ))} 고른 ${E(p.name)} 씨가 ${pen ? '상대 다섯 명을 차례로 쓰러뜨리며 <b>펜타킬</b>' : '상대 네 명을 연달아 잡아내며 <b>쿼드라킬</b>'}을 터뜨린 것이다.`);
       P.push(`이 판에서 ${E(p.name)} 씨의 최종 기록은 ${p.k}킬 ${p.d}데스 ${p.a}어시스트. 팀 킬의 ${f.kp}%에 관여했고, 팀 내 딜량은 ${f.dmgRank}위였다. ${tn(p.team)}은 ${f.my} : ${f.their}${p.win ? `로 ${f.min}분 만에 승리를 가져갔다.` : `로 졌다. 쿼드라킬도 패배를 막지는 못했다.`}`);
       P.push(pen ? pick(quoteMate, 2) : `한 명만 더 있었다면 펜타킬이었다. ${pick(['마지막 한 명은 끝내 도망쳤다.', '마지막 한 명은 우물로 귀환했다는 후문이다.', '현장에서는 “아깝다”는 탄식이 쏟아졌다.'], 2)}`);
-      P.push(pick(quoteFoe, 5));
-      const dl = dayLine(p.name); if (dl) P.push(dl);
-      const sl = streakLine(p.name); if (sl) P.push(sl);
+      P.push(`${pick(quoteFoe, 5)} ${streakLine(p.name)}`.trim());
     } else if (a.cat === '역대 기록 경신') {
-      P.push(`의P 내전 명예의 전당이 하루 만에 ${g.records.length}줄이나 바뀌었다. ${pick(['기록 담당자는 이날 밤 잠을 이루지 못했다.', '명예의 전당 관리인은 “분필이 모자랄 지경”이라고 털어놨다.', '오래 버티던 기록들이 한꺼번에 무너졌다.'], 1)}`);
+      P.push(`${g.records.length > 1 ? `의P 내전 명예의 전당이 하루 만에 ${g.records.length}줄이나 바뀌었다.` : '의P 내전 명예의 전당에 새 이름이 새겨졌다.'} ${pick(['기록 담당자는 이날 밤 잠을 이루지 못했다.', '명예의 전당 관리인은 “분필이 모자랄 지경”이라고 털어놨다.', '오래 버티던 기록들이 한꺼번에 무너졌다.'], 1)}`);
       P.push(`새로 쓰인 기록은 다음과 같다. ${a.list.map(x => x.replace(/ · /, ' — ')).join(', ')}.`);
       const nm = [...new Set(g.records.map(t => (t.split(' · ').pop() || '').replace(/\s*\(.*\)$/, '')))];
       if (nm.length) { const top = nm.map(n => ({ n, c: g.records.filter(t => t.includes(n)).length })).sort((x, y) => y.c - x.c)[0];
-        P.push(`가장 바빴던 사람은 ${E(top.n)} 씨. 혼자 ${top.c}개의 기록을 갈아치웠다. ${pick(quoteWin, 2)}고 ${E(top.n)} 씨는 소감을 밝혔다(고 전해진다).`); const dl = dayLine(top.n); if (dl) P.push(dl); }
-      P.push('바뀐 기록은 명예의 전당에서 바로 확인할 수 있다. 다음 내전에서 이 기록을 다시 깰 주인공이 누가 될지 벌써부터 관심이 쏠린다.');
+        P.push(`${nm.length > 1 ? `가장 바빴던 사람은 ${E(top.n)} 씨. 혼자 ${top.c}개의 기록을 갈아치웠다. ` : ''}${pick(quoteWin, 2)}고 ${E(top.n)} 씨는 소감을 밝혔다(고 전해진다). ${dayLine(top.n)}`); }
+
     } else if (a.cat === '대이변') {
       const w = winnerOf(m), l = w === 'blue' ? 'red' : 'blue', pw = a.num;
       const W = m.players.filter(x => x.team === w), Lp = m.players.filter(x => x.team === l), sc = matchScores(m), best = W.slice().sort((x, y) => sc[m.players.indexOf(y)] - sc[m.players.indexOf(x)])[0];
       P.push(`${gameNo(m)}번째 판, 의P 승부 예측이 체면을 구겼다. 경기 전 이길 확률 <b>${pw}%</b>로 점쳐졌던 ${tn(w)}이 ${tk(m, w)} : ${tk(m, l)}로 승리를 거둔 것이다.`);
       P.push(`${tn(w)}에는 ${W.map(x => E(x.name)).join(', ')} 씨가, ${tn(l)}에는 ${Lp.map(x => E(x.name)).join(', ')} 씨가 나섰다. 숫자로는 ${tn(l)}의 우세가 뚜렷했지만, 협곡은 숫자대로 흘러가지 않았다.`);
       if (best) P.push(`역전의 일등공신은 ${E(cn(best.champ))}${eul(cn(best.champ))} 고른 ${E(best.name)} 씨. ${best.k}/${best.d}/${best.a}로 팀을 이끌었다. ${pick(quoteWin, 4)}`);
-      P.push(`경기는 ${fmtLen(m.len)} 만에 끝났다. ${pick(quoteFoe, 1)}`);
-      P.push('승부 예측 담당자는 “예측은 예측일 뿐, 참고만 해 달라”는 짧은 입장을 냈다.');
+      P.push(`경기는 ${fmtLen(m.len)} 만에 끝났다. 승부 예측 담당자는 “예측은 참고만 해 달라”는 짧은 입장을 냈다.`);
     } else if (a.cat === '오늘의 MVP') {
       const v = g.mvp, d = personDay(v.p.name);
       P.push(`이날 내전의 주인공은 단연 ${E(v.p.name)} 씨였다. ${v.g}판에 나서 ${v.w}번 이기며 가장 많이 웃었다.`);
       P.push(`합계 기록은 ${v.k}/${v.d}/${v.a}, KDA로는 ${((v.k + v.a) / Math.max(1, v.d)).toFixed(2)}. ${d.champs.length ? `${d.champs.slice(0, 3).map(E).join(', ')}${eul(d.champs[Math.min(2, d.champs.length - 1)])} 번갈아 잡으며` : ''} ${v.mvp ? `경기 MVP도 ${v.mvp}번 가져갔다.` : '꾸준히 제 몫을 해냈다.'}`);
-      P.push(pick(quoteMate, 3));
-      const sl = streakLine(v.p.name); if (sl) P.push(sl);
-      P.push(`${pick(quoteWin, 6)}. 경기가 끝난 뒤 ${E(v.p.name)} 씨가 남긴 말이다(라고 기자는 상상한다).`);
+      P.push(`${pick(quoteMate, 3)} ${streakLine(v.p.name)}`.trim());
     } else if (a.cat === '연패 탈출' || a.cat === '연승 마감' || a.cat === '연승 행진' || a.cat === '연패 수렁' || a.cat === '무패 행진' || a.cat === '눈물의 날') {
       const nm = a.who, d = personDay(nm);
       const open = { '연패 탈출': `길고 긴 터널이 끝났다. ${E(nm)} 씨가 ${a.num}연패의 사슬을 끊어냈다.`, '연승 마감': `질주가 멈췄다. ${a.num}연승을 달리던 ${E(nm)} 씨가 이날 패배를 맛봤다.`,
@@ -7653,13 +7648,9 @@ function newsHtml(day, issueNo) {
       if (a.who) { const dl = dayLine(a.who); if (dl) P.push(dl); const sl = streakLine(a.who); if (sl) P.push(sl); }
       P.push(pick(quoteFoe, 6));
     }
-    // 그날 전체 분위기 + 마무리 (모든 톱기사 공통)
-    const bw = ms.filter(x => winnerOf(x) === 'blue').length, totK = ms.reduce((t, x) => t + x.players.reduce((u, y) => u + y.k, 0), 0);
-    const lens = ms.map(x => x.len), avg = Math.round(lens.reduce((t, x) => t + x, 0) / lens.length / 60);
-    P.push(`이날 내전은 모두 ${ms.length}판이 열렸다. ${bw === ms.length - bw ? `블루와 레드가 ${bw}승씩 나눠 가졌고` : `${bw > ms.length - bw ? '블루' : '레드'}팀이 ${Math.max(bw, ms.length - bw)}승 ${Math.min(bw, ms.length - bw)}패로 앞섰고`}, 협곡에는 총 ${totK}번의 킬 알림이 울렸다. 한 판 평균 시간은 ${avg}분.`);
+    // 마무리 한 줄: 같은 날 다른 소식 예고
     const others = A.filter(x => x !== a && x.cat !== a.cat).slice(0, 2);
-    if (others.length) P.push(`한편 같은 날 ${others.map(x => `‘${x.h.replace(/<[^>]+>/g, '')}’`).join(', ')} 소식도 전해졌다. 자세한 내용은 아래 기사에서 이어진다.`);
-    P.push(pick(['다음 내전에서는 또 어떤 이야기가 쓰일지, 본지는 계속해서 협곡을 지켜볼 예정이다.', '의P 내전의 다음 페이지는 다음 내전에서 이어진다.', '기자는 다음 내전에도 리플레이 파일을 들고 현장을 찾을 예정이다.'], 9));
+    if (others.length) P.push(`한편 이날 ${others.map(x => `‘${x.h.replace(/<[^>]+>/g, '')}’`).join(', ')} 소식도 전해졌다.`);
     return P.filter(Boolean);
   }
   A.sort((a, b) => b.sc - a.sc);
@@ -7682,7 +7673,10 @@ function newsHtml(day, issueNo) {
   };
   const d0 = new Date(ms[0].date), WD = '일월화수목금토';
   const dateTxt = `${d0.getFullYear()}년 ${d0.getMonth() + 1}월 ${d0.getDate()}일 ${WD[d0.getDay()]}요일${day.length > 10 ? ' · ' + day.slice(11) : ''}`;
-  const leadChamp = lead && (lead.champ || (lead.m && (lead.m.players.find(p => p.name === lead.who) || {}).champ));
+  // 사진: 기사 챔프 → 그 판의 그 사람 챔프 → 그 사람이 이날 가장 잘한 판 챔프 → 이날 MVP 챔프 → 이날 가장 잘한 판 챔프
+  const bestChampOf = name => { let best = null; ms.forEach(m => { const sc = matchScores(m); m.players.forEach((p, i) => { if ((!name || normName(p.name) === normName(name)) && (!best || sc[i] > best.s)) best = { s: sc[i], c: p.champ }; }); }); return best && best.c; };
+  const firstWho = a => a && a.who ? String(a.who).split(/,\s*|\s*&\s*/)[0] : '';
+  const leadChamp = lead && (lead.champ || (lead.m && (lead.m.players.find(p => p.name === lead.who) || {}).champ) || (firstWho(lead) && bestChampOf(firstWho(lead))) || (g.mvp && g.mvp.p.champ) || bestChampOf(''));
   const leadHtml = lead ? `<div class="np-lead">
       <div class="np-lt"><span class="np-kick">${lead.cat}</span>
         <h4>${lead.h}${lead.q ? ` …<br><em>${lead.q}</em>` : ''}</h4>
