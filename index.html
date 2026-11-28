@@ -7805,7 +7805,7 @@ function maybeDeliverNews() {
   const L = latestNews(); if (!L) return;
   let seen = ''; try { seen = localStorage.getItem(NEWS_SEEN_KEY) || ''; } catch (e) {}
   if (seen === L.key) return;
-  _newsDelivered = true; if (IS_ADMIN) openNewsAlert(); else openNews(true);
+  _newsDelivered = true; openNewsAlert();
 }
 // 사이트 주소 (관리자 표시 없이 · 전적 화면으로 바로)
 const siteRecordUrl = () => location.origin + location.pathname + '#record' + (recMode === 'aram' ? '-aram' : '');
