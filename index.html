@@ -2229,6 +2229,23 @@
       .np-ar:nth-child(odd) { border-left: none; padding-left: 0; }
       .np-foot { flex-direction: column; gap: 2px; }
     }
+    .news-alert { display: none; position: fixed; inset: 0; z-index: 1590; background: rgba(2,5,10,.55); align-items: center; justify-content: center; padding: 16px; }
+    .news-alert.open { display: flex; animation: fadeUp .2s ease; }
+    .na-box { position: relative; width: min(360px, 100%); border-radius: 16px; overflow: hidden; border: 1px solid #3a4658; box-shadow: 0 20px 50px rgba(0,0,0,.6);
+      background: radial-gradient(rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 4px 4px, linear-gradient(180deg, #172131, #0f151f); animation: naDrop .7s cubic-bezier(.2,.9,.3,1.25) both; }
+    @keyframes naDrop { 0% { transform: translateY(-60px) rotate(-8deg) scale(.7); opacity: 0; } 100% { transform: none; opacity: 1; } }
+    .na-x { position: absolute; top: 8px; right: 8px; z-index: 2; width: 30px; height: 30px; border-radius: 50%; border: 1px solid #3a4658; background: rgba(14,20,29,.85); color: #d9e0ea; cursor: pointer; font-size: .85rem; }
+    .na-ph { position: relative; height: 120px; background: #0b1018; }
+    .na-ph img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; filter: grayscale(.5) brightness(.8); }
+    .na-ph::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, #151e2c, transparent 70%); }
+    .na-new { position: absolute; left: 12px; top: 10px; z-index: 1; font-size: .62rem; font-weight: 900; letter-spacing: 1px; color: #fff; background: #e2626a; border-radius: 4px; padding: 2px 7px; }
+    .na-in { padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 5px; }
+    .na-in small { font-size: .7rem; color: #8a97a8; }
+    .na-in i { font-style: normal; align-self: flex-start; font-size: .64rem; font-weight: 800; color: #ff9aa0; border: 1px solid rgba(226,98,106,.55); background: rgba(226,98,106,.12); border-radius: 3px; padding: 1px 7px; letter-spacing: 1px; }
+    .na-in b { font-family: 'Noto Serif KR', serif; font-size: 1.1rem; font-weight: 900; color: #eef2f7; line-height: 1.35; word-break: keep-all; }
+    .na-btns { display: flex; gap: 8px; margin-top: 8px; }
+    .na-go { flex: 1; border: none; border-radius: 999px; padding: 9px 0; font-family: inherit; font-weight: 800; font-size: .82rem; color: #1a1206; background: linear-gradient(90deg, #ffe39a, #d9a63c); cursor: pointer; }
+    .na-later { border: 1px solid #3a4658; background: transparent; color: #8a97a8; border-radius: 999px; padding: 9px 14px; font-family: inherit; font-size: .76rem; cursor: pointer; }
     /* 📰 대시보드 1면 카드 + 신문 팝업 */
     .news-card { display: flex; align-items: center; gap: 14px; width: 100%; padding: 12px 14px; border-radius: 12px; cursor: pointer; text-align: left; font-family: inherit; color: var(--text);
       background: radial-gradient(rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 4px 4px, linear-gradient(100deg, #182232, #111925); border: 1px solid #3a4658; box-shadow: inset 0 0 0 1px rgba(255,255,255,.02); transition: border-color .15s, transform .15s; }
@@ -3307,6 +3324,7 @@
 <div class="hist-pop" id="champPop" onclick="if (event.target === this) closeChampPop()">
     <div class="hp-box cp-box"><button class="hp-close" onclick="closeChampPop()">✕</button><div id="cpBody"></div></div>
 </div>
+<div class="news-alert" id="newsAlert" onclick="if (event.target === this) closeNewsAlert()"><div class="na-box"></div></div>
 <!-- 📰 협곡일보 팝업 (대시보드 1면 카드 · 새 호 배달) -->
 <div class="news-pop" id="newsPop" onclick="if (event.target === this) closeNews()">
   <div class="news-pop-box"><button class="news-x" onclick="closeNews()" aria-label="닫기">✕</button><div id="newsPopBody"></div></div>
@@ -7724,22 +7742,47 @@ function latestNews() {
   const days = [...new Set(modeMatches().map(dayKey))].sort();
   return days.length ? { day: days[days.length - 1], no: days.length, key: recMode + '|' + days[days.length - 1] } : null;
 }
-let _newsCardCache = { k: '', html: '' };
-function newsCardHtml() {
-  const L = latestNews(); if (!L) return '';
+let _newsBriefCache = { k: '', v: null };
+function newsBrief() {                       // 최신 호 요약: 호수 · 날짜 · 꼬리표 · 헤드라인 · 사진
+  const L = latestNews(); if (!L) return null;
   const ck = L.key + '|' + matches.length;
-  if (_newsCardCache.k !== ck) {
+  if (_newsBriefCache.k !== ck) {
     let kick = '', head = '', img = '';
     try { const d = document.createElement('div'); d.innerHTML = newsHtml(L.day, L.no);
       kick = (d.querySelector('.np-kick') || {}).textContent || ''; const h = d.querySelector('.np-lt h4'); head = h ? h.innerHTML.split('<br>')[0].replace(/\s*…\s*$/, '') : '';
       const im = d.querySelector('.np-photo img'); img = im ? im.getAttribute('src') : ''; } catch (e) {}
-    _newsCardCache = { k: ck, html: `<div class="db-sec"><button class="news-card" onclick="openNews()">
-      <span class="nc-ico">📰</span>
-      <span class="nc-t"><small>협곡일보 제 ${L.no}호 · ${dateOf(L.day)}${L.day.length > 10 ? ' ' + L.day.slice(11) : ''} 내전</small>${kick ? `<i>${kick}</i>` : ''}<b>${head || '그날의 소식'}</b></span>
-      ${img ? `<span class="nc-img"><img src="${img}" alt="" loading="lazy" onerror="this.remove()"></span>` : ''}
-      <span class="nc-go">신문 펼치기 ›</span></button></div>` };
+    _newsBriefCache = { k: ck, v: { ...L, kick, head: head || '그날의 소식', img, when: `${dateOf(L.day)}${L.day.length > 10 ? ' ' + L.day.slice(11) : ''} 내전` } };
   }
-  return _newsCardCache.html;
+  return _newsBriefCache.v;
+}
+function newsCardHtml() {
+  const B = newsBrief(); if (!B) return '';
+  return `<div class="db-sec"><button class="news-card" onclick="openNews()">
+      <span class="nc-ico">📰</span>
+      <span class="nc-t"><small>협곡일보 제 ${B.no}호 · ${B.when}</small>${B.kick ? `<i>${B.kick}</i>` : ''}<b>${B.head}</b></span>
+      ${B.img ? `<span class="nc-img"><img src="${B.img}" alt="" loading="lazy" onerror="this.remove()"></span>` : ''}
+      <span class="nc-go">신문 펼치기 ›</span></button></div>`;
+}
+// 작은 알림: "새 협곡일보 도착" (관리자 링크 먼저) — 펼치기 누르면 전체 신문, ✕ · 바깥 · 뒤로가기로 닫힘
+function openNewsAlert() {
+  const B = newsBrief(); if (!B) return;
+  const el = document.getElementById('newsAlert');
+  el.querySelector('.na-box').innerHTML = `<button class="na-x" onclick="closeNewsAlert()" aria-label="닫기">✕</button>
+    <div class="na-ph">${B.img ? `<img src="${B.img}" alt="" onerror="this.remove()">` : ''}<span class="na-new">NEW</span></div>
+    <div class="na-in"><small>📰 협곡일보 제 ${B.no}호 도착 · ${B.when}</small>${B.kick ? `<i>${B.kick}</i>` : ''}<b>${B.head}</b>
+      <div class="na-btns"><button class="na-go" onclick="newsAlertToPaper()">신문 펼치기 ›</button><button class="na-later" onclick="closeNewsAlert()">나중에 볼게요</button></div></div>`;
+  el.classList.add('open');
+  try { localStorage.setItem(NEWS_SEEN_KEY, B.key); } catch (e) {}
+  layerOpen('newsAlert', () => closeNewsAlert(true));
+}
+function newsAlertToPaper() {          // 알림 → 전체 신문: 뒤로가기 기록은 하나만 유지 (뒤로가기 한 번이면 신문 닫힘)
+  document.getElementById('newsAlert').classList.remove('open');
+  const l = _layers.find(x => x.id === 'newsAlert'); if (l) { l.id = 'news'; l.closeFn = () => closeNews(true); }
+  openNews();
+}
+function closeNewsAlert(fromBack) {
+  const el = document.getElementById('newsAlert'); if (!el.classList.contains('open')) return;
+  el.classList.remove('open'); if (!fromBack) layerClose('newsAlert');
 }
 function openNews(deliver) {
   const L = latestNews(); if (!L) return;
@@ -7758,11 +7801,11 @@ function closeNews(fromBack) {
 let _newsDelivered = false;
 function maybeDeliverNews() {
   if (_newsDelivered || recLoading() || navigator.webdriver) return;            // 자동 테스트 브라우저에서는 배달 안 함
-  if (!document.getElementById('view-dash').classList.contains('active') || document.getElementById('newsPop').classList.contains('open')) return;
+  if (!document.getElementById('view-dash').classList.contains('active') || document.getElementById('newsPop').classList.contains('open') || document.getElementById('newsAlert').classList.contains('open')) return;
   const L = latestNews(); if (!L) return;
   let seen = ''; try { seen = localStorage.getItem(NEWS_SEEN_KEY) || ''; } catch (e) {}
   if (seen === L.key) return;
-  _newsDelivered = true; openNews(true);
+  _newsDelivered = true; if (IS_ADMIN) openNewsAlert(); else openNews(true);
 }
 // 사이트 주소 (관리자 표시 없이 · 전적 화면으로 바로)
 const siteRecordUrl = () => location.origin + location.pathname + '#record' + (recMode === 'aram' ? '-aram' : '');
